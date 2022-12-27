@@ -3,7 +3,7 @@ import type { PlayerStatsData } from '../player.model';
 import { PlayerStats, UpdatablePlayerStats } from './player-stats';
 
 export interface VPsPlayerStatsData extends PlayerStatsData {
-  vpsCount: number;
+  vpsCount?: number;
 }
 
 export class VPsPlayerStats
@@ -20,7 +20,7 @@ export class VPsPlayerStats
   }
 
   renderStats(stats: VPsPlayerStatsData) {
-    return html`${stats.vpsCount}`;
+    return html`${stats.vpsCount ?? 0}`;
   }
 
   renderUpdateStats(stats: VPsPlayerStatsData) {
