@@ -148,7 +148,13 @@ export class NewSessionElement extends LitElement {
     `;
   }
 
-  addPlayer(player: Player = { name: '', stats: [] }) {
+  addPlayer(
+    player: Player = {
+      id: this.sessionsService.genId(),
+      name: '',
+      stats: [],
+    }
+  ) {
     this.players = [...this.players, player];
     return player;
   }

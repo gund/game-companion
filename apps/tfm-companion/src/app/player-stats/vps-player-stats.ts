@@ -1,6 +1,11 @@
-import { html } from 'lit';
+import { html, LitElement } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { PlayerStatsData } from '../player.model';
-import { PlayerStats, UpdatablePlayerStats } from './player-stats';
+import {
+  PlayerStats,
+  UpdatablePlayerStats,
+  UpdatePlayerStatsDataEvent,
+} from './player-stats';
 
 export interface VPsPlayerStatsData extends PlayerStatsData {
   vpsCount?: number;
@@ -24,6 +29,33 @@ export class VPsPlayerStats
   }
 
   renderUpdateStats(stats: VPsPlayerStatsData) {
-    return html`<p>VPsPlayerStats Update UI</p>`;
+    return html`<tfm-vps-player-stats-updater
+      .stats=${stats}
+    ></tfm-vps-player-stats-updater>`;
+  }
+}
+
+@customElement('tfm-vps-player-stats-updater')
+export class VPsPlayerStatsUpdaterElement extends LitElement {
+  @property() set stats(data: VPsPlayerStatsData | undefined) {
+    this.vpsCount = data?.vpsCount ?? 0;
+  }
+
+  @state() declare vpsCount: number;
+
+  render() {
+    return html`<input
+      type="number"
+      .value=${this.vpsCount}
+      min="0"
+      @input=${{
+        handleEvent: (e: Event) =>
+          this.updateVpsCount(parseInt((e.target as HTMLInputElement).value)),
+      }}
+    />`;
+  }
+
+  private updateVpsCount(vpsCount: number) {
+    this.dispatchEvent(new UpdatePlayerStatsDataEvent({ vpsCount }));
   }
 }

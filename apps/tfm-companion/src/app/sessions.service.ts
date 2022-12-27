@@ -1,7 +1,17 @@
-import type { Player } from './player.model';
+import type { Player, PlayerStatsData } from './player.model';
 import type { Session } from './session.model';
 
-const fakeSessions: Session[] = [];
+const fakeSessions: Session[] = [
+  {
+    id: '461358',
+    isActive: true,
+    createdAt: new Date('2022-12-27T20:00:30.848Z'),
+    players: [
+      { id: '251509', name: 'a', stats: [{ id: 'vps' }] },
+      { id: '227272', name: 'b', stats: [{ id: 'vps' }] },
+    ],
+  },
+];
 
 export class SessionsService {
   async getAllActive(): Promise<Session[]> {
@@ -26,7 +36,7 @@ export class SessionsService {
     }
 
     const session: Session = {
-      id: Math.random().toFixed(6),
+      id: this.genId(),
       isActive: true,
       createdAt: new Date(),
       players: data.players,
@@ -35,6 +45,20 @@ export class SessionsService {
     fakeSessions.push(session);
 
     return session;
+  }
+
+  async updatePlayer(sId: string, player: Player): Promise<Player> {
+    const session = await this.getById(sId);
+
+    session.players = session.players.map((p) =>
+      p.id === player.id ? player : p
+    );
+
+    return player;
+  }
+
+  genId() {
+    return String(Math.ceil(Math.random() * 1000000));
   }
 }
 

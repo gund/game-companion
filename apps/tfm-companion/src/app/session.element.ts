@@ -60,25 +60,27 @@ export class SessionElement extends LitElement {
   }
 
   private renderPlayer(player: Player) {
-    return html`${player.name}
-    ${when(
-      player.stats.length,
-      () => html`<table>
-        ${repeat(
-          player.stats,
-          (ps) => ps.id,
-          (ps) => html`<tr>
-            <td>${this.getPlayerStatsName(ps.id)}</td>
-            <td>${this.getPlayerStats(ps.id)?.renderStats(ps)}</td>
-          </tr>`
-        )}
-      </table>`
-    )}`;
+    return html`<h3>
+        <a href="/session/${this.sId}/player/${player.id}">${player.name}</a>
+      </h3>
+      ${when(
+        player.stats.length,
+        () => html`<table>
+          ${repeat(
+            player.stats,
+            (ps) => ps.id,
+            (ps) => html`<tr>
+              <td>${this.getPlayerStatsName(ps.id)}</td>
+              <td>${this.getPlayerStats(ps.id)?.renderStats(ps)}</td>
+            </tr>`
+          )}
+        </table>`
+      )}`;
   }
 
-  protected async willUpdate(changedProps: PropertyValueMap<SessionElement>) {
+  protected willUpdate(changedProps: PropertyValueMap<SessionElement>) {
     if (changedProps.has('sId')) {
-      await this.loadSession();
+      this.loadSession();
     }
   }
 

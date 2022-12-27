@@ -18,6 +18,12 @@ export const routes: RouteConfig[] = [
     enter: () => import('./session.element').then(),
   },
   {
+    path: '/session/:sid/player/:pid',
+    render: ({ sid, pid }) =>
+      html`<tfm-player .sId=${sid} .pId=${pid}></tfm-player>`,
+    enter: () => import('./player.element').then(),
+  },
+  {
     path: '**',
     render: () =>
       html`<h1>Not Found!</h1>
