@@ -1,6 +1,8 @@
 import { html, LitElement, PropertyValueMap } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat, when } from './lit-directives';
+import './player-stats/add-player-stats.element';
+import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import {
   isUpdatablePlayerStats,
   UpdatePlayerStatsDataEvent,
@@ -26,9 +28,17 @@ export class PlayerElement extends LitElement {
   @state() private declare session?: Session;
   @state() private declare player?: Player;
   @state() private declare isLoading: boolean;
+  @state() private declare showAddStats: boolean;
 
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
+
+  constructor() {
+    super();
+
+    this.isLoading = false;
+    this.showAddStats = false;
+  }
 
   render() {
     return html`${when(
@@ -56,10 +66,37 @@ export class PlayerElement extends LitElement {
               >
                 ${this.renderPlayerStats(ps)}
               </td>
+              <td>
+                <button
+                  type="button"
+                  @click=${{ handleEvent: () => this.removePlayerStats(ps) }}
+                >
+                  Remove
+                </button>
+              </td>
             </tr>`
           )}
         </table>`
-      )}`;
+      )}
+      <p>
+        <button
+          type="button"
+          @click=${{
+            handleEvent: () => (this.showAddStats = !this.showAddStats),
+          }}
+        >
+          Add new stats
+        </button>
+        ${when(
+          this.showAddStats,
+          () =>
+            html`<p>
+              <tfm-add-player-stats
+                @tfmAddPlayerStats=${this.addPlayerStats}
+              ></tfm-add-player-stats>
+            </p>`
+        )}
+      </p>`;
   }
 
   private renderPlayerStats(data: PlayerStatsData) {
@@ -132,6 +169,29 @@ export class PlayerElement extends LitElement {
     }
 
     Object.assign(playerStats, data);
+
+    await this.sessionsService.updatePlayer(this.sId, this.player);
+  }
+
+  private async addPlayerStats(event: AddPlayerStatsEvent) {
+    if (!this.player) {
+      return;
+    }
+
+    this.player.stats.push(event.data);
+    this.showAddStats = false;
+    this.requestUpdate();
+
+    await this.sessionsService.updatePlayer(this.sId, this.player);
+  }
+
+  private async removePlayerStats(data: PlayerStatsData) {
+    if (!this.player) {
+      return;
+    }
+
+    this.player.stats = this.player.stats.filter((ps) => ps !== data);
+    this.requestUpdate();
 
     await this.sessionsService.updatePlayer(this.sId, this.player);
   }

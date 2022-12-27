@@ -2,12 +2,8 @@ import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { AppElement } from './app.element';
 import { live, repeat, when } from './lit-directives';
-import type {
-  ConfigurablePlayerStats,
-  PlayerStats,
-  UpdatePlayerStatsDataEvent,
-} from './player-stats/player-stats';
-import { isConfigurablePlayerStats } from './player-stats/player-stats';
+import './player-stats/add-player-stats.element';
+import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import { PlayerStatsRegistry } from './player-stats/registry';
 import type { Player, PlayerStatsData } from './player.model';
 import { SessionsService } from './sessions.service';
@@ -26,10 +22,6 @@ export class NewSessionElement extends LitElement {
   private declare players: Player[];
   @state()
   private declare globalStats: PlayerStatsData[];
-  @state()
-  private declare selectedGlobalStats?: PlayerStats;
-  @state()
-  private declare selectedGlobalStatsData?: PlayerStatsData;
   @state()
   private declare error?: string;
   @state()
@@ -98,42 +90,9 @@ export class NewSessionElement extends LitElement {
             </li>`
           )}
           </ul>
-          <select @change=${this.selectGlobalStats}>
-            <option disabled ?selected=${!this.selectedGlobalStats}>
-              -- Select stats --
-            </option>
-            ${repeat(
-              this.playerStatsRegistry.getAvailable(),
-              (ps) => ps.getId(),
-              (ps) =>
-                html`<option
-                  .value=${ps.getId()}
-                  ?selected=${ps === this.selectedGlobalStats}
-                >
-                  ${ps.getName()}
-                </option>`
-            )}
-          </select>
-          ${when(
-            this.selectedGlobalStats &&
-              isConfigurablePlayerStats(this.selectedGlobalStats),
-            () => html`<p
-              @tfmUpdateData=${{
-                handleEvent: (e: UpdatePlayerStatsDataEvent) =>
-                  this.updateGlobalStatsData(e.data),
-              }}
-            >
-              ${(
-                this.selectedGlobalStats as PlayerStats &
-                  ConfigurablePlayerStats
-              ).renderConfiguration()}
-            </p>`
-          )}
-          <button type="button"
-            ?disabled=${!this.selectedGlobalStatsData}
-            @click=${this.addGlobalStats}>
-            Add
-          </button>
+          <tfm-add-player-stats @tfmAddPlayerStats=${
+            this.addGlobalStats
+          }></tfm-add-player-stats>
           </fieldset>
         </p>
         ${when(this.error, () => html`<p>${this.error}</p>`)}
@@ -165,49 +124,21 @@ export class NewSessionElement extends LitElement {
 
   createSession() {
     this.players.forEach(
-      (player) => (player.stats = [...this.globalStats, ...player.stats])
+      (player) =>
+        (player.stats = [
+          ...this.globalStats.map((ps) => ({ ...ps })),
+          ...player.stats,
+        ])
     );
     return this.sessionsService.createSession({ players: this.players });
   }
 
-  private addGlobalStats() {
-    if (!this.selectedGlobalStatsData) {
-      return;
-    }
-
-    this.globalStats = [...this.globalStats, this.selectedGlobalStatsData];
-    this.selectedGlobalStats = undefined;
-    this.selectedGlobalStatsData = undefined;
+  private addGlobalStats(event: AddPlayerStatsEvent) {
+    this.globalStats = [...this.globalStats, event.data];
   }
 
   private removeGlobalStats(data: PlayerStatsData) {
     this.globalStats = this.globalStats.filter((ps) => ps !== data);
-  }
-
-  private selectGlobalStats(e: Event) {
-    const selectedId = (e.target as HTMLSelectElement).value;
-    this.selectedGlobalStats = this.playerStatsRegistry
-      .getAvailable()
-      .find((ps) => ps.getId() === selectedId);
-
-    if (
-      !this.selectedGlobalStats ||
-      isConfigurablePlayerStats(this.selectedGlobalStats)
-    ) {
-      return;
-    }
-
-    this.updateGlobalStatsData({});
-  }
-
-  private updateGlobalStatsData(data?: unknown) {
-    if (!this.selectedGlobalStats) {
-      return;
-    }
-
-    this.selectedGlobalStatsData = data
-      ? { ...data, id: this.selectedGlobalStats.getId() }
-      : undefined;
   }
 
   private getPlayerStatsName(id: string) {
