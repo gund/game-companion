@@ -1,4 +1,8 @@
 export interface Player {
   name: string;
-  stats: Record<string, unknown>;
+  stats: PlayerStatsData[];
+}
+
+export interface PlayerStatsData {
+  id: string;
 }
