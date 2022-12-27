@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {},
   "dependencies": {
+    "@lit-labs/router": "^0.1.1",
     "core-js": "^3.27.0",
+    "lit": "^2.5.0",
     "regenerator-runtime": "^0.13.7",
     "tslib": "^2.4.1"
   },
