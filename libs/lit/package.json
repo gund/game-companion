@@ -1,0 +1,9 @@
+{
+  "name": "@game-companion/lit",
+  "version": "0.0.1",
+  "description": "A much more commonly-sense exports of lit stuff",
+  "type": "module",
+  "main": "index.cjs",
+  "module": "index.js",
+  "types": "index.d.ts"
+}

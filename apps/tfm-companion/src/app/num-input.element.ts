@@ -1,7 +1,13 @@
-import { html, LitElement } from 'lit';
+import {
+  createRef,
+  customElement,
+  html,
+  ifDefined,
+  LitElement,
+  property,
+  ref,
+} from '@game-companion/lit';
 import './haptic-feedback.element';
-import { customElement, property } from './lit/decorators';
-import { createRef, ifDefined, ref } from './lit/directives';
 
 declare global {
   interface HTMLElementTagNameMap {

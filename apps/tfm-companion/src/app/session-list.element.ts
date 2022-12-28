@@ -1,6 +1,10 @@
-import { html, LitElement } from 'lit';
-import { customElement, property } from './lit/decorators';
-import { repeat } from './lit/directives';
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  repeat,
+} from '@game-companion/lit';
 import { SessionHelper } from './session.helper';
 import type { Session } from './session.model';
 

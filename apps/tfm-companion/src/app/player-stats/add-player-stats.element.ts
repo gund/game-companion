@@ -1,6 +1,11 @@
-import { html, LitElement } from 'lit';
-import { customElement, state } from '../lit/decorators';
-import { repeat, when } from '../lit/directives';
+import {
+  customElement,
+  html,
+  LitElement,
+  repeat,
+  state,
+  when,
+} from '@game-companion/lit';
 import type { PlayerStatsData } from '../player.model';
 import type { PlayerStats } from './player-stats';
 import {

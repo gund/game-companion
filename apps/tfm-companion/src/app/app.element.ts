@@ -1,6 +1,5 @@
+import { customElement, LitElement } from '@game-companion/lit';
 import { Router } from '@lit-labs/router';
-import { LitElement } from 'lit';
-import { customElement } from './lit/decorators';
 import { routes } from './routes';
 
 declare global {

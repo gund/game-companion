@@ -1,7 +1,13 @@
-import { html, LitElement } from 'lit';
+import {
+  customElement,
+  html,
+  LitElement,
+  live,
+  repeat,
+  state,
+  when,
+} from '@game-companion/lit';
 import { TfmAppElement } from './app.element';
-import { customElement, state } from './lit/decorators';
-import { live, repeat, when } from './lit/directives';
 import './player-stats/add-player-stats.element';
 import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import { PlayerStatsRegistry } from './player-stats/registry';

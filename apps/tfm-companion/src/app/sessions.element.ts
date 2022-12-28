@@ -1,6 +1,11 @@
-import { html, LitElement } from 'lit';
-import { customElement, state } from './lit/decorators';
-import { until, when } from './lit/directives';
+import {
+  customElement,
+  html,
+  LitElement,
+  state,
+  until,
+  when,
+} from '@game-companion/lit';
 import './session-list.element';
 import type { Session } from './session.model';
 import { SessionsService } from './sessions.service';

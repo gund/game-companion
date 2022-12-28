@@ -1,5 +1,10 @@
-import { html, LitElement } from 'lit';
-import { customElement, property, state } from '../lit/decorators';
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  state,
+} from '@game-companion/lit';
 import '../num-input.element';
 import { PlayerStatsData } from '../player.model';
 import {

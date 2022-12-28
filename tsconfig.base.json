@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "noImplicitOverride": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@game-companion/lit": ["libs/lit/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

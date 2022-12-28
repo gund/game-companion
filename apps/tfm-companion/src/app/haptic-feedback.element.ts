@@ -1,5 +1,10 @@
-import { html, LitElement, PropertyValueMap } from 'lit';
-import { customElement, property } from './lit/decorators';
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValueMap,
+} from '@game-companion/lit';
 
 declare global {
   interface HTMLElementTagNameMap {

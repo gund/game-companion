@@ -1,6 +1,13 @@
-import { html, LitElement, PropertyValueMap } from 'lit';
-import { customElement, property, state } from './lit/decorators';
-import { repeat, when } from './lit/directives';
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValueMap,
+  repeat,
+  state,
+  when,
+} from '@game-companion/lit';
 import './player-stats/add-player-stats.element';
 import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import {
