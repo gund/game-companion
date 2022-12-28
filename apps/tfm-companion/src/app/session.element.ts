@@ -132,7 +132,5 @@ export class TfmSessionElement extends LitElement {
     }
 
     await this.sessionsService.finishSesssion(this.sId!);
-
-    await TfmAppElement.query().router.goto('/');
   }
 }
