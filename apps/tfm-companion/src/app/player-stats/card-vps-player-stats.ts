@@ -1,5 +1,6 @@
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import '../num-input.element';
 import { PlayerStatsData } from '../player.model';
 import {
   ConfigurablePlayerStats,
@@ -52,8 +53,7 @@ export class CardVPsPlayerStatsUpdaterElement extends LitElement {
 
   render() {
     return html`${this.data?.cardName}
-      <input
-        type="number"
+      <tfm-num-input
         .value=${this.data?.scoreCount}
         min="0"
         @input=${{
@@ -62,7 +62,7 @@ export class CardVPsPlayerStatsUpdaterElement extends LitElement {
               parseInt((e.target as HTMLInputElement).value)
             ),
         }}
-      />
+      ></tfm-num-input>
       ${this.data && this.playerStats?.renderStats(this.data)}`;
   }
 
@@ -96,14 +96,13 @@ export class CardVPsPlayerStatsConfiguratorElement extends LitElement {
       <p>
         <label>
           VP Ratio
-          <input
-            type="number"
+          <tfm-num-input
             min="1"
             .value=${this.data.vpsRatio}
             @input=${this.getUpdateHandler((vpsRatio) => ({
               vpsRatio: parseInt(vpsRatio),
             }))}
-          />
+          ></tfm-num-input>
         </label>
       </p>
     </form>`;
