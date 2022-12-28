@@ -30,7 +30,7 @@ export class AppElement extends LitElement {
 
   router = new Router(this, routes);
 
-  render() {
+  protected render() {
     return this.router.outlet();
   }
 }

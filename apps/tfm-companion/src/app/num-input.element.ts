@@ -18,7 +18,7 @@ export class NumInputElement extends LitElement {
 
   private inputRef = createRef<HTMLInputElement>();
 
-  render() {
+  protected render() {
     return html`<input
         type="number"
         ${ref(this.inputRef)}

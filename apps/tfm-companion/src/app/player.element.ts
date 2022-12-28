@@ -40,7 +40,7 @@ export class PlayerElement extends LitElement {
     this.showAddStats = false;
   }
 
-  render() {
+  protected render() {
     return html`${when(
         this.player,
         () => this.renderPlayer(this.player!),

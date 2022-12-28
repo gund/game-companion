@@ -38,7 +38,7 @@ export class NewSessionElement extends LitElement {
     this.isSaving = false;
   }
 
-  render() {
+  protected render() {
     return html`
       <h1>Create New Session</h1>
       <form @submit=${this.handleSubmit}>

@@ -27,7 +27,7 @@ export class AddPlayerStatsElement extends LitElement {
 
   private playerStatsRegistry = new PlayerStatsRegistry();
 
-  render() {
+  protected render() {
     return html`<select @change=${this.selectGlobalStats}>
         <option disabled ?selected=${!this.selectedPlayerStats}>
           -- Select stats --

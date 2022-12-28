@@ -81,7 +81,7 @@ export class CardVPsPlayerStatsConfiguratorElement extends LitElement {
     this.data = { cardName: '', scoreCount: 0, vpsRatio: 1 };
   }
 
-  render() {
+  protected render() {
     return html`<form>
       <p>
         <label>

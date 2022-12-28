@@ -31,7 +31,7 @@ export class SessionElement extends LitElement {
     this.isLoading = false;
   }
 
-  render() {
+  protected render() {
     return html` ${when(
         this.session,
         () => this.renderSession(this.session!),

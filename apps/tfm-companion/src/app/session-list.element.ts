@@ -18,7 +18,7 @@ export class SessionListElement extends LitElement {
 
   private sessionHelper = new SessionHelper();
 
-  render() {
+  protected render() {
     return html`
       <ul>
         ${repeat(
