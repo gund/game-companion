@@ -61,7 +61,7 @@ export class PlayerElement extends LitElement {
               <td
                 @tfmUpdateData=${{
                   handleEvent: (e: UpdatePlayerStatsDataEvent) =>
-                    this.updatePlayerStats(ps, e.data),
+                    this.updatePlayerStats(ps, e.data as object),
                 }}
               >
                 ${this.renderPlayerStats(ps)}
@@ -160,15 +160,15 @@ export class PlayerElement extends LitElement {
     return this.getPlayerStats(id)?.getName() ?? `Unknown(${id})`;
   }
 
-  private async updatePlayerStats(
-    playerStats: PlayerStatsData,
-    data?: unknown
-  ) {
+  private async updatePlayerStats(playerStats: PlayerStatsData, data?: object) {
     if (!this.player) {
       return;
     }
 
-    Object.assign(playerStats, data);
+    this.player.stats = this.player.stats.map((ps) =>
+      ps === playerStats ? { ...ps, ...data } : ps
+    );
+    this.requestUpdate();
 
     await this.sessionsService.updatePlayer(this.sId, this.player);
   }
@@ -178,7 +178,7 @@ export class PlayerElement extends LitElement {
       return;
     }
 
-    this.player.stats.push(event.data);
+    this.player.stats = [...this.player.stats, event.data];
     this.showAddStats = false;
     this.requestUpdate();
 

@@ -60,7 +60,7 @@ export class AddPlayerStatsElement extends LitElement {
       )}
       <button
         type="button"
-        ?disabled=${!this.selectedPlayerStats}
+        ?disabled=${!this.selectedPlayerStatsData}
         @click=${this.addGlobalStats}
       >
         Add
@@ -88,7 +88,7 @@ export class AddPlayerStatsElement extends LitElement {
       !this.selectedPlayerStats ||
       isConfigurablePlayerStats(this.selectedPlayerStats)
     ) {
-      return;
+      return this.updateGlobalStatsData();
     }
 
     this.updateGlobalStatsData({});
