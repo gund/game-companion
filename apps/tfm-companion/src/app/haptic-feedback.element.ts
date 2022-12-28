@@ -1,5 +1,5 @@
 import { html, LitElement, PropertyValueMap } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property } from './lit/decorators';
 
 declare global {
   interface HTMLElementTagNameMap {

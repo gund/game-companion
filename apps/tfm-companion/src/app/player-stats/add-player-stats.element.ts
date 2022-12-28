@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { repeat, when } from '../lit-directives';
+import { customElement, state } from '../lit/decorators';
+import { repeat, when } from '../lit/directives';
 import type { PlayerStatsData } from '../player.model';
 import type { PlayerStats } from './player-stats';
 import {

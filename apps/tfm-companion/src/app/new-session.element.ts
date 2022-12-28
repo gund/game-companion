@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
 import { TfmAppElement } from './app.element';
-import { live, repeat, when } from './lit-directives';
+import { customElement, state } from './lit/decorators';
+import { live, repeat, when } from './lit/directives';
 import './player-stats/add-player-stats.element';
 import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import { PlayerStatsRegistry } from './player-stats/registry';

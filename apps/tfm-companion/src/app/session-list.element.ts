@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { repeat } from './lit-directives';
+import { customElement, property } from './lit/decorators';
+import { repeat } from './lit/directives';
 import { SessionHelper } from './session.helper';
 import type { Session } from './session.model';
 

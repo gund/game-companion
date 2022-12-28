@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
 import './haptic-feedback.element';
-import { createRef, ifDefined, ref } from './lit-directives';
+import { customElement, property } from './lit/decorators';
+import { createRef, ifDefined, ref } from './lit/directives';
 
 declare global {
   interface HTMLElementTagNameMap {

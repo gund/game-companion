@@ -1,5 +1,5 @@
 import { html, LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property, state } from '../lit/decorators';
 import '../num-input.element';
 import { TfmNumInputElement } from '../num-input.element';
 import type { PlayerStatsData } from '../player.model';

@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { until, when } from './lit-directives';
+import { customElement, state } from './lit/decorators';
+import { until, when } from './lit/directives';
 import './session-list.element';
 import type { Session } from './session.model';
 import { SessionsService } from './sessions.service';

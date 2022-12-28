@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyValueMap } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { repeat, when } from './lit-directives';
+import { customElement, property, state } from './lit/decorators';
+import { repeat, when } from './lit/directives';
 import './player-stats/add-player-stats.element';
 import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
 import {
