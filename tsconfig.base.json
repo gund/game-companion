@@ -16,7 +16,10 @@
     "noImplicitOverride": true,
     "baseUrl": ".",
     "paths": {
-      "@game-companion/lit": ["libs/lit/src/index.ts"]
+      "@game-companion/core": ["libs/core/src/index.ts"],
+      "@game-companion/core/elements": ["libs/core/src/elements.ts"],
+      "@game-companion/lit": ["libs/lit/src/index.ts"],
+      "@game-companion/tfm": ["libs/tfm/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

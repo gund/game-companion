@@ -12,13 +12,13 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmSessionsElement.selector]: TfmSessionsElement;
+    [GcSessionsElement.selector]: GcSessionsElement;
   }
 }
 
-@customElement(TfmSessionsElement.selector)
-export class TfmSessionsElement extends LitElement {
-  static readonly selector = 'tfm-sessions';
+@customElement(GcSessionsElement.selector)
+export class GcSessionsElement extends LitElement {
+  static readonly selector = 'gc-sessions';
 
   private sessionsService = new SessionsService();
 
@@ -51,7 +51,7 @@ export class TfmSessionsElement extends LitElement {
   private renderSessions(sessions: Session[]) {
     return html`${when(
       sessions.length,
-      () => html`<tfm-session-list .sessions=${sessions}></tfm-session-list>`,
+      () => html`<gc-session-list .sessions=${sessions}></gc-session-list>`,
       () => this.renderNoSessions()
     )}`;
   }

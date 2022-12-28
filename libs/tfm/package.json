@@ -1,0 +1,9 @@
+{
+  "name": "@game-companion/tfm",
+  "version": "0.0.1",
+  "description": "Terraforming Mars player stats for Game Companion",
+  "type": "module",
+  "main": "index.cjs",
+  "module": "index.js",
+  "types": "index.d.ts"
+}

@@ -18,7 +18,7 @@ export interface ConfigurablePlayerStats {
 }
 
 export class UpdatePlayerStatsDataEvent extends Event {
-  static readonly eventName = 'tfmUpdateData';
+  static readonly eventName = 'gcUpdateData';
 
   constructor(public data?: unknown) {
     super(UpdatePlayerStatsDataEvent.eventName, {

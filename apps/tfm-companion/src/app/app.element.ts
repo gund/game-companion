@@ -1,6 +1,6 @@
-import { customElement, LitElement } from '@game-companion/lit';
-import { Router } from '@lit-labs/router';
-import { routes } from './routes';
+import { mixinRootElement } from '@game-companion/core';
+import { customElement } from '@game-companion/lit';
+import { tfmPlayerStats } from '@game-companion/tfm';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -9,27 +9,9 @@ declare global {
 }
 
 @customElement(TfmAppElement.selector)
-export class TfmAppElement extends LitElement {
+export class TfmAppElement extends mixinRootElement({
+  selector: 'tfm-companion-root',
+  playerStats: [...tfmPlayerStats],
+}) {
   static readonly selector = 'tfm-companion-root';
-  private static app?: TfmAppElement;
-
-  static query() {
-    if (!this.app) {
-      const app = document.getElementsByTagName(TfmAppElement.selector).item(0);
-
-      if (!app) {
-        throw new Error('AppElement has not been mounted!');
-      }
-
-      this.app = app;
-    }
-
-    return this.app;
-  }
-
-  router = new Router(this, routes);
-
-  protected override render() {
-    return this.router.outlet();
-  }
 }

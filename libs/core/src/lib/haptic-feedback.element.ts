@@ -8,13 +8,13 @@ import {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmHapticFeedbackElement.selector]: TfmHapticFeedbackElement;
+    [GcHapticFeedbackElement.selector]: GcHapticFeedbackElement;
   }
 }
 
-@customElement(TfmHapticFeedbackElement.selector)
-export class TfmHapticFeedbackElement extends LitElement {
-  static readonly selector = 'tfm-haptic-feedback';
+@customElement(GcHapticFeedbackElement.selector)
+export class GcHapticFeedbackElement extends LitElement {
+  static readonly selector = 'gc-haptic-feedback';
 
   @property() declare event: string;
   @property() declare durationMs: number;
@@ -45,7 +45,7 @@ export class TfmHapticFeedbackElement extends LitElement {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<TfmHapticFeedbackElement>
+    changedProps: PropertyValueMap<GcHapticFeedbackElement>
   ) {
     if (changedProps.has('event')) {
       this.removeEventListener(changedProps.get('event'), this.provideFeedback);

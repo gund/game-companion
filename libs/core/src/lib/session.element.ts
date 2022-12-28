@@ -15,13 +15,13 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmSessionElement.selector]: TfmSessionElement;
+    [GcSessionElement.selector]: GcSessionElement;
   }
 }
 
-@customElement(TfmSessionElement.selector)
-export class TfmSessionElement extends LitElement {
-  static readonly selector = 'tfm-session';
+@customElement(GcSessionElement.selector)
+export class GcSessionElement extends LitElement {
+  static readonly selector = 'gc-session';
 
   @property() declare sId?: string;
 
@@ -100,7 +100,7 @@ export class TfmSessionElement extends LitElement {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<TfmSessionElement>
+    changedProps: PropertyValueMap<GcSessionElement>
   ) {
     if (changedProps.has('sId')) {
       this.loadSession();

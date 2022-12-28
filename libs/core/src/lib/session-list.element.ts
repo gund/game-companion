@@ -10,13 +10,13 @@ import type { Session } from './session.model';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmSessionListElement.selector]: TfmSessionListElement;
+    [GcSessionListElement.selector]: GcSessionListElement;
   }
 }
 
-@customElement(TfmSessionListElement.selector)
-export class TfmSessionListElement extends LitElement {
-  static readonly selector = 'tfm-session-list';
+@customElement(GcSessionListElement.selector)
+export class GcSessionListElement extends LitElement {
+  static readonly selector = 'gc-session-list';
 
   @property() declare sessions: Session[];
 

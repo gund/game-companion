@@ -7,22 +7,22 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import { TfmAppElement } from './app.element';
-import './player-stats/add-player-stats.element';
-import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
+import './add-player-stats.element';
+import { AddPlayerStatsEvent } from './add-player-stats.element';
 import { PlayerStatsRegistry } from './player-stats/registry';
 import type { Player, PlayerStatsData } from './player.model';
+import { queryRootElement } from './root.element';
 import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmNewSessionElement.selector]: TfmNewSessionElement;
+    [GcNewSessionElement.selector]: GcNewSessionElement;
   }
 }
 
-@customElement(TfmNewSessionElement.selector)
-export class TfmNewSessionElement extends LitElement {
-  static readonly selector = 'tfm-new-session';
+@customElement(GcNewSessionElement.selector)
+export class GcNewSessionElement extends LitElement {
+  static readonly selector = 'gc-new-session';
 
   @state()
   private declare players: Player[];
@@ -96,9 +96,9 @@ export class TfmNewSessionElement extends LitElement {
             </li>`
           )}
           </ul>
-          <tfm-add-player-stats @tfmAddPlayerStats=${
+          <gc-add-player-stats @gcAddPlayerStats=${
             this.addGlobalStats
-          }></tfm-add-player-stats>
+          }></gc-add-player-stats>
           </fieldset>
         </p>
         ${when(this.error, () => html`<p>${this.error}</p>`)}
@@ -163,7 +163,7 @@ export class TfmNewSessionElement extends LitElement {
       this.error = undefined;
       this.isSaving = true;
       const session = await this.createSession();
-      await TfmAppElement.query().router.goto(`/session/${session.id}`);
+      await queryRootElement().router.goto(`/session/${session.id}`);
     } catch (e) {
       this.error = String(e);
     } finally {

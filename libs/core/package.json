@@ -1,0 +1,21 @@
+{
+  "name": "@game-companion/core",
+  "version": "0.0.1",
+  "description": "A core experience of any Game Companion App",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./core/src/index.d.ts",
+  "exports": {
+    ".": {
+      "main": "./index.cjs",
+      "module": "./index.js",
+      "types": "./core/src/index.d.ts"
+    },
+    "./elements": {
+      "main": "./index2.cjs",
+      "module": "./index2.js",
+      "types": "./core/src/elements.d.ts"
+    }
+  }
+}

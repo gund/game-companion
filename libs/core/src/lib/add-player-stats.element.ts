@@ -6,24 +6,24 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import type { PlayerStatsData } from '../player.model';
-import type { PlayerStats } from './player-stats';
+import type { PlayerStatsData } from './player.model';
+import type { PlayerStats } from './player-stats/player-stats';
 import {
   ConfigurablePlayerStats,
   isConfigurablePlayerStats,
   UpdatePlayerStatsDataEvent,
-} from './player-stats';
-import { PlayerStatsRegistry } from './registry';
+} from './player-stats/player-stats';
+import { PlayerStatsRegistry } from './player-stats/registry';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmAddPlayerStatsElement.selector]: TfmAddPlayerStatsElement;
+    [GcAddPlayerStatsElement.selector]: GcAddPlayerStatsElement;
   }
 }
 
-@customElement(TfmAddPlayerStatsElement.selector)
-export class TfmAddPlayerStatsElement extends LitElement {
-  static readonly selector = 'tfm-add-player-stats';
+@customElement(GcAddPlayerStatsElement.selector)
+export class GcAddPlayerStatsElement extends LitElement {
+  static readonly selector = 'gc-add-player-stats';
 
   @state()
   private declare selectedPlayerStats?: PlayerStats;
@@ -53,7 +53,7 @@ export class TfmAddPlayerStatsElement extends LitElement {
         this.selectedPlayerStats &&
           isConfigurablePlayerStats(this.selectedPlayerStats),
         () => html`<p
-          @tfmUpdateData=${{
+          @gcUpdateData=${{
             handleEvent: (e: UpdatePlayerStatsDataEvent) =>
               this.updateGlobalStatsData(e.data),
           }}
@@ -111,7 +111,7 @@ export class TfmAddPlayerStatsElement extends LitElement {
 }
 
 export class AddPlayerStatsEvent extends Event {
-  static readonly eventName = 'tfmAddPlayerStats';
+  static readonly eventName = 'gcAddPlayerStats';
 
   constructor(public data: PlayerStatsData) {
     super(AddPlayerStatsEvent.eventName, { bubbles: true, cancelable: false });

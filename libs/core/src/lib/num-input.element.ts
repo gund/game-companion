@@ -11,13 +11,13 @@ import './haptic-feedback.element';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmNumInputElement.selector]: TfmNumInputElement;
+    [GcNumInputElement.selector]: GcNumInputElement;
   }
 }
 
-@customElement(TfmNumInputElement.selector)
-export class TfmNumInputElement extends LitElement {
-  static readonly selector = 'tfm-num-input';
+@customElement(GcNumInputElement.selector)
+export class GcNumInputElement extends LitElement {
+  static readonly selector = 'gc-num-input';
 
   @property() declare value: string;
   @property() declare min?: string;
@@ -26,7 +26,7 @@ export class TfmNumInputElement extends LitElement {
   private inputRef = createRef<HTMLInputElement>();
 
   protected override render() {
-    return html`<tfm-haptic-feedback event="input">
+    return html`<gc-haptic-feedback event="input">
         <input
           type="number"
           ${ref(this.inputRef)}
@@ -37,7 +37,7 @@ export class TfmNumInputElement extends LitElement {
             handleEvent: () => (this.value = this.inputRef.value?.value ?? ''),
           }}
         />
-      </tfm-haptic-feedback>
+      </gc-haptic-feedback>
       <button type="button" @click=${this.decrement}>-</button>
       <button type="button" @click=${this.increment}>+</button>`;
   }

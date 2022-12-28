@@ -8,8 +8,8 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import './player-stats/add-player-stats.element';
-import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
+import './add-player-stats.element';
+import { AddPlayerStatsEvent } from './add-player-stats.element';
 import {
   isUpdatablePlayerStats,
   UpdatePlayerStatsDataEvent,
@@ -21,13 +21,13 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmPlayerElement.selector]: TfmPlayerElement;
+    [GcPlayerElement.selector]: GcPlayerElement;
   }
 }
 
-@customElement(TfmPlayerElement.selector)
-export class TfmPlayerElement extends LitElement {
-  static readonly selector = 'tfm-player';
+@customElement(GcPlayerElement.selector)
+export class GcPlayerElement extends LitElement {
+  static readonly selector = 'gc-player';
 
   @property() declare sId: string;
   @property() declare pId: string;
@@ -66,7 +66,7 @@ export class TfmPlayerElement extends LitElement {
             (ps) => html`<tr>
               <td>${this.getPlayerStatsName(ps.id)}</td>
               <td
-                @tfmUpdateData=${{
+                @gcUpdateData=${{
                   handleEvent: (e: UpdatePlayerStatsDataEvent) =>
                     this.updatePlayerStats(ps, e.data as object),
                 }}
@@ -98,9 +98,9 @@ export class TfmPlayerElement extends LitElement {
           this.showAddStats,
           () =>
             html`<p>
-              <tfm-add-player-stats
-                @tfmAddPlayerStats=${this.addPlayerStats}
-              ></tfm-add-player-stats>
+              <gc-add-player-stats
+                @gcAddPlayerStats=${this.addPlayerStats}
+              ></gc-add-player-stats>
             </p>`
         )}
       </p>`;
@@ -129,7 +129,7 @@ export class TfmPlayerElement extends LitElement {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<TfmPlayerElement>
+    changedProps: PropertyValueMap<GcPlayerElement>
   ) {
     if (changedProps.has('sId')) {
       this.loadSession();
