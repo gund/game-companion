@@ -31,7 +31,7 @@ export class TfmSessionElement extends LitElement {
     this.isLoading = false;
   }
 
-  protected render() {
+  protected override render() {
     return html` ${when(
         this.session,
         () => this.renderSession(this.session!),
@@ -93,7 +93,9 @@ export class TfmSessionElement extends LitElement {
       )}`;
   }
 
-  protected willUpdate(changedProps: PropertyValueMap<TfmSessionElement>) {
+  protected override willUpdate(
+    changedProps: PropertyValueMap<TfmSessionElement>
+  ) {
     if (changedProps.has('sId')) {
       this.loadSession();
     }

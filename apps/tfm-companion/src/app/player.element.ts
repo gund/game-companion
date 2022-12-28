@@ -40,7 +40,7 @@ export class TfmPlayerElement extends LitElement {
     this.showAddStats = false;
   }
 
-  protected render() {
+  protected override render() {
     return html`${when(
         this.player,
         () => this.renderPlayer(this.player!),
@@ -121,7 +121,9 @@ export class TfmPlayerElement extends LitElement {
     )}`;
   }
 
-  protected willUpdate(changedProps: PropertyValueMap<TfmPlayerElement>) {
+  protected override willUpdate(
+    changedProps: PropertyValueMap<TfmPlayerElement>
+  ) {
     if (changedProps.has('sId')) {
       this.loadSession();
     }

@@ -27,7 +27,7 @@ export class TfmAddPlayerStatsElement extends LitElement {
 
   private playerStatsRegistry = new PlayerStatsRegistry();
 
-  protected render() {
+  protected override render() {
     return html`<select @change=${this.selectGlobalStats}>
         <option disabled ?selected=${!this.selectedPlayerStats}>
           -- Select stats --

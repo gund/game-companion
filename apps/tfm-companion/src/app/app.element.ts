@@ -30,7 +30,7 @@ export class TfmAppElement extends LitElement {
 
   router = new Router(this, routes);
 
-  protected render() {
+  protected override render() {
     return this.router.outlet();
   }
 }

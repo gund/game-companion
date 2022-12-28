@@ -1,5 +1,6 @@
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import './haptic-feedback.element';
 import { createRef, ifDefined, ref } from './lit-directives';
 
 declare global {
@@ -18,17 +19,19 @@ export class TfmNumInputElement extends LitElement {
 
   private inputRef = createRef<HTMLInputElement>();
 
-  protected render() {
-    return html`<input
-        type="number"
-        ${ref(this.inputRef)}
-        .value=${this.value}
-        .min=${ifDefined(this.min)}
-        .max=${ifDefined(this.max)}
-        @input=${{
-          handleEvent: () => (this.value = this.inputRef.value?.value ?? ''),
-        }}
-      />
+  protected override render() {
+    return html`<tfm-haptic-feedback event="input">
+        <input
+          type="number"
+          ${ref(this.inputRef)}
+          .value=${this.value}
+          .min=${ifDefined(this.min)}
+          .max=${ifDefined(this.max)}
+          @input=${{
+            handleEvent: () => (this.value = this.inputRef.value?.value ?? ''),
+          }}
+        />
+      </tfm-haptic-feedback>
       <button type="button" @click=${this.decrement}>-</button>
       <button type="button" @click=${this.increment}>+</button>`;
   }
@@ -53,11 +56,11 @@ export class TfmNumInputElement extends LitElement {
     this.updateValue(String(currValue - 1));
   }
 
-  focus() {
+  override focus() {
     this.inputRef.value?.focus();
   }
 
-  blur() {
+  override blur() {
     this.inputRef.value?.blur();
   }
 

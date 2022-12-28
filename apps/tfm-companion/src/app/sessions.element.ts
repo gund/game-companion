@@ -21,7 +21,7 @@ export class TfmSessionsElement extends LitElement {
   private inactiveSessions = this.sessionsService.getInactive();
   private sessionsCount = this.sessions.then((sesssions) => sesssions.length);
 
-  protected render() {
+  protected override render() {
     return html`
       <h1>Active Sessions (${until(this.sessionsCount, '...')})</h1>
       ${until(

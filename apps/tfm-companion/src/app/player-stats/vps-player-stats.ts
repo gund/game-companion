@@ -45,7 +45,7 @@ export class TfmVPsPlayerStatsUpdaterElement extends LitElement {
 
   @state() declare vpsCount: number;
 
-  protected render() {
+  protected override render() {
     return html`<tfm-num-input
       .value=${this.vpsCount}
       min="0"

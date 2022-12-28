@@ -38,7 +38,7 @@ export class TfmNewSessionElement extends LitElement {
     this.isSaving = false;
   }
 
-  protected render() {
+  protected override render() {
     return html`
       <h1>Create New Session</h1>
       <form @submit=${this.handleSubmit}>

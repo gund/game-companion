@@ -18,7 +18,7 @@ export class TfmSessionListElement extends LitElement {
 
   private sessionHelper = new SessionHelper();
 
-  protected render() {
+  protected override render() {
     return html`
       <ul>
         ${repeat(

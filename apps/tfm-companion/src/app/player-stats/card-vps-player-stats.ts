@@ -51,7 +51,7 @@ export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
   @property() declare data?: CardVPsPlayerStatsData;
   @property() declare playerStats?: CardVPsPlayerStats;
 
-  render() {
+  protected override render() {
     return html`${this.data?.cardName}
       <tfm-num-input
         .value=${this.data?.scoreCount}
@@ -81,7 +81,7 @@ export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
     this.data = { cardName: '', scoreCount: 0, vpsRatio: 1 };
   }
 
-  protected render() {
+  protected override render() {
     return html`<form>
       <p>
         <label>
