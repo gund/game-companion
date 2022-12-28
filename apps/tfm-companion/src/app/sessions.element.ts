@@ -1,5 +1,5 @@
 import { html, LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { until, when } from './lit-directives';
 import './session-list.element';
 import type { Session } from './session.model';
@@ -17,9 +17,12 @@ export class TfmSessionsElement extends LitElement {
 
   private sessionsService = new SessionsService();
 
-  private sessions = this.sessionsService.getActive();
-  private inactiveSessions = this.sessionsService.getInactive();
-  private sessionsCount = this.sessions.then((sesssions) => sesssions.length);
+  @state()
+  private declare sessions: Promise<Session[]>;
+  @state()
+  private declare inactiveSessions: Promise<Session[]>;
+  @state()
+  private declare sessionsCount: Promise<number>;
 
   protected override render() {
     return html`
@@ -35,7 +38,12 @@ export class TfmSessionsElement extends LitElement {
     `;
   }
 
-  renderSessions(sessions: Session[]) {
+  override connectedCallback() {
+    super.connectedCallback();
+    this.loadSessions();
+  }
+
+  private renderSessions(sessions: Session[]) {
     return html`${when(
       sessions.length,
       () => html`<tfm-session-list .sessions=${sessions}></tfm-session-list>`,
@@ -43,7 +51,7 @@ export class TfmSessionsElement extends LitElement {
     )}`;
   }
 
-  renderInactiveSessions(sessions: Session[]) {
+  private renderInactiveSessions(sessions: Session[]) {
     return html`${when(
       sessions.length,
       () => html`<h2>Inactive Sessions (${sessions.length})</h2>
@@ -51,7 +59,13 @@ export class TfmSessionsElement extends LitElement {
     )}`;
   }
 
-  renderNoSessions() {
+  private renderNoSessions() {
     return html`No sessions found!`;
+  }
+
+  private loadSessions() {
+    this.sessions = this.sessionsService.getActive();
+    this.inactiveSessions = this.sessionsService.getInactive();
+    this.sessionsCount = this.sessions.then((sesssions) => sesssions.length);
   }
 }

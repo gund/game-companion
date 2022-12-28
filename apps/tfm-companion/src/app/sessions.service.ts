@@ -1,39 +1,49 @@
+import { BooleanNumber, DbService, TextRange } from './db.service';
 import type { Player } from './player.model';
 import type { Session } from './session.model';
 
-const fakeSessions: Session[] = [
-  {
-    id: '461358',
-    isActive: true,
-    createdAt: new Date('2022-12-27T20:00:30.848Z'),
-    players: [
-      { id: '251509', name: 'a', stats: [{ id: 'vps' }] },
-      { id: '227272', name: 'b', stats: [{ id: 'vps' }] },
-    ],
-  },
-];
-
 export class SessionsService {
+  constructor(private dbService = new DbService()) {}
+
   async getActive(): Promise<Session[]> {
-    return fakeSessions
-      .filter((s) => s.isActive)
-      .sort((s1, s2) => s2.createdAt.getTime() - s1.createdAt.getTime());
+    const db = await this.dbService.getDb();
+
+    const iter = db
+      .transaction('sessions', 'readonly')
+      .store.index('isActive-createdAt')
+      .iterate(
+        IDBKeyRange.bound(
+          [BooleanNumber.False, TextRange.Upper],
+          [BooleanNumber.True, TextRange.Upper]
+        ),
+        'prev'
+      );
+
+    const sessions: Session[] = [];
+
+    for await (const cursor of iter) {
+      sessions.push(cursor.value);
+    }
+
+    return sessions.map((s) => this.deserializeSession(s));
   }
 
   async getInactive(): Promise<Session[]> {
-    return fakeSessions
-      .filter((s) => !s.isActive)
-      .sort((s1, s2) => s2.createdAt.getTime() - s1.createdAt.getTime());
+    const db = await this.dbService.getDb();
+
+    const sessions = await db.getAllFromIndex(
+      'sessions',
+      'isActive',
+      BooleanNumber.False
+    );
+
+    return sessions.map((s) => this.deserializeSession(s));
   }
 
   async getById(sId: string): Promise<Session> {
-    const session = fakeSessions.find((s) => s.id === sId);
+    const { session } = await this.findByIdTx(sId);
 
-    if (!session) {
-      throw new Error(`Session with ID ${sId} was not found!`);
-    }
-
-    return session;
+    return this.deserializeSession(session);
   }
 
   async createSession(data: CreateSessionData): Promise<Session> {
@@ -48,31 +58,69 @@ export class SessionsService {
       players: data.players,
     };
 
-    fakeSessions.push(session);
+    const db = await this.dbService.getDb();
+
+    await db.put('sessions', this.serializeSession(session));
 
     return session;
   }
 
   async updatePlayer(sId: string, player: Player): Promise<Player> {
-    const session = await this.getById(sId);
+    const { session, tx } = await this.findByIdTx(sId, 'readwrite');
 
     session.players = session.players.map((p) =>
       p.id === player.id ? player : p
     );
 
+    await tx.store.put(this.serializeSession(session));
+
     return player;
   }
 
   async finishSesssion(sId: string): Promise<Session> {
-    const session = await this.getById(sId);
+    const { session, tx } = await this.findByIdTx(sId, 'readwrite');
 
     session.isActive = false;
+
+    await tx.store.put(this.serializeSession(session));
 
     return session;
   }
 
   genId() {
     return String(Math.ceil(Math.random() * 1000000));
+  }
+
+  private async findByIdTx<M extends IDBTransactionMode = 'readonly'>(
+    sId: string,
+    mode: M = 'readonly' as any
+  ) {
+    const db = await this.dbService.getDb();
+    const tx = db.transaction('sessions', mode);
+
+    const session = await tx.store.get(sId);
+
+    if (!session) {
+      throw new Error(`Session with ID ${sId} was not found!`);
+    }
+
+    return { session, tx };
+  }
+
+  private deserializeSession(session: Session): Session {
+    return {
+      ...session,
+      isActive: (session.isActive as any) === BooleanNumber.True ? true : false,
+    };
+  }
+
+  private serializeSession(session: Session): Session {
+    return {
+      ...session,
+      isActive: (session.isActive
+        ? BooleanNumber.True
+        : BooleanNumber.False) as any,
+    };
   }
 }
 
