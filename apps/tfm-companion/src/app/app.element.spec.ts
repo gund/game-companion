@@ -1,10 +1,10 @@
-import { AppElement } from './app.element';
+import { TfmAppElement } from './app.element';
 
 describe('AppElement', () => {
-  let app: AppElement;
+  let app: TfmAppElement;
 
   beforeEach(() => {
-    app = new AppElement();
+    app = new TfmAppElement();
   });
 
   it('should create successfully', () => {

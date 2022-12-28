@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import '../num-input.element';
-import { NumInputElement } from '../num-input.element';
+import { TfmNumInputElement } from '../num-input.element';
 import type { PlayerStatsData } from '../player.model';
 import {
   PlayerStats,
@@ -38,7 +38,7 @@ export class VPsPlayerStats
 }
 
 @customElement('tfm-vps-player-stats-updater')
-export class VPsPlayerStatsUpdaterElement extends LitElement {
+export class TfmVPsPlayerStatsUpdaterElement extends LitElement {
   @property() set stats(data: VPsPlayerStatsData | undefined) {
     this.vpsCount = data?.vpsCount ?? 0;
   }
@@ -56,7 +56,7 @@ export class VPsPlayerStatsUpdaterElement extends LitElement {
   private updateVpsCount(event: Event) {
     this.dispatchEvent(
       new UpdatePlayerStatsDataEvent({
-        vpsCount: parseInt((event.target as NumInputElement).value),
+        vpsCount: parseInt((event.target as TfmNumInputElement).value),
       })
     );
   }

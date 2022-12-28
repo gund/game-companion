@@ -7,12 +7,12 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SessionsElement.selector]: SessionsElement;
+    [TfmSessionsElement.selector]: TfmSessionsElement;
   }
 }
 
-@customElement(SessionsElement.selector)
-export class SessionsElement extends LitElement {
+@customElement(TfmSessionsElement.selector)
+export class TfmSessionsElement extends LitElement {
   static readonly selector = 'tfm-sessions';
 
   private sessionsService = new SessionsService();

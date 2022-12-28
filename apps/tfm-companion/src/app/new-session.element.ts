@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { AppElement } from './app.element';
+import { TfmAppElement } from './app.element';
 import { live, repeat, when } from './lit-directives';
 import './player-stats/add-player-stats.element';
 import { AddPlayerStatsEvent } from './player-stats/add-player-stats.element';
@@ -10,12 +10,12 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [NewSessionElement.selector]: NewSessionElement;
+    [TfmNewSessionElement.selector]: TfmNewSessionElement;
   }
 }
 
-@customElement(NewSessionElement.selector)
-export class NewSessionElement extends LitElement {
+@customElement(TfmNewSessionElement.selector)
+export class TfmNewSessionElement extends LitElement {
   static readonly selector = 'tfm-new-session';
 
   @state()
@@ -157,7 +157,7 @@ export class NewSessionElement extends LitElement {
       this.error = undefined;
       this.isSaving = true;
       const session = await this.createSession();
-      await AppElement.query().router.goto(`/session/${session.id}`);
+      await TfmAppElement.query().router.goto(`/session/${session.id}`);
     } catch (e) {
       this.error = String(e);
     } finally {

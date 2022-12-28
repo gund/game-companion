@@ -14,12 +14,12 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [PlayerElement.selector]: PlayerElement;
+    [TfmPlayerElement.selector]: TfmPlayerElement;
   }
 }
 
-@customElement(PlayerElement.selector)
-export class PlayerElement extends LitElement {
+@customElement(TfmPlayerElement.selector)
+export class TfmPlayerElement extends LitElement {
   static readonly selector = 'tfm-player';
 
   @property() declare sId: string;
@@ -121,7 +121,7 @@ export class PlayerElement extends LitElement {
     )}`;
   }
 
-  protected willUpdate(changedProps: PropertyValueMap<PlayerElement>) {
+  protected willUpdate(changedProps: PropertyValueMap<TfmPlayerElement>) {
     if (changedProps.has('sId')) {
       this.loadSession();
     }

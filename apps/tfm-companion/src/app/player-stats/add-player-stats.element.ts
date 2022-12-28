@@ -12,12 +12,12 @@ import { PlayerStatsRegistry } from './registry';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [AddPlayerStatsElement.selector]: AddPlayerStatsElement;
+    [TfmAddPlayerStatsElement.selector]: TfmAddPlayerStatsElement;
   }
 }
 
-@customElement(AddPlayerStatsElement.selector)
-export class AddPlayerStatsElement extends LitElement {
+@customElement(TfmAddPlayerStatsElement.selector)
+export class TfmAddPlayerStatsElement extends LitElement {
   static readonly selector = 'tfm-add-player-stats';
 
   @state()

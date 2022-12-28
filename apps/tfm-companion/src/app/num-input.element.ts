@@ -4,12 +4,12 @@ import { createRef, ifDefined, ref } from './lit-directives';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [NumInputElement.selector]: NumInputElement;
+    [TfmNumInputElement.selector]: TfmNumInputElement;
   }
 }
 
-@customElement(NumInputElement.selector)
-export class NumInputElement extends LitElement {
+@customElement(TfmNumInputElement.selector)
+export class TfmNumInputElement extends LitElement {
   static readonly selector = 'tfm-num-input';
 
   @property() declare value: string;

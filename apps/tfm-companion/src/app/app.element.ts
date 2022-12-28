@@ -5,18 +5,18 @@ import { routes } from './routes';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [AppElement.selector]: AppElement;
+    [TfmAppElement.selector]: TfmAppElement;
   }
 }
 
-@customElement(AppElement.selector)
-export class AppElement extends LitElement {
+@customElement(TfmAppElement.selector)
+export class TfmAppElement extends LitElement {
   static readonly selector = 'tfm-companion-root';
-  private static app?: AppElement;
+  private static app?: TfmAppElement;
 
   static query() {
     if (!this.app) {
-      const app = document.getElementsByTagName(AppElement.selector).item(0);
+      const app = document.getElementsByTagName(TfmAppElement.selector).item(0);
 
       if (!app) {
         throw new Error('AppElement has not been mounted!');

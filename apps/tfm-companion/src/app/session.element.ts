@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyValueMap } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { AppElement } from './app.element';
+import { TfmAppElement } from './app.element';
 import { repeat, when } from './lit-directives';
 import { PlayerStatsRegistry } from './player-stats/registry';
 import type { Player } from './player.model';
@@ -9,12 +9,12 @@ import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SessionElement.selector]: SessionElement;
+    [TfmSessionElement.selector]: TfmSessionElement;
   }
 }
 
-@customElement(SessionElement.selector)
-export class SessionElement extends LitElement {
+@customElement(TfmSessionElement.selector)
+export class TfmSessionElement extends LitElement {
   static readonly selector = 'tfm-session';
 
   @property() declare sId?: string;
@@ -93,7 +93,7 @@ export class SessionElement extends LitElement {
       )}`;
   }
 
-  protected willUpdate(changedProps: PropertyValueMap<SessionElement>) {
+  protected willUpdate(changedProps: PropertyValueMap<TfmSessionElement>) {
     if (changedProps.has('sId')) {
       this.loadSession();
     }
@@ -131,6 +131,6 @@ export class SessionElement extends LitElement {
 
     await this.sessionsService.finishSesssion(this.sId!);
 
-    await AppElement.query().router.goto('/');
+    await TfmAppElement.query().router.goto('/');
   }
 }

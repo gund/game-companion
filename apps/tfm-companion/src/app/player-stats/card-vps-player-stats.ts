@@ -47,7 +47,7 @@ export class CardVPsPlayerStats
 }
 
 @customElement('tfm-card-vps-player-stats-updater')
-export class CardVPsPlayerStatsUpdaterElement extends LitElement {
+export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
   @property() declare data?: CardVPsPlayerStatsData;
   @property() declare playerStats?: CardVPsPlayerStats;
 
@@ -72,7 +72,7 @@ export class CardVPsPlayerStatsUpdaterElement extends LitElement {
 }
 
 @customElement('tfm-card-vps-player-stats-configurator')
-export class CardVPsPlayerStatsConfiguratorElement extends LitElement {
+export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
   @state() declare data: Omit<CardVPsPlayerStatsData, 'id'>;
 
   constructor() {
