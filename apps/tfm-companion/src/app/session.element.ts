@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyValueMap } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { AppElement } from './app.element';
 import { repeat, when } from './lit-directives';
 import { PlayerStatsRegistry } from './player-stats/registry';
 import type { Player } from './player.model';
@@ -31,8 +32,7 @@ export class SessionElement extends LitElement {
   }
 
   render() {
-    return html`<h1>Active Session</h1>
-      ${when(
+    return html` ${when(
         this.session,
         () => this.renderSession(this.session!),
         () => this.renderFallback()
@@ -41,14 +41,22 @@ export class SessionElement extends LitElement {
   }
 
   private renderSession(session: Session) {
-    return html`<h2>Players (${session.players.length})</h2>
+    return html`<h1>${session.isActive ? 'Active' : 'Inactive'} Session</h1>
+      <h2>Players (${session.players.length})</h2>
       <ul>
         ${repeat(
           session.players,
           (p) => p.name,
           (p) => html`<li>${this.renderPlayer(p)}</li>`
         )}
-      </ul>`;
+      </ul>
+      ${when(
+        session.isActive,
+        () =>
+          html`<p>
+            <button @click=${this.finishSession}>Finish session</button>
+          </p>`
+      )}`;
   }
 
   private renderFallback() {
@@ -61,7 +69,14 @@ export class SessionElement extends LitElement {
 
   private renderPlayer(player: Player) {
     return html`<h3>
-        <a href="/session/${this.sId}/player/${player.id}">${player.name}</a>
+        ${when(
+          this.session?.isActive,
+          () =>
+            html`<a href="/session/${this.sId}/player/${player.id}"
+              >${player.name}</a
+            >`,
+          () => html`${player.name}`
+        )}
       </h3>
       ${when(
         player.stats.length,
@@ -107,5 +122,15 @@ export class SessionElement extends LitElement {
 
   private getPlayerStatsName(id: string) {
     return this.getPlayerStats(id)?.getName() ?? `Unknown(${id})`;
+  }
+
+  private async finishSession() {
+    if (!confirm('Are you sure you want to finish this session?')) {
+      return;
+    }
+
+    await this.sessionsService.finishSesssion(this.sId!);
+
+    await AppElement.query().router.goto('/');
   }
 }

@@ -17,7 +17,8 @@ export class SessionsElement extends LitElement {
 
   private sessionsService = new SessionsService();
 
-  private sessions = this.sessionsService.getAllActive();
+  private sessions = this.sessionsService.getActive();
+  private inactiveSessions = this.sessionsService.getInactive();
   private sessionsCount = this.sessions.then((sesssions) => sesssions.length);
 
   render() {
@@ -27,16 +28,27 @@ export class SessionsElement extends LitElement {
         this.sessions.then((s) => this.renderSessions(s)),
         'Loading...'
       )}
+      <p><a href="/session/new">Create new session</a></p>
+      ${until(
+        this.inactiveSessions.then((s) => this.renderInactiveSessions(s))
+      )}
     `;
   }
 
   renderSessions(sessions: Session[]) {
     return html`${when(
-        sessions.length,
-        () => html`<tfm-session-list .sessions=${sessions}></tfm-session-list>`,
-        () => this.renderNoSessions()
-      )}
-      <p><a href="/session/new">Create new session</a></p>`;
+      sessions.length,
+      () => html`<tfm-session-list .sessions=${sessions}></tfm-session-list>`,
+      () => this.renderNoSessions()
+    )}`;
+  }
+
+  renderInactiveSessions(sessions: Session[]) {
+    return html`${when(
+      sessions.length,
+      () => html`<h2>Inactive Sessions (${sessions.length})</h2>
+        ${this.renderSessions(sessions)}`
+    )}`;
   }
 
   renderNoSessions() {

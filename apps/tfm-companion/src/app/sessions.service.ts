@@ -1,4 +1,4 @@
-import type { Player, PlayerStatsData } from './player.model';
+import type { Player } from './player.model';
 import type { Session } from './session.model';
 
 const fakeSessions: Session[] = [
@@ -14,9 +14,15 @@ const fakeSessions: Session[] = [
 ];
 
 export class SessionsService {
-  async getAllActive(): Promise<Session[]> {
+  async getActive(): Promise<Session[]> {
     return fakeSessions
       .filter((s) => s.isActive)
+      .sort((s1, s2) => s2.createdAt.getTime() - s1.createdAt.getTime());
+  }
+
+  async getInactive(): Promise<Session[]> {
+    return fakeSessions
+      .filter((s) => !s.isActive)
       .sort((s1, s2) => s2.createdAt.getTime() - s1.createdAt.getTime());
   }
 
@@ -55,6 +61,14 @@ export class SessionsService {
     );
 
     return player;
+  }
+
+  async finishSesssion(sId: string): Promise<Session> {
+    const session = await this.getById(sId);
+
+    session.isActive = false;
+
+    return session;
   }
 
   genId() {
