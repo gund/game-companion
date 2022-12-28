@@ -4,6 +4,7 @@ export interface PlayerStats<S extends PlayerStatsData = PlayerStatsData> {
   getId(): string;
   getName(): string;
   renderStats(stats: S): unknown;
+  getFinalScore(stats: S): number;
 }
 
 export interface UpdatablePlayerStats<

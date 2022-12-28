@@ -31,7 +31,11 @@ export class CardVPsPlayerStats
 
   renderStats(stats: CardVPsPlayerStatsData) {
     return html`[${stats.cardName}:${stats.scoreCount ?? 0}]
-    ${Math.floor(stats.scoreCount / stats.vpsRatio)}VPs (${stats.vpsRatio}/1 VP)`;
+    ${this.getFinalScore(stats)}VPs (${stats.vpsRatio}/1 VP)`;
+  }
+
+  getFinalScore(stats: CardVPsPlayerStatsData): number {
+    return Math.floor(stats.scoreCount / stats.vpsRatio);
   }
 
   renderUpdateStats(stats: CardVPsPlayerStatsData) {

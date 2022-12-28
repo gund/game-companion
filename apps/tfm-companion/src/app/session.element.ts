@@ -75,7 +75,7 @@ export class TfmSessionElement extends LitElement {
             html`<a href="/session/${this.sId}/player/${player.id}"
               >${player.name}</a
             >`,
-          () => html`${player.name}`
+          () => html`${player.name} - ${this.getFinalPlayerScore(player)}`
         )}
       </h3>
       ${when(
@@ -131,6 +131,14 @@ export class TfmSessionElement extends LitElement {
       return;
     }
 
-    await this.sessionsService.finishSesssion(this.sId!);
+    this.session = await this.sessionsService.finishSesssion(this.sId!);
+  }
+
+  private getFinalPlayerScore(player: Player) {
+    return player.stats.reduce(
+      (score, ps) =>
+        score + (this.getPlayerStats(ps.id)?.getFinalScore(ps) ?? 0),
+      0
+    );
   }
 }

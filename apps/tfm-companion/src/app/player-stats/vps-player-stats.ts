@@ -30,6 +30,10 @@ export class VPsPlayerStats
     return html`${stats.vpsCount ?? 0}`;
   }
 
+  getFinalScore(stats: VPsPlayerStatsData): number {
+    return stats.vpsCount ?? 0;
+  }
+
   renderUpdateStats(stats: VPsPlayerStatsData) {
     return html`<tfm-vps-player-stats-updater
       .stats=${stats}
