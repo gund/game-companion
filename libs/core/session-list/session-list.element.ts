@@ -1,3 +1,5 @@
+import type { Session } from '@game-companion/core';
+import { SessionHelper } from '@game-companion/core';
 import {
   customElement,
   html,
@@ -5,8 +7,6 @@ import {
   property,
   repeat,
 } from '@game-companion/lit';
-import { SessionHelper } from './session.helper';
-import type { Session } from './session.model';
 
 declare global {
   interface HTMLElementTagNameMap {

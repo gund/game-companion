@@ -1,3 +1,12 @@
+import type { Player, PlayerStatsData, Session } from '@game-companion/core';
+import {
+  isUpdatablePlayerStats,
+  PlayerStatsRegistry,
+  SessionsService,
+  UpdatePlayerStatsDataEvent,
+} from '@game-companion/core';
+import '@game-companion/core/add-player-stats';
+import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
   customElement,
   html,
@@ -8,16 +17,6 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import './add-player-stats.element';
-import { AddPlayerStatsEvent } from './add-player-stats.element';
-import {
-  isUpdatablePlayerStats,
-  UpdatePlayerStatsDataEvent,
-} from './player-stats/player-stats';
-import { PlayerStatsRegistry } from './player-stats/registry';
-import type { Player, PlayerStatsData } from './player.model';
-import type { Session } from './session.model';
-import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {

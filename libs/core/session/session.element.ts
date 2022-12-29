@@ -1,3 +1,5 @@
+import type { Player, Session } from '@game-companion/core';
+import { PlayerStatsRegistry, SessionsService } from '@game-companion/core';
 import {
   customElement,
   html,
@@ -8,10 +10,6 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import { PlayerStatsRegistry } from './player-stats/registry';
-import type { Player } from './player.model';
-import type { Session } from './session.model';
-import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,4 +1,14 @@
 import {
+  isConfigurablePlayerStats,
+  PlayerStatsRegistry,
+  UpdatePlayerStatsDataEvent,
+} from '@game-companion/core';
+import type {
+  ConfigurablePlayerStats,
+  PlayerStats,
+  PlayerStatsData,
+} from '@game-companion/core';
+import {
   customElement,
   html,
   LitElement,
@@ -6,14 +16,6 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import type { PlayerStatsData } from './player.model';
-import type { PlayerStats } from './player-stats/player-stats';
-import {
-  ConfigurablePlayerStats,
-  isConfigurablePlayerStats,
-  UpdatePlayerStatsDataEvent,
-} from './player-stats/player-stats';
-import { PlayerStatsRegistry } from './player-stats/registry';
 
 declare global {
   interface HTMLElementTagNameMap {

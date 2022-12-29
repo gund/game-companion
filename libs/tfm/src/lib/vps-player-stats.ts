@@ -4,7 +4,6 @@ import type {
   UpdatablePlayerStats,
 } from '@game-companion/core';
 import { html } from '@game-companion/lit';
-import '@game-companion/core/elements';
 
 export interface VPsPlayerStatsData extends PlayerStatsData {
   vpsCount?: number;
@@ -32,7 +31,7 @@ export class VPsPlayerStats
   }
 
   renderUpdateStats(stats: VPsPlayerStatsData) {
-    import('./vps-updater.element');
+    import('@game-companion/tfm/vps-updater');
 
     return html`<tfm-vps-player-stats-updater
       .stats=${stats}

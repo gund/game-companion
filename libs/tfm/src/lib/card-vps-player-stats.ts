@@ -36,7 +36,7 @@ export class CardVPsPlayerStats
   }
 
   renderUpdateStats(stats: CardVPsPlayerStatsData) {
-    import('./card-vps-updater.element');
+    import('@game-companion/tfm/card-vps-updater');
 
     return html`<tfm-card-vps-player-stats-updater
       .data=${stats}
@@ -45,7 +45,7 @@ export class CardVPsPlayerStats
   }
 
   renderConfiguration() {
-    import('./card-vps-configurator.element');
+    import('@game-companion/tfm/card-vps-configurator');
 
     return html`<tfm-card-vps-player-stats-configurator></tfm-card-vps-player-stats-configurator>`;
   }

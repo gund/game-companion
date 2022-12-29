@@ -6,23 +6,23 @@ export function getRoutes(baseUrl?: string): RouteConfig[] {
     {
       path: `${baseUrl}`,
       render: () => html`<gc-sessions></gc-sessions>`,
-      enter: () => import('./sessions.element').then(),
+      enter: () => import('../../sessions/sessions.element').then(),
     },
     {
       path: `${baseUrl}session/new`,
       render: () => html`<gc-new-session></gc-new-session>`,
-      enter: () => import('./new-session.element').then(),
+      enter: () => import('../../new-session/new-session.element').then(),
     },
     {
       path: `${baseUrl}session/:sid`,
       render: ({ sid }) => html`<gc-session .sId=${sid}></gc-session>`,
-      enter: () => import('./session.element').then(),
+      enter: () => import('../../session/session.element').then(),
     },
     {
       path: `${baseUrl}session/:sid/player/:pid`,
       render: ({ sid, pid }) =>
         html`<gc-player .sId=${sid} .pId=${pid}></gc-player>`,
-      enter: () => import('./player.element').then(),
+      enter: () => import('../../player/player.element').then(),
     },
   ];
 }

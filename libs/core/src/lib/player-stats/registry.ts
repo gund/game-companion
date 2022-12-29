@@ -1,4 +1,4 @@
-import { queryRootElement } from '../root.element';
+import { queryRootElement } from '../root-element';
 import type { PlayerStats } from './player-stats';
 
 export class PlayerStatsRegistry {

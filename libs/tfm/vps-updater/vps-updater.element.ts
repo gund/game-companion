@@ -1,5 +1,6 @@
 import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
-import { GcNumInputElement } from '@game-companion/core/elements';
+import '@game-companion/core/num-input';
+import { GcNumInputElement } from '@game-companion/core/num-input';
 import {
   customElement,
   html,
@@ -7,7 +8,7 @@ import {
   property,
   state,
 } from '@game-companion/lit';
-import { VPsPlayerStatsData } from './vps-player-stats';
+import type { VPsPlayerStatsData } from '@game-companion/tfm';
 
 @customElement('tfm-vps-player-stats-updater')
 export class TfmVPsPlayerStatsUpdaterElement extends LitElement {

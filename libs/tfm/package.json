@@ -3,7 +3,29 @@
   "version": "0.0.1",
   "description": "Terraforming Mars player stats for Game Companion",
   "type": "module",
-  "main": "index.cjs",
-  "module": "index.js",
-  "types": "index.d.ts"
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./tfm/src/index.d.ts",
+  "exports": {
+    ".": {
+      "main": "./index.cjs",
+      "module": "./index.js",
+      "types": "./tfm/src/index.d.ts"
+    },
+    "./vps-updater": {
+      "main": "./vps-updater.cjs",
+      "module": "./vps-updater.js",
+      "types": "./tfm/vps-updater/elements.d.ts"
+    },
+    "./card-vps-updater": {
+      "main": "./card-vps-updater.cjs",
+      "module": "./card-vps-updater.js",
+      "types": "./tfm/card-vps-updater/elements.d.ts"
+    },
+    "./card-vps-configurator": {
+      "main": "./card-vps-configurator.cjs",
+      "module": "./card-vps-configurator.js",
+      "types": "./tfm/card-vps-configurator/elements.d.ts"
+    }
+  }
 }

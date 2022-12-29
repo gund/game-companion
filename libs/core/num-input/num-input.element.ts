@@ -7,7 +7,7 @@ import {
   property,
   ref,
 } from '@game-companion/lit';
-import './haptic-feedback.element';
+import '@game-companion/core/haptic-feedback';
 
 declare global {
   interface HTMLElementTagNameMap {

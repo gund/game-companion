@@ -1,3 +1,6 @@
+import type { Session } from '@game-companion/core';
+import { SessionsService } from '@game-companion/core';
+import '@game-companion/core/session-list';
 import {
   customElement,
   html,
@@ -6,9 +9,6 @@ import {
   until,
   when,
 } from '@game-companion/lit';
-import './session-list.element';
-import type { Session } from './session.model';
-import { SessionsService } from './sessions.service';
 
 declare global {
   interface HTMLElementTagNameMap {
