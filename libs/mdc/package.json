@@ -1,0 +1,41 @@
+{
+  "name": "@game-companion/mdc",
+  "version": "0.0.1",
+  "description": "Material Web Components based on MDC",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./mdc/src/index.d.ts",
+  "exports": {
+    ".": {
+      "main": "./index.cjs",
+      "module": "./index.js",
+      "types": "./mdc/src/index.d.ts"
+    },
+    "./icons-link": {
+      "main": "./icons-link.cjs",
+      "module": "./icons-link.js",
+      "types": "./mdc/icons-link/index.d.ts"
+    },
+    "./button": {
+      "main": "./button.cjs",
+      "module": "./button.js",
+      "types": "./mdc/button/index.d.ts"
+    },
+    "./icon-button": {
+      "main": "./icon-button.cjs",
+      "module": "./icon-button.js",
+      "types": "./mdc/icon-button/index.d.ts"
+    },
+    "./list": {
+      "main": "./list.cjs",
+      "module": "./list.js",
+      "types": "./mdc/list/index.d.ts"
+    },
+    "./top-app-bar": {
+      "main": "./top-app-bar.cjs",
+      "module": "./top-app-bar.js",
+      "types": "./mdc/top-app-bar/index.d.ts"
+    }
+  }
+}

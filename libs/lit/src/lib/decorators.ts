@@ -1,1 +1,7 @@
-export { customElement, property, state } from 'lit/decorators.js';
+export {
+  customElement,
+  property,
+  state,
+  queryAll,
+  queryAssignedElements,
+} from 'lit/decorators.js';

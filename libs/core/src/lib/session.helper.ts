@@ -9,12 +9,10 @@ export class SessionHelper {
   ) {}
 
   getName(session: Session) {
-    return `Session with ${
-      session.players.length
-    } people from ${this.formatSince(session)}`;
+    return `Session with ${session.players.length} people`;
   }
 
-  private formatSince(session: Session) {
+  formatSince(session: Session) {
     const today = new Date();
     const diffTime = session.createdAt.getTime() - today.getTime();
     let diff = diffTime / 1000 / 60 / 60 / 24;

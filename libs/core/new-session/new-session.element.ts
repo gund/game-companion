@@ -15,6 +15,8 @@ import {
   state,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/icon-button';
+import '@game-companion/mdc/top-app-bar';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -48,7 +50,15 @@ export class GcNewSessionElement extends LitElement {
 
   protected override render() {
     return html`
-      <h1>Create New Session</h1>
+      <mdc-top-app-bar appearance="fixed">
+        <span slot="title">New Session</span>
+        <a href="/" slot="menu">
+          <mdc-icon-button
+            btnClass="mdc-top-app-bar__navigation-icon"
+            icon="arrow_back"
+            aria-label="Back"
+          ></mdc-icon-button>
+        </a>
       <form @submit=${this.handleSubmit}>
       <fieldset ?disabled=${this.isSaving}>
         <p>
@@ -111,7 +121,7 @@ export class GcNewSessionElement extends LitElement {
         </p>
       </fieldset>
       </form>
-      <p><a href="/">Go back</a></p>
+      </mdc-top-app-bar>
     `;
   }
 

@@ -1,7 +1,7 @@
-import type { Session } from '@game-companion/core';
-import { SessionsService } from '@game-companion/core';
+import { Session, SessionsService } from '@game-companion/core';
 import '@game-companion/core/session-list';
 import {
+  css,
   customElement,
   html,
   LitElement,
@@ -9,6 +9,8 @@ import {
   until,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/fab';
+import '@game-companion/mdc/top-app-bar';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -19,6 +21,15 @@ declare global {
 @customElement(GcSessionsElement.selector)
 export class GcSessionsElement extends LitElement {
   static readonly selector = 'gc-sessions';
+  static override styles = [
+    css`
+      mdc-fab {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+      }
+    `,
+  ];
 
   private sessionsService = new SessionsService();
 
@@ -26,20 +37,22 @@ export class GcSessionsElement extends LitElement {
   private declare sessions: Promise<Session[]>;
   @state()
   private declare inactiveSessions: Promise<Session[]>;
-  @state()
-  private declare sessionsCount: Promise<number>;
 
   protected override render() {
     return html`
-      <h1>Active Sessions (${until(this.sessionsCount, '...')})</h1>
-      ${until(
-        this.sessions.then((s) => this.renderSessions(s)),
-        'Loading...'
-      )}
-      <p><a href="/session/new">Create new session</a></p>
-      ${until(
-        this.inactiveSessions.then((s) => this.renderInactiveSessions(s))
-      )}
+      <mdc-top-app-bar appearance="fixed">
+        <span slot="title">Sessions</span>
+        ${until(
+          this.sessions.then((s) => this.renderSessions(s)),
+          `Loading...`
+        )}
+        ${until(
+          this.inactiveSessions.then((s) => this.renderInactiveSessions(s))
+        )}
+      </mdc-top-app-bar>
+      <a href="/session/new">
+        <mdc-fab icon="group_add" aria-label="Create new session"></mdc-fab>
+      </a>
     `;
   }
 
@@ -49,28 +62,19 @@ export class GcSessionsElement extends LitElement {
   }
 
   private renderSessions(sessions: Session[]) {
-    return html`${when(
-      sessions.length,
-      () => html`<gc-session-list .sessions=${sessions}></gc-session-list>`,
-      () => this.renderNoSessions()
-    )}`;
+    return html`<gc-session-list .sessions=${sessions}></gc-session-list>`;
   }
 
   private renderInactiveSessions(sessions: Session[]) {
     return html`${when(
       sessions.length,
-      () => html`<h2>Inactive Sessions (${sessions.length})</h2>
+      () => html`<h3>Inactive Sessions</h3>
         ${this.renderSessions(sessions)}`
     )}`;
-  }
-
-  private renderNoSessions() {
-    return html`No sessions found!`;
   }
 
   private loadSessions() {
     this.sessions = this.sessionsService.getActive();
     this.inactiveSessions = this.sessionsService.getInactive();
-    this.sessionsCount = this.sessions.then((sesssions) => sesssions.length);
   }
 }

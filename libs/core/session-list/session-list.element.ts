@@ -6,7 +6,9 @@ import {
   LitElement,
   property,
   repeat,
+  when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/list';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -23,16 +25,25 @@ export class GcSessionListElement extends LitElement {
   private sessionHelper = new SessionHelper();
 
   protected override render() {
-    return html`
-      <ul>
+    return html`${when(
+      this.sessions.length,
+      () => html`<mdc-list twoline icon="groups">
         ${repeat(
           this.sessions,
           (s) => s.id,
-          (s) => html`<li>
-            <a href="/session/${s.id}">${this.sessionHelper.getName(s)}</a>
-          </li>`
+          (s) => html`<mdc-list-item>
+            <a href="/session/${s.id}">
+              <span class="mdc-list-item__primary-text"
+                >${this.sessionHelper.getName(s)}</span
+              >
+              <span class="mdc-list-item__secondary-text"
+                >From ${this.sessionHelper.formatSince(s)}</span
+              >
+            </a>
+          </mdc-list-item>`
         )}
-      </ul>
-    `;
+      </mdc-list>`,
+      () => html`<h3>No sessions found!</h3>`
+    )}`;
   }
 }

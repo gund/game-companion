@@ -9,6 +9,7 @@
     "core-js": "^3.27.0",
     "idb": "^7.1.1",
     "lit": "^2.5.0",
+    "material-components-web": "^14.0.0",
     "regenerator-runtime": "^0.13.7",
     "tslib": "^2.4.1"
   },
