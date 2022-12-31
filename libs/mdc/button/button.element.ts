@@ -2,6 +2,7 @@ import {
   classMap,
   customElement,
   html,
+  ifDefined,
   property,
   ref,
   unsafeCSS,
@@ -25,6 +26,7 @@ export class MdcButtonElement extends MdcCoreButton {
   @property({ type: Boolean }) declare outlined: boolean;
   @property({ type: Boolean }) declare raised: boolean;
   @property({ type: String }) declare icon?: string;
+  @property({ type: String }) declare href?: string;
 
   constructor() {
     super();
@@ -35,24 +37,36 @@ export class MdcButtonElement extends MdcCoreButton {
 
   protected override render() {
     return html`<div class="mdc-touch-target-wrapper">
-        <button
-          type=${this.type}
-          class="mdc-button mdc-button--touch ${classMap(this.getClassMap())}"
-          ?disabled=${this.disabled}
-          ${ref(this.buttonRef)}
-        >
-          <span class="mdc-button__ripple"></span>
-          <span class="mdc-button__touch"></span>
-          ${when(
-            this.icon,
-            () => html`<i class="material-icons mdc-button__icon"
-              >${this.icon}</i
-            >`
-          )}
-          <span class="mdc-button__label"><slot></slot></span>
-        </button>
+        ${when(
+          this.type === 'link',
+          () => html`<a
+            href=${ifDefined(this.href)}
+            class="mdc-button mdc-button--touch ${classMap(this.getClassMap())}"
+            ?disabled=${this.disabled}
+            ${ref(this.initButton)}
+          >
+            ${this.renderInnerButton()}
+          </a>`,
+          () => html`<button
+            class="mdc-button mdc-button--touch ${classMap(this.getClassMap())}"
+            ?disabled=${this.disabled}
+            ${ref(this.initButton)}
+          >
+            ${this.renderInnerButton()}
+          </button>`
+        )}
       </div>
       <mdc-icons-link></mdc-icons-link>`;
+  }
+
+  protected renderInnerButton() {
+    return html`<span class="mdc-button__ripple"></span>
+      <span class="mdc-button__touch"></span>
+      ${when(
+        this.icon,
+        () => html`<i class="material-icons mdc-button__icon">${this.icon}</i>`
+      )}
+      <span class="mdc-button__label"><slot></slot></span>`;
   }
 
   protected getClassMap() {

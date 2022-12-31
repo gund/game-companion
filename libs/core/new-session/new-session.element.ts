@@ -53,13 +53,14 @@ export class GcNewSessionElement extends LitElement {
     return html`
       <mdc-top-app-bar appearance="fixed">
         <span slot="title">New Session</span>
-        <a href="/" slot="menu">
-          <mdc-icon-button
-            btnClass="mdc-top-app-bar__navigation-icon"
-            icon="arrow_back"
-            aria-label="Back"
-          ></mdc-icon-button>
-        </a>
+        <mdc-icon-button
+          slot="menu"
+          type="link"
+          href="/"
+          class="mdc-top-app-bar__navigation-icon"
+          icon="arrow_back"
+          aria-label="Back"
+        ></mdc-icon-button>
       <form @submit=${this.handleSubmit}>
       <fieldset ?disabled=${this.isSaving}>
         <p>

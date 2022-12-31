@@ -1,4 +1,4 @@
-import { createRef, LitElement, property } from '@game-companion/lit';
+import { LitElement, property } from '@game-companion/lit';
 import { MDCRipple } from '@material/ripple';
 import {
   asFormAssociatedInternal,
@@ -9,7 +9,7 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   @property({ type: String }) declare type: string;
   @property({ type: Boolean, reflect: true }) declare disabled: boolean;
 
-  protected buttonRef = createRef<HTMLButtonElement>();
+  protected buttonElement?: HTMLElement;
   protected ripple?: MDCRipple;
 
   protected handleClick = () => {
@@ -33,15 +33,15 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   }
 
   override click(): void {
-    this.buttonRef.value?.click();
+    this.buttonElement?.click();
   }
 
   override focus(options?: FocusOptions): void {
-    this.buttonRef.value?.focus(options);
+    this.buttonElement?.focus(options);
   }
 
   override blur(): void {
-    this.buttonRef.value?.blur();
+    this.buttonElement?.blur();
   }
 
   override connectedCallback() {
@@ -58,13 +58,11 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
     this.disabled = isDisabled;
   }
 
-  protected override firstUpdated() {
-    this.initButton(this.buttonRef.value);
-  }
-
-  protected initButton(button?: HTMLButtonElement) {
-    if (button) {
-      this.ripple = MDCRipple.attachTo(button);
+  protected initButton(element?: Element) {
+    if (element) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.buttonElement = element as any;
+      this.ripple = MDCRipple.attachTo(element);
     }
   }
 }

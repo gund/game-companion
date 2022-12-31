@@ -2,6 +2,7 @@ import {
   classMap,
   customElement,
   html,
+  ifDefined,
   property,
   ref,
   unsafeCSS,
@@ -25,6 +26,7 @@ export class MdcFabElement extends MdcCoreButton {
   @property({ type: Boolean }) declare mini: boolean;
   @property({ type: Boolean }) declare extended: boolean;
   @property({ type: String }) declare icon?: string;
+  @property({ type: String }) declare href?: string;
 
   constructor() {
     super();
@@ -33,29 +35,42 @@ export class MdcFabElement extends MdcCoreButton {
     this.extended = false;
   }
 
-  protected override render(): unknown {
+  protected override render() {
     return html`<div class="mdc-touch-target-wrapper">
-        <button
-          class="mdc-fab mdc-fab--touch ${classMap(this.getClassMap())}"
-          ?disabled=${this.disabled}
-          ${ref(this.buttonRef)}
-        >
-          <div class="mdc-fab__ripple"></div>
-          ${when(
-            this.icon,
-            () =>
-              html`<span class="material-icons mdc-fab__icon"
-                >${this.icon}</span
-              >`
-          )}
-          ${when(
-            this.extended,
-            () => html`<span class="mdc-fab__label"><slot></slot></span>`
-          )}
-          <span class="mdc-fab__touch"></span>
-        </button>
+        ${when(
+          this.type === 'link',
+          () => html`<a
+            class="mdc-fab mdc-fab--touch ${classMap(this.getClassMap())}"
+            href=${ifDefined(this.href)}
+            ?disabled=${this.disabled}
+            ${ref(this.initButton)}
+          >
+            ${this.renderInnerButton()}
+          </a>`,
+          () => html`<button
+            class="mdc-fab mdc-fab--touch ${classMap(this.getClassMap())}"
+            ?disabled=${this.disabled}
+            ${ref(this.initButton)}
+          >
+            ${this.renderInnerButton()}
+          </button>`
+        )}
       </div>
       <mdc-icons-link></mdc-icons-link>`;
+  }
+
+  protected renderInnerButton() {
+    return html`<span class="mdc-fab__ripple"></span>
+      ${when(
+        this.icon,
+        () =>
+          html`<span class="material-icons mdc-fab__icon">${this.icon}</span>`
+      )}
+      ${when(
+        this.extended,
+        () => html`<span class="mdc-fab__label"><slot></slot></span>`
+      )}
+      <span class="mdc-fab__touch"></span>`;
   }
 
   protected getClassMap() {

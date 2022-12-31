@@ -50,9 +50,12 @@ export class GcSessionsElement extends LitElement {
           this.inactiveSessions.then((s) => this.renderInactiveSessions(s))
         )}
       </mdc-top-app-bar>
-      <a href="/session/new">
-        <mdc-fab icon="group_add" aria-label="Create new session"></mdc-fab>
-      </a>
+      <mdc-fab
+        type="link"
+        href="/session/new"
+        icon="group_add"
+        aria-label="Create new session"
+      ></mdc-fab>
     `;
   }
 
