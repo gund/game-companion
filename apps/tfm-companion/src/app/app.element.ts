@@ -1,8 +1,7 @@
 import { mixinRootElement } from '@game-companion/core';
+import '@game-companion/core/update-notification';
 import { customElement, html } from '@game-companion/lit';
-import '@game-companion/mdc/snackbar';
 import { tfmPlayerStats } from '@game-companion/tfm';
-import './update-notification.element';
 
 declare global {
   interface HTMLElementTagNameMap {

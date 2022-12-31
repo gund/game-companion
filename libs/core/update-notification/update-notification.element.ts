@@ -1,4 +1,10 @@
-import { customElement, html, LitElement, state } from '@game-companion/lit';
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValueMap,
+  state,
+} from '@game-companion/lit';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -76,6 +82,14 @@ export class GcUpdateNotificationElement extends LitElement {
       New update is available!
       <mdc-button slot="actions" @click=${this.handleReload}>Reload</mdc-button>
     </mdc-snackbar>`;
+  }
+
+  protected override willUpdate(
+    changedProps: PropertyValueMap<GcUpdateNotificationElement>
+  ) {
+    if (changedProps.has('updateFound')) {
+      import('@game-companion/mdc/snackbar');
+    }
   }
 
   private handleReload() {
