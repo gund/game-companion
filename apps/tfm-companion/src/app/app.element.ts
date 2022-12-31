@@ -1,7 +1,7 @@
 import { mixinRootElement } from '@game-companion/core';
-import '@game-companion/core/update-notification';
 import { customElement, html } from '@game-companion/lit';
 import { tfmPlayerStats } from '@game-companion/tfm';
+import './update-notification.element';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -18,6 +18,6 @@ export class TfmAppElement extends mixinRootElement({
 
   protected override render() {
     return html`${super.render()}
-      <gc-update-notification></gc-update-notification>`;
+      <tfm-update-notification></tfm-update-notification>`;
   }
 }

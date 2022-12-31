@@ -131,6 +131,10 @@ export class MdcSnackbarElement extends LitElement {
       this.syncLeadingMedia();
     }
 
+    if (changedProps.has('hasDismiss') && this.hasDismiss) {
+      import('@game-companion/mdc/icon-button');
+    }
+
     this.initActions();
   }
 

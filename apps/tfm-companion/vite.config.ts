@@ -13,9 +13,11 @@ export default defineConfig({
       root: '../../',
     }),
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'inline',
+      devOptions: { enabled: true, type: 'module' },
+      registerType: 'prompt',
+      injectRegister: null,
       manifest: {
+        id: 'com.game-companion.tfm',
         name: 'Terraforming Mars Companion App',
         short_name: 'TFM Companion',
         description: 'Terraforming Mars Companion App',

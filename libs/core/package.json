@@ -46,11 +46,6 @@
       "main": "./sessions.cjs",
       "module": "./sessions.js",
       "types": "./core/sessions/elements.d.ts"
-    },
-    "./update-notification": {
-      "main": "./update-notification.cjs",
-      "module": "./update-notification.js",
-      "types": "./core/update-notification/elements.d.ts"
     }
   }
 }
