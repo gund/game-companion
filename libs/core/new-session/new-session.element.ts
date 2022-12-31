@@ -10,12 +10,13 @@ import {
   customElement,
   html,
   LitElement,
-  live,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/button';
 import '@game-companion/mdc/icon-button';
+import '@game-companion/mdc/text-field';
 import '@game-companion/mdc/top-app-bar';
 
 declare global {
@@ -63,31 +64,36 @@ export class GcNewSessionElement extends LitElement {
       <fieldset ?disabled=${this.isSaving}>
         <p>
           <fieldset>
-          <h3>Players (${this.players.length})</h3>
+          <h3>
+            Players (${this.players.length})
+            <mdc-icon-button
+              type="button"
+              icon="add"
+              aria-label="Add player"
+              @click=${{ handleEvent: () => this.addPlayer() }}
+            ></mdc-icon-button>
+          </h3>
           <ul>
           ${repeat(
             this.players,
             (p) =>
               html`<li>
-                <input
-                  placeholder="Player name"
+                <mdc-text-field
                   required
-                  .value=${live(p.name)}
-                  @change=${(e: Event) =>
-                    (p.name = (e.target as HTMLInputElement).value)}
-                />
-                <button
-                  type="button"
-                  @click=${{ handleEvent: () => this.removePlayer(p) }}
+                  name="player[]"
+                  label="Player name"
+                  value=${p.name}
                 >
-                  Remove
-                </button>
+                </mdc-text-field>
+                <mdc-icon-button
+                  type="button"
+                  icon="delete"
+                  aria-label="Remove player"
+                  @click=${{ handleEvent: () => this.removePlayer(p) }}
+                ></mdc-icon-button>
               </li>`
           )}
           </ul>
-          <button type="button" @click=${{
-            handleEvent: () => this.addPlayer(),
-          }}>Add a player</button>
           </fieldset>
         </p>
         <p>
@@ -99,12 +105,12 @@ export class GcNewSessionElement extends LitElement {
             (ps) => ps.id,
             (ps) => html`<li>
               ${this.getPlayerStatsName(ps.id)}
-              <button
+              <mdc-icon-button
                 type="button"
+                icon="delete"
+                aria-label="Remove global stat"
                 @click=${{ handleEvent: () => this.removeGlobalStats(ps) }}
-              >
-                Remove
-              </button>
+              ></mdc-icon-button>
             </li>`
           )}
           </ul>
@@ -115,9 +121,10 @@ export class GcNewSessionElement extends LitElement {
         </p>
         ${when(this.error, () => html`<p>${this.error}</p>`)}
         <p>
-          <button type="submit">${
-            this.isSaving ? 'Creating session...' : 'Create session'
-          }</button>
+          <mdc-button type="submit" raised ?disabled=${this.isSaving}>
+            ${this.isSaving ? 'Creating session...' : 'Create session'}
+          </mdc-button>
+          <mdc-button type="reset">Reset</mdc-button>
         </p>
       </fieldset>
       </form>
@@ -170,6 +177,12 @@ export class GcNewSessionElement extends LitElement {
 
   private async handleSubmit(e: SubmitEvent) {
     e.preventDefault();
+
+    const data = new FormData(e.target as any);
+
+    const playerNames = data.getAll('player[]').map(String);
+
+    this.players.forEach((p, i) => (p.name = playerNames[i]));
 
     try {
       this.error = undefined;

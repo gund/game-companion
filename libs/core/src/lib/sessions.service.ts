@@ -51,6 +51,10 @@ export class SessionsService {
       throw new Error(`A session cannot exist without any players!`);
     }
 
+    if (data.players.some((player) => player.name === '')) {
+      throw new Error(`Some players have no name!`);
+    }
+
     const session: Session = {
       id: this.genId(),
       isActive: true,
