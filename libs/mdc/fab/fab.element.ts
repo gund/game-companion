@@ -2,7 +2,6 @@ import {
   classMap,
   customElement,
   html,
-  ifDefined,
   property,
   ref,
   unsafeCSS,
@@ -14,7 +13,7 @@ import fabStyles from '@material/fab/dist/mdc.fab.min.css?inline';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [MdcFabElement.selector]: MdcFabElement;
+    ['mdc-fab']: MdcFabElement;
   }
 }
 
@@ -39,7 +38,6 @@ export class MdcFabElement extends MdcCoreButton {
         <button
           class="mdc-fab mdc-fab--touch ${classMap(this.getClassMap())}"
           ?disabled=${this.disabled}
-          aria-label=${ifDefined(this.ariaLabel)}
           ${ref(this.buttonRef)}
         >
           <div class="mdc-fab__ripple"></div>

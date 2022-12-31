@@ -36,6 +36,11 @@
       "main": "./top-app-bar.cjs",
       "module": "./top-app-bar.js",
       "types": "./mdc/top-app-bar/index.d.ts"
+    },
+    "./text-field": {
+      "main": "./text-field.cjs",
+      "module": "./text-field.js",
+      "types": "./mdc/text-field/index.d.ts"
     }
   }
 }

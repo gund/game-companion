@@ -1,22 +1,39 @@
-import {
-  createRef,
-  html,
-  LitElement,
-  property,
-  ref,
-} from '@game-companion/lit';
+import { createRef, LitElement, property } from '@game-companion/lit';
 import { MDCRipple } from '@material/ripple';
+import {
+  asFormAssociatedInternal,
+  formAssociatedMixin,
+} from './form-associated';
 
-export abstract class MdcCoreButton extends LitElement {
-  @property({ type: Boolean }) declare disabled: boolean;
+export class MdcCoreButton extends formAssociatedMixin(LitElement) {
+  @property({ type: String }) declare type: string;
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
 
   protected buttonRef = createRef<HTMLButtonElement>();
   protected ripple?: MDCRipple;
 
+  protected handleClick = () => {
+    switch (this.type) {
+      case 'submit':
+        asFormAssociatedInternal(this).getInternals().form?.requestSubmit();
+        break;
+      case 'reset':
+        asFormAssociatedInternal(this).getInternals().form?.reset();
+        break;
+    }
+  };
+
   constructor() {
     super();
 
+    this.type = 'submit';
     this.disabled = false;
+
+    asFormAssociatedInternal(this).getInternals().role = 'button';
+  }
+
+  override click(): void {
+    this.buttonRef.value?.click();
   }
 
   override focus(options?: FocusOptions): void {
@@ -27,11 +44,21 @@ export abstract class MdcCoreButton extends LitElement {
     this.buttonRef.value?.blur();
   }
 
-  override click(): void {
-    this.buttonRef.value?.click();
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', this.handleClick);
   }
 
-  protected override updated() {
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this.handleClick);
+  }
+
+  formDisabledCallback(isDisabled: boolean) {
+    this.disabled = isDisabled;
+  }
+
+  protected override firstUpdated() {
     this.initButton(this.buttonRef.value);
   }
 

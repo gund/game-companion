@@ -13,7 +13,7 @@ import btnStyles from '@material/button/dist/mdc.button.min.css?inline';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [MdcButtonElement.selector]: MdcButtonElement;
+    'mdc-button': MdcButtonElement;
   }
 }
 
@@ -36,6 +36,7 @@ export class MdcButtonElement extends MdcCoreButton {
   protected override render() {
     return html`<div class="mdc-touch-target-wrapper">
         <button
+          type=${this.type}
           class="mdc-button mdc-button--touch ${classMap(this.getClassMap())}"
           ?disabled=${this.disabled}
           ${ref(this.buttonRef)}
@@ -44,9 +45,7 @@ export class MdcButtonElement extends MdcCoreButton {
           <span class="mdc-button__touch"></span>
           ${when(
             this.icon,
-            () => html`<i
-              class="material-icons mdc-button__icon"
-              aria-hidden="true"
+            () => html`<i class="material-icons mdc-button__icon"
               >${this.icon}</i
             >`
           )}
