@@ -41,6 +41,11 @@
       "main": "./text-field.cjs",
       "module": "./text-field.js",
       "types": "./mdc/text-field/index.d.ts"
+    },
+    "./snackbar": {
+      "main": "./snackbar.cjs",
+      "module": "./snackbar.js",
+      "types": "./mdc/snackbar/index.d.ts"
     }
   }
 }
