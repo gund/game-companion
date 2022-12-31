@@ -23,6 +23,8 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
     }
   };
 
+  protected disabledInterval?: unknown;
+
   constructor() {
     super();
 
@@ -56,6 +58,13 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
 
   formDisabledCallback(isDisabled: boolean) {
     this.disabled = isDisabled;
+
+    if (this.disabled) {
+      this.disabledInterval = setInterval(
+        () => this.checkFormDisabledState(),
+        100
+      );
+    }
   }
 
   protected initButton(element?: Element) {
@@ -64,5 +73,28 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
       this.buttonElement = element as any;
       this.ripple = MDCRipple.attachTo(element);
     }
+  }
+
+  protected checkFormDisabledState() {
+    if (!this.disabled) {
+      this.clearDisabledInterval();
+      return;
+    }
+
+    const form = asFormAssociatedInternal(this).getInternals().form;
+
+    const closestElement = this.closest('fieldset') ?? form;
+
+    const isDisabled = closestElement?.hasAttribute('disabled') ?? false;
+
+    if (!isDisabled) {
+      this.disabled = false;
+      this.clearDisabledInterval();
+    }
+  }
+
+  protected clearDisabledInterval() {
+    clearInterval(this.disabledInterval as any);
+    this.disabledInterval = undefined;
   }
 }

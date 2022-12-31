@@ -122,7 +122,7 @@ export class GcNewSessionElement extends LitElement {
         </p>
         ${when(this.error, () => html`<p>${this.error}</p>`)}
         <p>
-          <mdc-button type="submit" raised ?disabled=${this.isSaving}>
+          <mdc-button type="submit" raised>
             ${this.isSaving ? 'Creating session...' : 'Create session'}
           </mdc-button>
           <mdc-button type="reset">Reset</mdc-button>
