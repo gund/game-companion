@@ -31,12 +31,11 @@ export class GcUpdateNotificationElement extends LitElement {
       return;
     }
 
-    if (newSw.state === 'activated') {
+    if (newSw.state === 'installed' || newSw.state === 'activated') {
       this.updateFound = true;
     } else {
       const handleStateChange = () => {
-        console.log(newSw.state);
-        if (newSw.state === 'activated') {
+        if (newSw.state === 'installed' || newSw.state === 'activated') {
           this.updateFound = true;
         }
       };
@@ -58,6 +57,10 @@ export class GcUpdateNotificationElement extends LitElement {
     super.connectedCallback();
 
     const sw = await window.navigator.serviceWorker.ready;
+
+    if (sw.installing) {
+      this.handleUpdateFound();
+    }
 
     sw.addEventListener('updatefound', this.handleUpdateFound);
   }
