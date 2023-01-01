@@ -76,7 +76,6 @@ export class GcNewSessionElement extends LitElement {
       <form @submit=${this.handleSubmit}>
       <fieldset ?disabled=${this.isSaving}>
         <p>
-          <fieldset>
           <h3>
             Players (${this.players.length})
             <mdc-icon-button
@@ -104,10 +103,8 @@ export class GcNewSessionElement extends LitElement {
               >
               </mdc-text-field>`
           )}
-          </fieldset>
         </p>
         <p>
-          <fieldset>
           <h3>Global Player Stats (${this.globalStats.length})</h3>
           <ul>
           ${repeat(
@@ -127,7 +124,6 @@ export class GcNewSessionElement extends LitElement {
           <gc-add-player-stats @gcAddPlayerStats=${
             this.addGlobalStats
           }></gc-add-player-stats>
-          </fieldset>
         </p>
         ${when(this.error, () => html`<p>${this.error}</p>`)}
         <p>
