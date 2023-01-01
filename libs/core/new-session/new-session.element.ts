@@ -47,6 +47,8 @@ export class GcNewSessionElement extends LitElement {
     this.players = [];
     this.globalStats = [];
     this.isSaving = false;
+
+    this.addPlayer();
   }
 
   protected override render() {
@@ -77,7 +79,7 @@ export class GcNewSessionElement extends LitElement {
           <ul>
           ${repeat(
             this.players,
-            (p) =>
+            (p, i) =>
               html`<li>
                 <mdc-text-field
                   required
@@ -86,12 +88,15 @@ export class GcNewSessionElement extends LitElement {
                   value=${p.name}
                 >
                 </mdc-text-field>
-                <mdc-icon-button
-                  type="button"
-                  icon="delete"
-                  aria-label="Remove player"
-                  @click=${{ handleEvent: () => this.removePlayer(p) }}
-                ></mdc-icon-button>
+                ${when(
+                  i > 0,
+                  () => html`<mdc-icon-button
+                    type="button"
+                    icon="delete"
+                    aria-label="Remove player"
+                    @click=${{ handleEvent: () => this.removePlayer(p) }}
+                  ></mdc-icon-button>`
+                )}
               </li>`
           )}
           </ul>
