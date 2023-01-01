@@ -52,8 +52,10 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   @property({ type: String }) declare placeholder?: string;
   @property({ type: String }) declare min?: string;
   @property({ type: String }) declare max?: string;
+  @property({ type: String }) declare step?: string;
   @property({ type: String }) declare minlength?: string;
   @property({ type: String }) declare maxlength?: string;
+  @property({ type: String }) declare pattern?: string;
 
   protected inputRef = createRef<HTMLInputElement>();
   protected textField?: MDCTextField;
@@ -127,8 +129,10 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             placeholder=${ifDefined(this.placeholder)}
             min=${ifDefined(this.min)}
             max=${ifDefined(this.max)}
+            step=${ifDefined(this.step)}
             minlength=${ifDefined(this.minlength)}
             maxlength=${ifDefined(this.maxlength)}
+            pattern=${ifDefined(this.pattern)}
             @input=${this.syncValue}
             @change=${this.replayEvent}
             @blur=${this.handleInputBlur}
@@ -140,6 +144,11 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
           () => html`<span class="mdc-line-ripple"></span>`
         )}
       </label>
+      <div class="mdc-text-field-helper-line">
+        <div class="mdc-text-field-helper-text" aria-hidden="true">
+          helper text
+        </div>
+      </div>
       <div
         style="font-size: 0; position: absolute; pointer-events: none; opacity: 0;"
       >
@@ -154,8 +163,10 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   }
 
   override disconnectedCallback(): void {
-    this.removeEventListener('focus', this.handleFocus);
     super.disconnectedCallback();
+    this.removeEventListener('focus', this.handleFocus);
+    this.textField?.destroy();
+    this.textField = undefined;
   }
 
   protected override willUpdate(
@@ -193,6 +204,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
 
   protected initTextField(element?: Element) {
     if (element) {
+      this.textField?.destroy();
       setTimeout(() => (this.textField = MDCTextField.attachTo(element)));
     }
   }
