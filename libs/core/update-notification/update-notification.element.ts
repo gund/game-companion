@@ -2,34 +2,28 @@ import {
   customElement,
   html,
   LitElement,
+  property,
   PropertyValueMap,
-  state,
 } from '@game-companion/lit';
-import { registerSW } from 'virtual:pwa-register';
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TfmUpdateNotificationElement.selector]: TfmUpdateNotificationElement;
+    [GcUpdateNotificationElement.selector]: GcUpdateNotificationElement;
   }
 }
 
-@customElement(TfmUpdateNotificationElement.selector)
-export class TfmUpdateNotificationElement extends LitElement {
-  static readonly selector = 'tfm-update-notification';
+@customElement(GcUpdateNotificationElement.selector)
+export class GcUpdateNotificationElement extends LitElement {
+  static readonly selector = 'gc-update-notification';
 
-  @state() declare updateInstalled: boolean;
-  @state() declare offlineReady: boolean;
+  @property() declare updateInstalled: boolean;
+  @property() declare offlineReady: boolean;
 
   constructor() {
     super();
 
     this.updateInstalled = false;
     this.offlineReady = false;
-
-    registerSW({
-      onNeedRefresh: () => (this.updateInstalled = true),
-      onOfflineReady: () => (this.offlineReady = true),
-    });
   }
 
   protected override render() {
@@ -46,7 +40,7 @@ export class TfmUpdateNotificationElement extends LitElement {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<TfmUpdateNotificationElement>
+    changedProps: PropertyValueMap<GcUpdateNotificationElement>
   ) {
     if (
       changedProps.has('updateInstalled') ||

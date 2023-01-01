@@ -13,8 +13,8 @@ export default defineConfig({
       root: '../../',
     }),
     VitePWA({
-      devOptions: { enabled: true, type: 'module' },
-      registerType: 'prompt',
+      devOptions: { enabled: false, type: 'module' },
+      registerType: 'autoUpdate',
       injectRegister: null,
       manifest: {
         id: 'com.game-companion.tfm',

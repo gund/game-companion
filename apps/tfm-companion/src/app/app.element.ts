@@ -1,7 +1,8 @@
 import { mixinRootElement } from '@game-companion/core';
-import { customElement, html } from '@game-companion/lit';
+import '@game-companion/core/update-notification';
+import { customElement, html, state } from '@game-companion/lit';
 import { tfmPlayerStats } from '@game-companion/tfm';
-import './update-notification.element';
+import { registerSW } from 'virtual:pwa-register';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -16,8 +17,26 @@ export class TfmAppElement extends mixinRootElement({
 }) {
   static readonly selector = 'tfm-companion-root';
 
+  @state() private declare updateInstalled: boolean;
+  @state() private declare offlineReady: boolean;
+
+  constructor() {
+    super();
+
+    this.updateInstalled = false;
+    this.offlineReady = false;
+
+    registerSW({
+      onNeedRefresh: () => (this.updateInstalled = true),
+      onOfflineReady: () => (this.offlineReady = true),
+    });
+  }
+
   protected override render() {
     return html`${super.render()}
-      <tfm-update-notification></tfm-update-notification>`;
+      <gc-update-notification
+        .updateInstalled=${this.updateInstalled}
+        .offlineReady=${this.offlineReady}
+      ></gc-update-notification>`;
   }
 }
