@@ -33,8 +33,10 @@ export class MdcTopAppBarElement extends LitElement {
 
   protected topBar?: MDCTopAppBar;
 
-  constructor() {
-    super();
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.topBar?.destroy();
+    this.topBar = undefined;
   }
 
   protected override render() {
@@ -67,6 +69,7 @@ export class MdcTopAppBarElement extends LitElement {
 
   private initTopBar(element?: Element) {
     if (element) {
+      this.topBar?.destroy();
       this.topBar = MDCTopAppBar.attachTo(element);
     }
   }

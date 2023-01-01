@@ -54,6 +54,9 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('click', this.handleClick);
+    this.ripple?.destroy();
+    this.ripple = undefined;
+    this.buttonElement = undefined;
   }
 
   formDisabledCallback(isDisabled: boolean) {
@@ -69,6 +72,7 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
 
   protected initButton(element?: Element) {
     if (element) {
+      this.ripple?.destroy();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.buttonElement = element as any;
       this.ripple = MDCRipple.attachTo(element);

@@ -144,11 +144,6 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
           () => html`<span class="mdc-line-ripple"></span>`
         )}
       </label>
-      <div class="mdc-text-field-helper-line">
-        <div class="mdc-text-field-helper-text" aria-hidden="true">
-          helper text
-        </div>
-      </div>
       <div
         style="font-size: 0; position: absolute; pointer-events: none; opacity: 0;"
       >

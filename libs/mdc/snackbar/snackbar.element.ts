@@ -84,6 +84,12 @@ export class MdcSnackbarElement extends LitElement {
     this.snackbar?.close(reason);
   }
 
+  override disconnectedCallback() {
+    this.cleanupLeadingMedia();
+    this.snackbar?.destroy();
+    this.snackbar = undefined;
+  }
+
   protected override render() {
     return html`<aside
       class="mdc-snackbar ${classMap(this.getClassMap())}"
@@ -140,6 +146,7 @@ export class MdcSnackbarElement extends LitElement {
 
   protected initSnackbar(element?: Element) {
     if (element) {
+      this.snackbar?.destroy();
       this.snackbar = MDCSnackbar.attachTo(element);
       this.syncOpen();
       this.syncTimeout();
@@ -183,17 +190,18 @@ export class MdcSnackbarElement extends LitElement {
   protected syncLeadingMedia() {
     if (!this.leadingMedia) {
       this.leadingMatches = false;
-      this.leadingMql?.removeEventListener(
-        'change',
-        this.handleLeadingMqlChange
-      );
-      this.leadingMql = undefined;
+      this.cleanupLeadingMedia();
       return;
     }
 
     this.leadingMql = window.matchMedia(this.leadingMedia);
     this.leadingMql.addEventListener('change', this.handleLeadingMqlChange);
     this.handleLeadingMqlChange(this.leadingMql);
+  }
+
+  protected cleanupLeadingMedia() {
+    this.leadingMql?.removeEventListener('change', this.handleLeadingMqlChange);
+    this.leadingMql = undefined;
   }
 
   protected handleClosed() {

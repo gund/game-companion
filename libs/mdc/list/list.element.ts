@@ -62,6 +62,13 @@ export class MdcListElement extends LitElement {
     this.items = [];
   }
 
+  override disconnectedCallback() {
+    this.list?.destroy();
+    this.listItems?.forEach((item) => item.destroy());
+    this.list = undefined;
+    this.listItems = undefined;
+  }
+
   protected override render(): unknown {
     return html`<ul
         class="mdc-list ${classMap(this.getClassMap())}"
@@ -105,12 +112,14 @@ export class MdcListElement extends LitElement {
 
   private initList(list?: Element) {
     if (list) {
+      this.list?.destroy();
       this.list = MDCList.attachTo(list);
     }
   }
 
   private initListItems(items?: Element[]) {
     if (items) {
+      this.listItems?.forEach((item) => item.destroy());
       this.listItems = items.map((item) => MDCRipple.attachTo(item));
     }
   }
