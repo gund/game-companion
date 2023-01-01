@@ -1,12 +1,12 @@
-import {
-  isConfigurablePlayerStats,
-  PlayerStatsRegistry,
-  UpdatePlayerStatsDataEvent,
-} from '@game-companion/core';
 import type {
   ConfigurablePlayerStats,
   PlayerStats,
   PlayerStatsData,
+} from '@game-companion/core';
+import {
+  isConfigurablePlayerStats,
+  PlayerStatsRegistry,
+  UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
 import {
   customElement,
@@ -16,6 +16,7 @@ import {
   state,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/button';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -65,13 +66,13 @@ export class GcAddPlayerStatsElement extends LitElement {
           ).renderConfiguration()}
         </p>`
       )}
-      <button
+      <mdc-button
         type="button"
         ?disabled=${!this.selectedPlayerStatsData}
         @click=${this.addGlobalStats}
       >
         Add
-      </button>`;
+      </mdc-button>`;
   }
 
   private addGlobalStats() {

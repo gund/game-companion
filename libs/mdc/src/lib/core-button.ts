@@ -1,4 +1,4 @@
-import { LitElement, property } from '@game-companion/lit';
+import { LitElement, property, PropertyValueMap } from '@game-companion/lit';
 import { MDCRipple } from '@material/ripple';
 import {
   asFormAssociatedInternal,
@@ -7,7 +7,7 @@ import {
 
 export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   @property({ type: String }) declare type: string;
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
+  @property({ type: Boolean }) declare disabled: boolean;
 
   protected buttonElement?: HTMLElement;
   protected ripple?: MDCRipple;
@@ -62,7 +62,8 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   formDisabledCallback(isDisabled: boolean) {
     this.disabled = isDisabled;
 
-    if (this.disabled) {
+    // Start check loop only if the button is not disabled directly
+    if (this.disabled && !this.hasAttribute('disabled')) {
       this.disabledInterval = setInterval(
         () => this.checkFormDisabledState(),
         100
@@ -80,7 +81,7 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   }
 
   protected checkFormDisabledState() {
-    if (!this.disabled) {
+    if (!this.disabled || this.hasAttribute('disabled')) {
       this.clearDisabledInterval();
       return;
     }
