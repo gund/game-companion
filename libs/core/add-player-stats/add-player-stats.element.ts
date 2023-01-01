@@ -11,12 +11,14 @@ import {
 import {
   customElement,
   html,
+  ifDefined,
   LitElement,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
 import '@game-companion/mdc/button';
+import '@game-companion/mdc/select';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -36,22 +38,19 @@ export class GcAddPlayerStatsElement extends LitElement {
   private playerStatsRegistry = new PlayerStatsRegistry();
 
   protected override render() {
-    return html`<select @change=${this.selectGlobalStats}>
-        <option disabled ?selected=${!this.selectedPlayerStats}>
-          -- Select stats --
-        </option>
+    return html`<mdc-select
+        label="Pick player stats"
+        @change=${this.selectGlobalStats}
+      >
         ${repeat(
           this.playerStatsRegistry.getAvailable(),
           (ps) => ps.getId(),
           (ps) =>
-            html`<option
-              .value=${ps.getId()}
-              ?selected=${ps === this.selectedPlayerStats}
-            >
+            html`<mdc-select-option data-value=${ps.getId()}>
               ${ps.getName()}
-            </option>`
+            </mdc-select-option>`
         )}
-      </select>
+      </mdc-select>
       ${when(
         this.selectedPlayerStats &&
           isConfigurablePlayerStats(this.selectedPlayerStats),
@@ -81,9 +80,6 @@ export class GcAddPlayerStatsElement extends LitElement {
     }
 
     this.dispatchEvent(new AddPlayerStatsEvent(this.selectedPlayerStatsData));
-
-    this.selectedPlayerStats = undefined;
-    this.selectedPlayerStatsData = undefined;
   }
 
   private selectGlobalStats(e: Event) {
@@ -91,6 +87,7 @@ export class GcAddPlayerStatsElement extends LitElement {
     this.selectedPlayerStats = this.playerStatsRegistry
       .getAvailable()
       .find((ps) => ps.getId() === selectedId);
+    this.selectedPlayerStatsData = undefined;
 
     if (
       !this.selectedPlayerStats ||

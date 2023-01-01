@@ -46,6 +46,11 @@
       "main": "./snackbar.cjs",
       "module": "./snackbar.js",
       "types": "./mdc/snackbar/index.d.ts"
+    },
+    "./select": {
+      "main": "./select.cjs",
+      "module": "./select.js",
+      "types": "./mdc/select/index.d.ts"
     }
   }
 }
