@@ -1,6 +1,7 @@
 import {
   classMap,
   createRef,
+  css,
   customElement,
   html,
   ifDefined,
@@ -21,6 +22,7 @@ import floatingLabelStyles from '@material/floating-label/dist/mdc.floating-labe
 import lineRippleStyles from '@material/line-ripple/dist/mdc.line-ripple.min.css?inline';
 import notchedOutlineStyles from '@material/notched-outline/dist/mdc.notched-outline.min.css?inline';
 import { MDCTextField } from '@material/textfield';
+import { MDCTextFieldIcon } from '@material/textfield/icon';
 import textFieldStyles from '@material/textfield/dist/mdc.textfield.min.css?inline';
 
 declare global {
@@ -39,6 +41,11 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     unsafeCSS(lineRippleStyles),
     unsafeCSS(notchedOutlineStyles),
     unsafeCSS(textFieldStyles),
+    css`
+      .mdc-text-field {
+        width: 100%;
+      }
+    `,
   ];
 
   @property({ type: Boolean }) declare disabled: boolean;
@@ -56,13 +63,19 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   @property({ type: String }) declare minlength?: string;
   @property({ type: String }) declare maxlength?: string;
   @property({ type: String }) declare pattern?: string;
+  @property({ type: String }) declare leadingIcon?: string;
+  @property({ type: String }) declare leadingIconLabel?: string;
+  @property({ type: String }) declare trailingIcon?: string;
+  @property({ type: String }) declare trailingIconLabel?: string;
 
   protected inputRef = createRef<HTMLInputElement>();
   protected textField?: MDCTextField;
+  protected leadingTextIcon?: MDCTextFieldIcon;
+  protected trailingTextIcon?: MDCTextFieldIcon;
   protected lastTabIndex = '0';
 
   protected handleFocus = () => this.focus();
-  protected handleInputBlur = () => this.restoreTabIndex();
+  protected handleBlur = () => this.restoreTabIndex();
 
   constructor() {
     super();
@@ -116,6 +129,22 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             <span class="mdc-notched-outline__trailing"></span>
           </span>`
         )}
+        ${when(
+          this.leadingIcon,
+          () =>
+            html`<i
+              class="material-icons mdc-text-field__icon mdc-text-field__icon--leading"
+              tabindex="0"
+              role="button"
+              aria-label=${ifDefined(this.leadingIconLabel)}
+              @click=${{
+                handleEvent: () =>
+                  this.handleIconClick('leading', this.leadingIconLabel),
+              }}
+              ${ref(this.initLeadingIcon)}
+              >${this.leadingIcon}</i
+            >`
+        )}
         <slot name="control">
           <input
             class="mdc-text-field__input"
@@ -135,10 +164,25 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             pattern=${ifDefined(this.pattern)}
             @input=${this.syncValue}
             @change=${this.replayEvent}
-            @blur=${this.handleInputBlur}
             ${ref(this.inputRef)}
           />
         </slot>
+        ${when(
+          this.trailingIcon,
+          () =>
+            html`<i
+              class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing"
+              tabindex="0"
+              role="button"
+              aria-label=${ifDefined(this.trailingIconLabel)}
+              @click=${{
+                handleEvent: () =>
+                  this.handleIconClick('trailing', this.trailingIconLabel),
+              }}
+              ${ref(this.initTrailingIcon)}
+              >${this.trailingIcon}</i
+            >`
+        )}
         ${when(
           this.mode === 'filled',
           () => html`<span class="mdc-line-ripple"></span>`
@@ -155,13 +199,19 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   protected override firstUpdated() {
     this.syncValue();
     this.addEventListener('focus', this.handleFocus);
+    this.addEventListener('blur', this.handleBlur);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener('focus', this.handleFocus);
+    this.removeEventListener('blur', this.handleBlur);
     this.textField?.destroy();
+    this.leadingTextIcon?.destroy();
+    this.trailingTextIcon?.destroy();
     this.textField = undefined;
+    this.leadingTextIcon = undefined;
+    this.trailingTextIcon = undefined;
   }
 
   protected override willUpdate(
@@ -204,11 +254,27 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     }
   }
 
+  protected initLeadingIcon(element?: Element) {
+    if (element) {
+      this.leadingTextIcon?.destroy();
+      this.leadingTextIcon = MDCTextFieldIcon.attachTo(element);
+    }
+  }
+
+  protected initTrailingIcon(element?: Element) {
+    if (element) {
+      this.trailingTextIcon?.destroy();
+      this.trailingTextIcon = MDCTextFieldIcon.attachTo(element);
+    }
+  }
+
   protected getLabelClassMap() {
     return {
       'mdc-text-field--disabled': this.disabled,
       'mdc-text-field--filled': this.mode === 'filled',
       'mdc-text-field--outlined': this.mode === 'outlined',
+      'mdc-text-field--with-leading-icon': !!this.leadingIcon,
+      'mdc-text-field--with-trailing-icon': !!this.trailingIcon,
     };
   }
 
@@ -276,5 +342,25 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
 
   protected restoreTabIndex() {
     this.setAttribute('tabindex', this.lastTabIndex);
+  }
+
+  protected handleIconClick(type: string, label?: string) {
+    if (!label) {
+      return;
+    }
+
+    this.dispatchEvent(
+      new MdcTextFieldIconClickEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      })
+    );
+  }
+}
+
+export class MdcTextFieldIconClickEvent extends Event {
+  constructor(type: string, eventInitDict?: EventInit) {
+    super(`mdcTextFieldIconClick:${type}`, eventInitDict);
   }
 }

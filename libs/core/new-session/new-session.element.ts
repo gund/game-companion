@@ -7,8 +7,10 @@ import {
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
+  css,
   customElement,
   html,
+  ifDefined,
   LitElement,
   repeat,
   state,
@@ -28,6 +30,14 @@ declare global {
 @customElement(GcNewSessionElement.selector)
 export class GcNewSessionElement extends LitElement {
   static readonly selector = 'gc-new-session';
+  static override styles = [
+    css`
+      .player-field {
+        display: block;
+        margin-bottom: 8px;
+      }
+    `,
+  ];
 
   @state()
   private declare players: Player[];
@@ -71,35 +81,29 @@ export class GcNewSessionElement extends LitElement {
             Players (${this.players.length})
             <mdc-icon-button
               type="button"
-              icon="add"
+              icon="person_add"
               aria-label="Add player"
               @click=${{ handleEvent: () => this.addPlayer() }}
             ></mdc-icon-button>
           </h3>
-          <ul>
           ${repeat(
             this.players,
             (p, i) =>
-              html`<li>
-                <mdc-text-field
-                  required
-                  name="player[]"
-                  label="Player name"
-                  value=${p.name}
-                >
-                </mdc-text-field>
-                ${when(
-                  i > 0,
-                  () => html`<mdc-icon-button
-                    type="button"
-                    icon="delete"
-                    aria-label="Remove player"
-                    @click=${{ handleEvent: () => this.removePlayer(p) }}
-                  ></mdc-icon-button>`
-                )}
-              </li>`
+              html`<mdc-text-field
+                required
+                class="player-field"
+                name="player[]"
+                label="Player name"
+                value=${p.name}
+                leadingIcon="person"
+                trailingIcon=${ifDefined(i > 0 ? 'person_remove' : null)}
+                trailingIconLabel=${ifDefined(i > 0 ? 'Remove player' : null)}
+                @mdcTextFieldIconClick:trailing=${{
+                  handleEvent: () => this.removePlayer(p),
+                }}
+              >
+              </mdc-text-field>`
           )}
-          </ul>
           </fieldset>
         </p>
         <p>
