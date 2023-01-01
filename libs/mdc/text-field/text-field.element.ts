@@ -134,8 +134,8 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
           () =>
             html`<i
               class="material-icons mdc-text-field__icon mdc-text-field__icon--leading"
-              tabindex="0"
-              role="button"
+              tabindex=${ifDefined(this.leadingIconLabel ? '0' : null)}
+              role=${ifDefined(this.leadingIconLabel ? 'button' : null)}
               aria-label=${ifDefined(this.leadingIconLabel)}
               @click=${{
                 handleEvent: () =>
@@ -172,8 +172,8 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
           () =>
             html`<i
               class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing"
-              tabindex="0"
-              role="button"
+              tabindex=${ifDefined(this.trailingIconLabel ? '0' : null)}
+              role=${ifDefined(this.trailingIconLabel ? 'button' : null)}
               aria-label=${ifDefined(this.trailingIconLabel)}
               @click=${{
                 handleEvent: () =>
