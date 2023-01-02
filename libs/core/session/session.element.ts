@@ -10,6 +10,8 @@ import {
   state,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/top-app-bar';
+import '@game-companion/mdc/icon-button';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -36,16 +38,40 @@ export class GcSessionElement extends LitElement {
   }
 
   protected override render() {
-    return html` ${when(
+    return html`<mdc-top-app-bar appearance="fixed">
+      <span slot="title">
+        ${this.session?.isActive ? 'Active' : 'Inactive'} Session
+      </span>
+      <mdc-icon-button
+        slot="menu"
+        type="link"
+        href="/"
+        class="mdc-top-app-bar__navigation-icon"
+        icon="arrow_back"
+        aria-label="Back"
+      ></mdc-icon-button>
+      ${when(
+        this.session?.isActive,
+        () =>
+          html`<mdc-icon-button
+            slot="toolbar"
+            type="button"
+            class="mdc-top-app-bar__navigation-icon"
+            icon="stop_circle"
+            aria-label="Finish session"
+            @click=${this.finishSession}
+          ></mdc-icon-button>`
+      )}
+      ${when(
         this.session,
         () => this.renderSession(this.session!),
         () => this.renderFallback()
       )}
-      <a href="/">Go back</a>`;
+    </mdc-top-app-bar>`;
   }
 
   private renderSession(session: Session) {
-    return html`<h1>${session.isActive ? 'Active' : 'Inactive'} Session</h1>
+    return html`
       <h2>Players (${session.players.length})</h2>
       <ul>
         ${repeat(
@@ -54,13 +80,7 @@ export class GcSessionElement extends LitElement {
           (p) => html`<li>${this.renderPlayer(p)}</li>`
         )}
       </ul>
-      ${when(
-        session.isActive,
-        () =>
-          html`<p>
-            <button @click=${this.finishSession}>Finish session</button>
-          </p>`
-      )}`;
+    </mdc-top-app-bar>`;
   }
 
   private renderFallback() {
@@ -76,9 +96,9 @@ export class GcSessionElement extends LitElement {
         ${when(
           this.session?.isActive,
           () =>
-            html`<a href="/session/${this.sId}/player/${player.id}"
-              >${player.name}</a
-            >`,
+            html`<a href="/session/${this.sId}/player/${player.id}">
+              ${player.name}
+            </a>`,
           () => html`${player.name} - ${this.getFinalPlayerScore(player)}`
         )}
       </h3>

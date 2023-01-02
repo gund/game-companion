@@ -17,6 +17,9 @@ import {
   state,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/top-app-bar';
+import '@game-companion/mdc/icon-button';
+import '@game-companion/mdc/button';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -47,16 +50,26 @@ export class GcPlayerElement extends LitElement {
   }
 
   protected override render() {
-    return html`${when(
+    return html`<mdc-top-app-bar appearance="fixed">
+      <span slot="title"> Player ${this.player?.name} </span>
+      <mdc-icon-button
+        slot="menu"
+        type="link"
+        href="/session/${this.sId}"
+        class="mdc-top-app-bar__navigation-icon"
+        icon="arrow_back"
+        aria-label="Back to session"
+      ></mdc-icon-button>
+      ${when(
         this.player,
         () => this.renderPlayer(this.player!),
         () => this.renderFallback()
-      )}<a href="/session/${this.sId}">Back to session</a>`;
+      )}
+    </mdc-top-app-bar>`;
   }
 
   private renderPlayer(player: Player) {
-    return html`<h1>Player ${player.name}</h1>
-      ${when(
+    return html`${when(
         player.stats.length,
         () => html`<table>
           ${repeat(
@@ -73,26 +86,27 @@ export class GcPlayerElement extends LitElement {
                 ${this.renderPlayerStats(ps)}
               </td>
               <td>
-                <button
+                <mdc-icon-button
                   type="button"
+                  icon="delete"
+                  aria-label="Remove"
                   @click=${{ handleEvent: () => this.removePlayerStats(ps) }}
-                >
-                  Remove
-                </button>
+                ></mdc-icon-button>
               </td>
             </tr>`
           )}
         </table>`
       )}
       <p>
-        <button
+        <mdc-button
           type="button"
+          outlined
           @click=${{
             handleEvent: () => (this.showAddStats = !this.showAddStats),
           }}
         >
           Add new stats
-        </button>
+        </mdc-button>
         ${when(
           this.showAddStats,
           () =>
