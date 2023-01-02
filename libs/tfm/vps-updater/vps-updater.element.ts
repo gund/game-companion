@@ -20,7 +20,8 @@ export class TfmVPsPlayerStatsUpdaterElement extends LitElement {
 
   protected override render() {
     return html`<gc-num-input
-      .value=${this.vpsCount}
+      label="Victory Points"
+      value=${this.vpsCount}
       min="0"
       @input=${this.updateVpsCount}
     ></gc-num-input>`;

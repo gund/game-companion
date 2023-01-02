@@ -44,6 +44,10 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     unsafeCSS(textFieldStyles),
     hiddenStyles,
     css`
+      :host {
+        display: inline-block;
+      }
+
       .mdc-text-field {
         width: 100%;
       }

@@ -1,6 +1,7 @@
 import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
 import '@game-companion/core/num-input';
 import { customElement, html, LitElement, state } from '@game-companion/lit';
+import '@game-companion/mdc/text-field';
 import type { CardVPsPlayerStatsData } from '@game-companion/tfm';
 
 @customElement('tfm-card-vps-player-stats-configurator')
@@ -16,26 +17,19 @@ export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
   protected override render() {
     return html`<form>
       <p>
-        <label>
-          Card Name:
-          <input
-            type="text"
-            .value=${this.data.cardName}
-            @input=${this.getUpdateHandler((cardName) => ({ cardName }))}
-          />
-        </label>
-      </p>
-      <p>
-        <label>
-          VP Ratio
-          <gc-num-input
-            min="1"
-            .value=${this.data.vpsRatio}
-            @input=${this.getUpdateHandler((vpsRatio) => ({
-              vpsRatio: parseInt(vpsRatio),
-            }))}
-          ></gc-num-input>
-        </label>
+        <mdc-text-field
+          label="Card Name"
+          value=${this.data.cardName}
+          @input=${this.getUpdateHandler((cardName) => ({ cardName }))}
+        ></mdc-text-field>
+        <gc-num-input
+          label="VP Ratio"
+          value=${this.data.vpsRatio}
+          min="1"
+          @input=${this.getUpdateHandler((vpsRatio) => ({
+            vpsRatio: parseInt(vpsRatio),
+          }))}
+        ></gc-num-input>
       </p>
     </form>`;
   }

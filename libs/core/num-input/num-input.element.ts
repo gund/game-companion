@@ -1,7 +1,6 @@
 import '@game-companion/core/haptic-feedback';
 import {
   createRef,
-  css,
   customElement,
   html,
   ifDefined,
@@ -25,14 +24,7 @@ declare global {
 @customElement(GcNumInputElement.selector)
 export class GcNumInputElement extends LitElement {
   static readonly selector = 'gc-num-input';
-  static override styles = [
-    hiddenStyles,
-    css`
-      mdc-text-field {
-        display: inline-block;
-      }
-    `,
-  ];
+  static override styles = [hiddenStyles];
 
   @property() declare value: string;
   @property() declare label?: string;
