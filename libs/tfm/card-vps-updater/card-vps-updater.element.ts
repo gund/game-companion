@@ -10,18 +10,21 @@ export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
   @property() declare playerStats?: CardVPsPlayerStats;
 
   protected override render() {
-    return html`${this.data?.cardName}
-      <gc-num-input
-        .value=${this.data?.scoreCount}
-        min="0"
-        @input=${{
-          handleEvent: (e: Event) =>
-            this.updateScoreCount(
-              parseInt((e.target as HTMLInputElement).value)
-            ),
-        }}
-      ></gc-num-input>
-      ${this.data && this.playerStats?.renderStats(this.data)}`;
+    return html`<gc-num-input
+      label=${this.data?.cardName}
+      value=${this.data?.scoreCount}
+      min="0"
+      @input=${{
+        handleEvent: (e: Event) =>
+          this.updateScoreCount(
+            parseInt((e.target as HTMLInputElement).value || '0')
+          ),
+      }}
+    >
+      <span slot="hint">
+        ${this.data && this.playerStats?.renderStats(this.data)}
+      </span>
+    </gc-num-input>`;
   }
 
   private updateScoreCount(scoreCount: number) {

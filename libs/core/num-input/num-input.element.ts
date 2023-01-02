@@ -1,13 +1,20 @@
+import '@game-companion/core/haptic-feedback';
 import {
   createRef,
+  css,
   customElement,
   html,
   ifDefined,
   LitElement,
+  live,
   property,
+  queryAssignedElements,
   ref,
+  state,
 } from '@game-companion/lit';
-import '@game-companion/core/haptic-feedback';
+import { hiddenStyles } from '@game-companion/mdc';
+import '@game-companion/mdc/text-field';
+import { MdcTextFieldElement } from '@game-companion/mdc/text-field';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -18,28 +25,51 @@ declare global {
 @customElement(GcNumInputElement.selector)
 export class GcNumInputElement extends LitElement {
   static readonly selector = 'gc-num-input';
+  static override styles = [
+    hiddenStyles,
+    css`
+      mdc-text-field {
+        display: inline-block;
+      }
+    `,
+  ];
 
   @property() declare value: string;
+  @property() declare label?: string;
   @property() declare min?: string;
   @property() declare max?: string;
 
-  private inputRef = createRef<HTMLInputElement>();
+  @queryAssignedElements({ slot: 'hint' })
+  private declare hintSlot: HTMLElement[];
+
+  @state() private declare hintLabel?: string;
+
+  private textFiledRef = createRef<MdcTextFieldElement>();
 
   protected override render() {
     return html`<gc-haptic-feedback event="input">
-        <input
+        <mdc-text-field
           type="number"
-          ${ref(this.inputRef)}
-          .value=${this.value}
-          .min=${ifDefined(this.min)}
-          .max=${ifDefined(this.max)}
+          value=${live(this.value)}
+          label=${ifDefined(this.label)}
+          hintLabel=${ifDefined(this.hintLabel)}
+          hintPersistent
+          min=${ifDefined(this.min)}
+          max=${ifDefined(this.max)}
+          leadingIcon="remove"
+          leadingIconLabel="Decrement"
+          trailingIcon="add"
+          trailingIconLabel="Increment"
+          @mdcTextFieldIconClick:leading=${this.decrement}
+          @mdcTextFieldIconClick:trailing=${this.increment}
           @input=${{
-            handleEvent: () => (this.value = this.inputRef.value?.value ?? ''),
+            handleEvent: () =>
+              (this.value = this.textFiledRef.value?.value ?? ''),
           }}
-        />
+          ${ref(this.textFiledRef)}
+        ></mdc-text-field>
       </gc-haptic-feedback>
-      <button type="button" @click=${this.decrement}>-</button>
-      <button type="button" @click=${this.increment}>+</button>`;
+      <div class="hidden"><slot name="hint"></slot></div>`;
   }
 
   increment() {
@@ -63,15 +93,19 @@ export class GcNumInputElement extends LitElement {
   }
 
   override focus() {
-    this.inputRef.value?.focus();
+    this.textFiledRef.value?.focus();
   }
 
   override blur() {
-    this.inputRef.value?.blur();
+    this.textFiledRef.value?.blur();
+  }
+
+  protected override updated() {
+    setTimeout(() => this.updateHint());
   }
 
   private updateValue(value: string) {
-    const inputRef = this.inputRef.value;
+    const inputRef = this.textFiledRef.value;
 
     if (!inputRef) {
       return;
@@ -84,6 +118,13 @@ export class GcNumInputElement extends LitElement {
     );
     inputRef.dispatchEvent(
       new Event('change', { bubbles: true, cancelable: true, composed: true })
+    );
+  }
+
+  private updateHint() {
+    this.hintLabel = this.hintSlot.reduce(
+      (txt, hint) => (txt += hint.textContent),
+      ''
     );
   }
 }

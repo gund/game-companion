@@ -16,6 +16,7 @@ import {
 import {
   asFormAssociatedInternal,
   formAssociatedMixin,
+  hiddenStyles,
 } from '@game-companion/mdc';
 import '@game-companion/mdc/icons-link';
 import floatingLabelStyles from '@material/floating-label/dist/mdc.floating-label.min.css?inline';
@@ -41,6 +42,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     unsafeCSS(lineRippleStyles),
     unsafeCSS(notchedOutlineStyles),
     unsafeCSS(textFieldStyles),
+    hiddenStyles,
     css`
       .mdc-text-field {
         width: 100%;
@@ -51,12 +53,14 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   @property({ type: Boolean }) declare disabled: boolean;
   @property({ type: Boolean }) declare required: boolean;
   @property({ type: Boolean }) declare readonly: boolean;
+  @property({ type: Boolean }) declare hintPersistent: boolean;
   @property({ type: String }) declare mode: MdcTextFieldMode;
   @property({ type: String }) declare type: string;
   @property({ type: String }) declare name: string;
   @property({ type: String }) declare value: string;
   @property({ type: String }) declare label?: string;
   @property({ type: String }) declare placeholder?: string;
+  @property({ type: String }) declare hintLabel?: string;
   @property({ type: String }) declare min?: string;
   @property({ type: String }) declare max?: string;
   @property({ type: String }) declare step?: string;
@@ -83,6 +87,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     this.disabled = false;
     this.required = false;
     this.readonly = false;
+    this.hintPersistent = false;
     this.mode = 'filled';
     this.type = 'text';
     this.name = '';
@@ -98,6 +103,18 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
 
   override blur() {
     this.inputRef.value?.blur();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener('focus', this.handleFocus);
+    this.removeEventListener('blur', this.handleBlur);
+    this.textField?.destroy();
+    this.leadingTextIcon?.destroy();
+    this.trailingTextIcon?.destroy();
+    this.textField = undefined;
+    this.leadingTextIcon = undefined;
+    this.trailingTextIcon = undefined;
   }
 
   formDisabledCallback(isDisabled: boolean) {
@@ -188,11 +205,20 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
           () => html`<span class="mdc-line-ripple"></span>`
         )}
       </label>
-      <div
-        style="font-size: 0; position: absolute; pointer-events: none; opacity: 0;"
-      >
-        <slot></slot>
-      </div>
+      ${when(
+        this.hintLabel,
+        () => html`<div class="mdc-text-field-helper-line">
+          <div
+            class="mdc-text-field-helper-text ${classMap(
+              this.getHintClassMap()
+            )}"
+            aria-hidden="true"
+          >
+            ${this.hintLabel}
+          </div>
+        </div>`
+      )}
+      <div class="hidden"><slot></slot></div>
       <mdc-icons-link></mdc-icons-link>`;
   }
 
@@ -202,21 +228,13 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     this.addEventListener('blur', this.handleBlur);
   }
 
-  override disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.removeEventListener('focus', this.handleFocus);
-    this.removeEventListener('blur', this.handleBlur);
-    this.textField?.destroy();
-    this.leadingTextIcon?.destroy();
-    this.trailingTextIcon?.destroy();
-    this.textField = undefined;
-    this.leadingTextIcon = undefined;
-    this.trailingTextIcon = undefined;
-  }
-
   protected override willUpdate(
     changedProps: PropertyValueMap<MdcTextFieldElement>
   ) {
+    if (changedProps.has('value')) {
+      this.updateValue(this.value);
+    }
+
     if (changedProps.has('required')) {
       asFormAssociatedInternal(this).getInternals().ariaRequired = String(
         this.required
@@ -275,6 +293,12 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
       'mdc-text-field--outlined': this.mode === 'outlined',
       'mdc-text-field--with-leading-icon': !!this.leadingIcon,
       'mdc-text-field--with-trailing-icon': !!this.trailingIcon,
+    };
+  }
+
+  protected getHintClassMap() {
+    return {
+      'mdc-text-field-helper-text--persistent': this.hintPersistent,
     };
   }
 
