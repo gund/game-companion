@@ -1,4 +1,4 @@
-import { LitElement, property, PropertyValueMap } from '@game-companion/lit';
+import { LitElement, property } from '@game-companion/lit';
 import { MDCRipple } from '@material/ripple';
 import {
   asFormAssociatedInternal,
@@ -53,6 +53,7 @@ export class MdcCoreButton extends formAssociatedMixin(LitElement) {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.clearDisabledInterval();
     this.removeEventListener('click', this.handleClick);
     this.ripple?.destroy();
     this.ripple = undefined;

@@ -11,7 +11,6 @@ import {
 import {
   customElement,
   html,
-  ifDefined,
   LitElement,
   repeat,
   state,

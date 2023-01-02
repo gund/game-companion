@@ -12,45 +12,10 @@
       "module": "./index.js",
       "types": "./mdc/src/index.d.ts"
     },
-    "./icons-link": {
-      "main": "./icons-link.cjs",
-      "module": "./icons-link.js",
-      "types": "./mdc/icons-link/index.d.ts"
-    },
-    "./button": {
-      "main": "./button.cjs",
-      "module": "./button.js",
-      "types": "./mdc/button/index.d.ts"
-    },
-    "./icon-button": {
-      "main": "./icon-button.cjs",
-      "module": "./icon-button.js",
-      "types": "./mdc/icon-button/index.d.ts"
-    },
-    "./list": {
-      "main": "./list.cjs",
-      "module": "./list.js",
-      "types": "./mdc/list/index.d.ts"
-    },
-    "./top-app-bar": {
-      "main": "./top-app-bar.cjs",
-      "module": "./top-app-bar.js",
-      "types": "./mdc/top-app-bar/index.d.ts"
-    },
-    "./text-field": {
-      "main": "./text-field.cjs",
-      "module": "./text-field.js",
-      "types": "./mdc/text-field/index.d.ts"
-    },
-    "./snackbar": {
-      "main": "./snackbar.cjs",
-      "module": "./snackbar.js",
-      "types": "./mdc/snackbar/index.d.ts"
-    },
-    "./select": {
-      "main": "./select.cjs",
-      "module": "./select.js",
-      "types": "./mdc/select/index.d.ts"
+    "./*": {
+      "main": "./*.cjs",
+      "module": "./*.js",
+      "types": "./mdc/*/index.d.ts"
     }
   }
 }

@@ -84,7 +84,7 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
 
     this.options = [];
 
-    asFormAssociatedInternal(this).getInternals().role = 'listbox';
+    asFormAssociatedInternal(this).getInternals().role = 'combobox';
   }
 
   override focus(options?: FocusOptions) {
@@ -93,6 +93,10 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
 
   override blur() {
     this.anchorRef.value?.blur();
+  }
+
+  override click() {
+    this.toggleMenu();
   }
 
   toggleMenu() {
