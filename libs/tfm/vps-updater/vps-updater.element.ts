@@ -2,6 +2,7 @@ import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
 import '@game-companion/core/num-input';
 import { GcNumInputElement } from '@game-companion/core/num-input';
 import {
+  css,
   customElement,
   html,
   LitElement,
@@ -12,6 +13,14 @@ import type { VPsPlayerStatsData } from '@game-companion/tfm';
 
 @customElement('tfm-vps-player-stats-updater')
 export class TfmVPsPlayerStatsUpdaterElement extends LitElement {
+  static override styles = [
+    css`
+      gc-num-input {
+        width: 100%;
+      }
+    `,
+  ];
+
   @property() set stats(data: VPsPlayerStatsData | undefined) {
     this.vpsCount = data?.vpsCount ?? 0;
   }

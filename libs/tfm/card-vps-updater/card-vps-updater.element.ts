@@ -1,11 +1,25 @@
 import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
 import '@game-companion/core/num-input';
-import { customElement, html, LitElement, property } from '@game-companion/lit';
+import {
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+} from '@game-companion/lit';
 import type { CardVPsPlayerStatsData } from '@game-companion/tfm';
 import { CardVPsPlayerStats } from '@game-companion/tfm';
 
 @customElement('tfm-card-vps-player-stats-updater')
 export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
+  static override styles = [
+    css`
+      gc-num-input {
+        width: 100%;
+      }
+    `,
+  ];
+
   @property() declare data?: CardVPsPlayerStatsData;
   @property() declare playerStats?: CardVPsPlayerStats;
 

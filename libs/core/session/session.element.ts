@@ -10,8 +10,10 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import '@game-companion/mdc/top-app-bar';
+import '@game-companion/mdc/card';
 import '@game-companion/mdc/icon-button';
+import { layoutStyles } from '@game-companion/mdc/layout';
+import '@game-companion/mdc/top-app-bar';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -22,6 +24,7 @@ declare global {
 @customElement(GcSessionElement.selector)
 export class GcSessionElement extends LitElement {
   static readonly selector = 'gc-session';
+  static override styles = [layoutStyles];
 
   @property() declare sId?: string;
 
@@ -71,16 +74,19 @@ export class GcSessionElement extends LitElement {
   }
 
   private renderSession(session: Session) {
-    return html`
-      <h2>Players (${session.players.length})</h2>
-      <ul>
+    return html`<div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner">
         ${repeat(
           session.players,
-          (p) => p.name,
-          (p) => html`<li>${this.renderPlayer(p)}</li>`
+          (p) => p.id,
+          (p) => html`<div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+          >
+            ${this.renderPlayer(p)}
+          </div>`
         )}
-      </ul>
-    </mdc-top-app-bar>`;
+      </div>
+    </div>`;
   }
 
   private renderFallback() {
@@ -92,13 +98,11 @@ export class GcSessionElement extends LitElement {
   }
 
   private renderPlayer(player: Player) {
-    return html`<h3>
+    return html`<mdc-card>
+      <h3>
         ${when(
           this.session?.isActive,
-          () =>
-            html`<a href="/session/${this.sId}/player/${player.id}">
-              ${player.name}
-            </a>`,
+          () => html`${player.name}`,
           () => html`${player.name} - ${this.getFinalPlayerScore(player)}`
         )}
       </h3>
@@ -114,7 +118,17 @@ export class GcSessionElement extends LitElement {
             </tr>`
           )}
         </table>`
-      )}`;
+      )}
+      <mdc-button
+        slot="actions"
+        type="link"
+        icon="edit"
+        outlined
+        href="/session/${this.sId}/player/${player.id}"
+      >
+        Edit Player
+      </mdc-button>
+    </mdc-card>`;
   }
 
   protected override willUpdate(

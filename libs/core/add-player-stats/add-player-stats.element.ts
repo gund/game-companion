@@ -18,6 +18,7 @@ import {
 } from '@game-companion/lit';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/select';
+import '@game-companion/mdc/card';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -37,10 +38,9 @@ export class GcAddPlayerStatsElement extends LitElement {
   private playerStatsRegistry = new PlayerStatsRegistry();
 
   protected override render() {
-    return html`<mdc-select
-        label="Pick player stats"
-        @change=${this.selectGlobalStats}
-      >
+    return html`<mdc-card>
+      <h2>Add player stats</h2>
+      <mdc-select label="Pick player stats" @change=${this.selectGlobalStats}>
         ${repeat(
           this.playerStatsRegistry.getAvailable(),
           (ps) => ps.getId(),
@@ -65,12 +65,15 @@ export class GcAddPlayerStatsElement extends LitElement {
         </p>`
       )}
       <mdc-button
+        slot="actions"
         type="button"
+        raised
         ?disabled=${!this.selectedPlayerStatsData}
         @click=${this.addGlobalStats}
       >
-        Add
-      </mdc-button>`;
+        Add Stats
+      </mdc-button>
+    </mdc-card>`;
   }
 
   private addGlobalStats() {
