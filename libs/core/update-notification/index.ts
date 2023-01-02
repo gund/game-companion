@@ -1,1 +1,1 @@
-export * from './update-notification.element';
+export * from './update-notification.element.js';

@@ -1,1 +1,1 @@
-export * from './top-app-bar.element';
+export * from './top-app-bar.element.js';

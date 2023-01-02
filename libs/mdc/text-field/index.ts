@@ -1,1 +1,1 @@
-export * from './text-field.element';
+export * from './text-field.element.js';

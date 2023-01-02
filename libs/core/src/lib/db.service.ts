@@ -4,7 +4,7 @@ import {
   openDB,
   OpenDBCallbacks,
 } from 'idb/with-async-ittr';
-import { Session } from './session.model';
+import { Session } from './session.model.js';
 
 export interface DbSchema extends DBSchema {
   sessions: {

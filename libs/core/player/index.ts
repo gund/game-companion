@@ -1,1 +1,1 @@
-export * from './player.element';
+export * from './player.element.js';

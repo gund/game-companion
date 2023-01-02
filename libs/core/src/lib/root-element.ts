@@ -1,7 +1,7 @@
 import { Router } from '@lit-labs/router';
 import { LitElement } from 'lit';
-import type { PlayerStats } from './player-stats';
-import { getRoutes } from './routes';
+import type { PlayerStats } from './player-stats/index.js';
+import { getRoutes } from './routes.js';
 
 export interface GcRootElement extends LitElement {
   router: Router;

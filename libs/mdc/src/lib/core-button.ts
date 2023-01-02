@@ -3,7 +3,7 @@ import { MDCRipple } from '@material/ripple';
 import {
   asFormAssociatedInternal,
   formAssociatedMixin,
-} from './form-associated';
+} from './form-associated.js';
 
 export class MdcCoreButton extends formAssociatedMixin(LitElement) {
   @property({ type: String }) declare type: string;

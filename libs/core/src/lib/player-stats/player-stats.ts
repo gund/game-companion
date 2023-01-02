@@ -1,4 +1,4 @@
-import type { PlayerStatsData } from '../player.model';
+import type { PlayerStatsData } from '../player.model.js';
 
 export interface PlayerStats<S extends PlayerStatsData = PlayerStatsData> {
   getId(): string;

@@ -1,3 +1,3 @@
-export * from './lib/lit';
-export * from './lib/decorators';
-export * from './lib/directives';
+export * from './lib/lit.js';
+export * from './lib/decorators.js';
+export * from './lib/directives.js';

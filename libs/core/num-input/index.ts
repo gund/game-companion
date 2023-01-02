@@ -1,1 +1,1 @@
-export * from './num-input.element';
+export * from './num-input.element.js';

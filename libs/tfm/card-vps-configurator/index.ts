@@ -1,1 +1,1 @@
-export * from './card-vps-configurator.element';
+export * from './card-vps-configurator.element.js';

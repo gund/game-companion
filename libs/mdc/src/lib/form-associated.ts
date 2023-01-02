@@ -1,4 +1,4 @@
-import { AbstractConstructor, Constructor } from './constructor';
+import { AbstractConstructor, Constructor } from './constructor.js';
 
 export interface FormAssociated {
   form: HTMLFormElement | null;

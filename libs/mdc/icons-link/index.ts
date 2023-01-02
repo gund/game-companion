@@ -1,1 +1,1 @@
-export * from './icons-link.element';
+export * from './icons-link.element.js';

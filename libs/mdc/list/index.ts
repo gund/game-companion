@@ -1,1 +1,1 @@
-export * from './list.element';
+export * from './list.element.js';

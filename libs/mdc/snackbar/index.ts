@@ -1,1 +1,1 @@
-export * from './snackbar.element';
+export * from './snackbar.element.js';

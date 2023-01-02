@@ -1,4 +1,4 @@
-import type { Session } from './session.model';
+import type { Session } from './session.model.js';
 
 export class SessionHelper {
   constructor(

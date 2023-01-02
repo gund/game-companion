@@ -1,4 +1,4 @@
-import type { Player } from './player.model';
+import type { Player } from './player.model.js';
 
 export interface Session {
   id: string;

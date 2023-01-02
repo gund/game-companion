@@ -1,2 +1,2 @@
-export * from './player-stats';
-export * from './registry';
+export * from './player-stats.js';
+export * from './registry.js';

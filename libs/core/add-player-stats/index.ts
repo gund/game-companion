@@ -1,1 +1,1 @@
-export * from './add-player-stats.element';
+export * from './add-player-stats.element.js';

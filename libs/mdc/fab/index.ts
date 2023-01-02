@@ -1,1 +1,1 @@
-export * from './fab.element';
+export * from './fab.element.js';

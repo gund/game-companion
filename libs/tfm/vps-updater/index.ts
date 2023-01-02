@@ -1,1 +1,1 @@
-export * from './vps-updater.element';
+export * from './vps-updater.element.js';

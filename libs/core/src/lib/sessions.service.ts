@@ -1,6 +1,6 @@
-import { BooleanNumber, DbService, TextRange } from './db.service';
-import type { Player } from './player.model';
-import type { Session } from './session.model';
+import { BooleanNumber, DbService, TextRange } from './db.service.js';
+import type { Player } from './player.model.js';
+import type { Session } from './session.model.js';
 
 export class SessionsService {
   constructor(private dbService = new DbService()) {}

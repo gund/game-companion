@@ -12,40 +12,10 @@
       "module": "./index.js",
       "types": "./core/src/index.d.ts"
     },
-    "./add-player-stats": {
-      "main": "./add-player-stats.cjs",
-      "module": "./add-player-stats.js",
-      "types": "./core/add-player-stats/elements.d.ts"
-    },
-    "./haptic-feedback": {
-      "main": "./haptic-feedback.cjs",
-      "module": "./haptic-feedback.js",
-      "types": "./core/haptic-feedback/elements.d.ts"
-    },
-    "./new-session": {
-      "main": "./new-session.cjs",
-      "module": "./new-session.js",
-      "types": "./core/new-session/elements.d.ts"
-    },
-    "./num-input": {
-      "main": "./num-input.cjs",
-      "module": "./num-input.js",
-      "types": "./core/num-input/elements.d.ts"
-    },
-    "./session-list": {
-      "main": "./session-list.cjs",
-      "module": "./session-list.js",
-      "types": "./core/session-list/elements.d.ts"
-    },
-    "./session": {
-      "main": "./session.cjs",
-      "module": "./session.js",
-      "types": "./core/session/elements.d.ts"
-    },
-    "./sessions": {
-      "main": "./sessions.cjs",
-      "module": "./sessions.js",
-      "types": "./core/sessions/elements.d.ts"
+    "./*": {
+      "main": "./*.cjs",
+      "module": "./*.js",
+      "types": "./core/*/elements.d.ts"
     }
   }
 }
