@@ -1,6 +1,7 @@
 import type { Player, Session } from '@game-companion/core';
 import { PlayerStatsRegistry, SessionsService } from '@game-companion/core';
 import {
+  css,
   customElement,
   html,
   LitElement,
@@ -24,7 +25,15 @@ declare global {
 @customElement(GcSessionElement.selector)
 export class GcSessionElement extends LitElement {
   static readonly selector = 'gc-session';
-  static override styles = [layoutStyles];
+  static override styles = [
+    layoutStyles,
+    css`
+      .player-stats {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    `,
+  ];
 
   @property() declare sId?: string;
 
@@ -108,26 +117,39 @@ export class GcSessionElement extends LitElement {
       </h3>
       ${when(
         player.stats.length,
-        () => html`<table>
-          ${repeat(
-            player.stats,
-            (ps) => ps.id,
-            (ps) => html`<tr>
-              <td>${this.getPlayerStatsName(ps.id)}</td>
-              <td>${this.getPlayerStats(ps.id)?.renderStats(ps)}</td>
-            </tr>`
-          )}
-        </table>`
+        () => html`<div class="mdc-layout-grid player-stats">
+          <div class="mdc-layout-grid__inner">
+            ${repeat(
+              player.stats,
+              (ps) => ps.id,
+              (ps) => html`
+                <div
+                  class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
+                >
+                  ${this.getPlayerStatsName(ps.id)}
+                </div>
+                <div
+                  class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
+                >
+                  ${this.getPlayerStats(ps.id)?.renderStats(ps)}
+                </div>
+              `
+            )}
+          </div>
+        </div>`
       )}
-      <mdc-button
-        slot="actions"
-        type="link"
-        icon="edit"
-        outlined
-        href="/session/${this.sId}/player/${player.id}"
-      >
-        Edit Player
-      </mdc-button>
+      ${when(
+        this.session?.isActive,
+        () => html`<mdc-button
+          slot="actions"
+          type="link"
+          icon="edit"
+          outlined
+          href="/session/${this.sId}/player/${player.id}"
+        >
+          Edit Player
+        </mdc-button>`
+      )}
     </mdc-card>`;
   }
 
