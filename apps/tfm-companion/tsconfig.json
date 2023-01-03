@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "types": ["vite/client", "vitest"]
+    "types": ["vite/client", "vite-plugin-pwa/client", "vitest"]
   },
   "include": ["src"],
   "references": [

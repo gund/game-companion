@@ -29,6 +29,7 @@ export class TfmAppElement extends mixinRootElement({
     this.offlineReady = false;
 
     this.updateSw = registerSW({
+      immediate: true,
       onNeedRefresh: () => (this.needRefresh = true),
       onOfflineReady: () => (this.offlineReady = true),
     });
