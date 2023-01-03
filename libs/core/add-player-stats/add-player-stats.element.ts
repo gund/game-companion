@@ -18,7 +18,6 @@ import {
 } from '@game-companion/lit';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/select';
-import '@game-companion/mdc/card';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -38,9 +37,10 @@ export class GcAddPlayerStatsElement extends LitElement {
   private playerStatsRegistry = new PlayerStatsRegistry();
 
   protected override render() {
-    return html`<mdc-card>
-      <h2>Add player stats</h2>
-      <mdc-select label="Pick player stats" @change=${this.selectGlobalStats}>
+    return html`<mdc-select
+        label="Pick player stats"
+        @change=${this.selectGlobalStats}
+      >
         ${repeat(
           this.playerStatsRegistry.getAvailable(),
           (ps) => ps.getId(),
@@ -63,24 +63,10 @@ export class GcAddPlayerStatsElement extends LitElement {
             this.selectedPlayerStats as PlayerStats & ConfigurablePlayerStats
           ).renderConfiguration()}
         </p>`
-      )}
-      <mdc-button
-        slot="actions"
-        type="button"
-        raised
-        ?disabled=${!this.selectedPlayerStatsData}
-        @click=${this.addGlobalStats}
-      >
-        Add Stats
-      </mdc-button>
-    </mdc-card>`;
+      )}`;
   }
 
   private addGlobalStats() {
-    if (!this.selectedPlayerStatsData) {
-      return;
-    }
-
     this.dispatchEvent(new AddPlayerStatsEvent(this.selectedPlayerStatsData));
   }
 
@@ -109,13 +95,15 @@ export class GcAddPlayerStatsElement extends LitElement {
     this.selectedPlayerStatsData = data
       ? { ...data, id: this.selectedPlayerStats.getId() }
       : undefined;
+
+    this.addGlobalStats();
   }
 }
 
 export class AddPlayerStatsEvent extends Event {
   static readonly eventName = 'gcAddPlayerStats';
 
-  constructor(public data: PlayerStatsData) {
+  constructor(public data?: PlayerStatsData) {
     super(AddPlayerStatsEvent.eventName, { bubbles: true, cancelable: false });
   }
 }

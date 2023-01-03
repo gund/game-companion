@@ -17,7 +17,9 @@ import {
   when,
 } from '@game-companion/lit';
 import '@game-companion/mdc/button';
+import '@game-companion/mdc/card';
 import '@game-companion/mdc/icon-button';
+import { layoutStyles } from '@game-companion/mdc/layout';
 import '@game-companion/mdc/text-field';
 import '@game-companion/mdc/top-app-bar';
 
@@ -31,10 +33,22 @@ declare global {
 export class GcNewSessionElement extends LitElement {
   static readonly selector = 'gc-new-session';
   static override styles = [
+    layoutStyles,
     css`
-      .player-field {
+      .player-field,
+      .global-stats-field {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
+      }
+
+      h3 span {
+        vertical-align: text-bottom;
+      }
+
+      fieldset {
+        margin: 0;
+        padding: 0;
+        border: none;
       }
     `,
   ];
@@ -43,6 +57,8 @@ export class GcNewSessionElement extends LitElement {
   private declare players: Player[];
   @state()
   private declare globalStats: PlayerStatsData[];
+  @state()
+  private declare currentGlobalStats?: PlayerStatsData;
   @state()
   private declare error?: string;
   @state()
@@ -73,67 +89,102 @@ export class GcNewSessionElement extends LitElement {
           icon="arrow_back"
           aria-label="Back"
         ></mdc-icon-button>
-      <form @submit=${this.handleSubmit}>
-      <fieldset ?disabled=${this.isSaving}>
-        <p>
-          <h3>
-            Players (${this.players.length})
-            <mdc-icon-button
-              type="button"
-              icon="person_add"
-              aria-label="Add player"
-              @click=${{ handleEvent: () => this.addPlayer() }}
-            ></mdc-icon-button>
-          </h3>
-          ${repeat(
-            this.players,
-            (p, i) =>
-              html`<mdc-text-field
-                required
-                class="player-field"
-                name="player[]"
-                label="Player name"
-                value=${p.name}
-                leadingIcon="person"
-                trailingIcon=${ifDefined(i > 0 ? 'person_remove' : null)}
-                trailingIconLabel=${ifDefined(i > 0 ? 'Remove player' : null)}
-                @mdcTextFieldIconClick:trailing=${{
-                  handleEvent: () => this.removePlayer(p),
-                }}
-              >
-              </mdc-text-field>`
-          )}
-        </p>
-        <p>
-          <h3>Global Player Stats (${this.globalStats.length})</h3>
-          <ul>
-          ${repeat(
-            this.globalStats,
-            (ps) => ps.id,
-            (ps) => html`<li>
-              ${this.getPlayerStatsName(ps.id)}
-              <mdc-icon-button
-                type="button"
-                icon="delete"
-                aria-label="Remove global stat"
-                @click=${{ handleEvent: () => this.removeGlobalStats(ps) }}
-              ></mdc-icon-button>
-            </li>`
-          )}
-          </ul>
-          <gc-add-player-stats @gcAddPlayerStats=${
-            this.addGlobalStats
-          }></gc-add-player-stats>
-        </p>
-        ${when(this.error, () => html`<p>${this.error}</p>`)}
-        <p>
-          <mdc-button type="submit" raised>
-            ${this.isSaving ? 'Creating session...' : 'Create session'}
-          </mdc-button>
-          <mdc-button type="reset">Reset</mdc-button>
-        </p>
-      </fieldset>
-      </form>
+        <form @submit=${this.handleSubmit}>
+          <fieldset ?disabled=${this.isSaving}>
+            <mdc-card>
+              <div class="mdc-layout-grid">
+                <div class="mdc-layout-grid__inner">
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+                  >
+                    <h3>
+                      <span>Players (${this.players.length})</span>
+                      <mdc-icon-button
+                        type="button"
+                        icon="person_add"
+                        aria-label="Add player"
+                        @click=${{ handleEvent: () => this.addPlayer() }}
+                      ></mdc-icon-button>
+                    </h3>
+                    ${repeat(
+                      this.players,
+                      (p, i) =>
+                        html`<mdc-text-field
+                          required
+                          class="player-field"
+                          name="player[]"
+                          label="Player name"
+                          value=${p.name}
+                          leadingIcon="person"
+                          trailingIcon=${ifDefined(
+                            i > 0 ? 'person_remove' : null
+                          )}
+                          trailingIconLabel=${ifDefined(
+                            i > 0 ? 'Remove player' : null
+                          )}
+                          @mdcTextFieldIconClick:trailing=${{
+                            handleEvent: () => this.removePlayer(p),
+                          }}
+                        >
+                        </mdc-text-field>`
+                    )}
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+                  >
+                    <h3>Global Player Stats (${this.globalStats.length})</h3>
+                    ${when(
+                      this.globalStats.length,
+                      () =>
+                        html`${repeat(
+                          this.globalStats,
+                          (ps) => ps.id,
+                          (ps) => html`<mdc-text-field
+                            readonly
+                            class="global-stats-field"
+                            label="Global Player Stats"
+                            value=${this.getPlayerStatsName(ps.id)}
+                            trailingIcon="delete"
+                            trailingIconLabel="Remove Global Stat"
+                            @mdcTextFieldIconClick:trailing=${{
+                              handleEvent: () => this.removeGlobalStats(ps),
+                            }}
+                          ></mdc-text-field>`
+                        )}`,
+                      () => html`<p>No global stats added!</p>`
+                    )}
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+                  >
+                    <h3>Add Global Player Stats</h3>
+                    <gc-add-player-stats
+                      @gcAddPlayerStats=${this.updateGlobalStats}
+                    ></gc-add-player-stats>
+                    <mdc-button
+                      slot="actions"
+                      type="button"
+                      outlined
+                      ?disabled=${!this.currentGlobalStats}
+                      @click=${this.addGlobalStats}
+                    >
+                      Add Stats
+                    </mdc-button>
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+                  >
+                    ${when(this.error, () => html`<p>${this.error}</p>`)}
+                  </div>
+                </div>
+              </div>
+              <mdc-button slot="actions" type="submit" raised>
+                ${this.isSaving ? 'Creating session...' : 'Create session'}
+              </mdc-button>
+              <mdc-button slot="actions" type="reset">Reset</mdc-button>
+            </mdc-card>
+          </fieldset>
+        </form>
       </mdc-top-app-bar>
     `;
   }
@@ -164,8 +215,16 @@ export class GcNewSessionElement extends LitElement {
     return this.sessionsService.createSession({ players: this.players });
   }
 
-  private addGlobalStats(event: AddPlayerStatsEvent) {
-    this.globalStats = [...this.globalStats, event.data];
+  private updateGlobalStats(event: AddPlayerStatsEvent) {
+    this.currentGlobalStats = event.data;
+  }
+
+  private addGlobalStats() {
+    if (!this.currentGlobalStats) {
+      return;
+    }
+
+    this.globalStats = [...this.globalStats, this.currentGlobalStats];
   }
 
   private removeGlobalStats(data: PlayerStatsData) {

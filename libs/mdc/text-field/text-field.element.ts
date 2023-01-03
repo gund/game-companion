@@ -23,8 +23,8 @@ import floatingLabelStyles from '@material/floating-label/dist/mdc.floating-labe
 import lineRippleStyles from '@material/line-ripple/dist/mdc.line-ripple.min.css?inline';
 import notchedOutlineStyles from '@material/notched-outline/dist/mdc.notched-outline.min.css?inline';
 import { MDCTextField } from '@material/textfield';
-import { MDCTextFieldIcon } from '@material/textfield/icon';
 import textFieldStyles from '@material/textfield/dist/mdc.textfield.min.css?inline';
+import { MDCTextFieldIcon } from '@material/textfield/icon';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -176,6 +176,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             .value=${live(this.value)}
             ?disabled=${this.disabled}
             ?required=${this.required}
+            ?readonly=${this.readonly}
             placeholder=${ifDefined(this.placeholder)}
             min=${ifDefined(this.min)}
             max=${ifDefined(this.max)}

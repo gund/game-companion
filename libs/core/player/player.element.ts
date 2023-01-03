@@ -8,21 +8,25 @@ import {
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
+  createRef,
+  css,
   customElement,
   html,
   LitElement,
   property,
   PropertyValueMap,
+  ref,
   repeat,
   state,
   when,
-  css,
 } from '@game-companion/lit';
-import '@game-companion/mdc/top-app-bar';
-import '@game-companion/mdc/icon-button';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/card';
+import '@game-companion/mdc/dialog';
+import { MdcDialogElement } from '@game-companion/mdc/dialog';
+import '@game-companion/mdc/icon-button';
 import { layoutStyles } from '@game-companion/mdc/layout';
+import '@game-companion/mdc/top-app-bar';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -47,6 +51,11 @@ export class GcPlayerElement extends LitElement {
 
       .controls {
       }
+
+      gc-add-player-stats {
+        display: block;
+        min-height: 150px;
+      }
     `,
   ];
 
@@ -56,7 +65,9 @@ export class GcPlayerElement extends LitElement {
   @state() private declare session?: Session;
   @state() private declare player?: Player;
   @state() private declare isLoading: boolean;
-  @state() private declare showAddStats: boolean;
+  @state() private declare currentPlayerStats?: PlayerStatsData;
+
+  private playerStatsDialogRef = createRef<MdcDialogElement>();
 
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
@@ -65,85 +76,95 @@ export class GcPlayerElement extends LitElement {
     super();
 
     this.isLoading = false;
-    this.showAddStats = false;
   }
 
   protected override render() {
     return html`<mdc-top-app-bar appearance="fixed">
-      <span slot="title">Player ${this.player?.name}</span>
-      <mdc-icon-button
-        slot="menu"
-        type="link"
-        href="/session/${this.sId}"
-        class="mdc-top-app-bar__navigation-icon"
-        icon="arrow_back"
-        aria-label="Back to session"
-      ></mdc-icon-button>
-      <div class="mdc-layout-grid">
-        <div class="mdc-layout-grid__inner">
-          ${when(
-            this.player,
-            () => this.renderPlayer(this.player!),
-            () => this.renderFallback()
-          )}
+        <span slot="title">Player ${this.player?.name}</span>
+        <mdc-icon-button
+          slot="menu"
+          type="link"
+          href="/session/${this.sId}"
+          class="mdc-top-app-bar__navigation-icon"
+          icon="arrow_back"
+          aria-label="Back to session"
+        ></mdc-icon-button>
+        <mdc-icon-button
+          slot="toolbar"
+          type="button"
+          icon="add_circle"
+          aria-label="Add Player Stats"
+          @click=${{
+            handleEvent: () => this.playerStatsDialogRef.value?.open(),
+          }}
+        ></mdc-icon-button>
+        <div class="mdc-layout-grid">
+          <div class="mdc-layout-grid__inner">
+            ${when(
+              this.player,
+              () => this.renderPlayer(this.player!),
+              () => this.renderFallback()
+            )}
+          </div>
         </div>
-      </div>
-    </mdc-top-app-bar>`;
+      </mdc-top-app-bar>
+      <mdc-dialog fullscreen ${ref(this.playerStatsDialogRef)}>
+        <span slot="title">Add Player Stats</span>
+        <gc-add-player-stats
+          @gcAddPlayerStats=${this.setCurrentPlayerStats}
+        ></gc-add-player-stats>
+        <mdc-button
+          slot="actions"
+          data-mdc-dialog-action="close"
+          data-mdc-dialog-button-default
+        >
+          Close
+        </mdc-button>
+        <mdc-button
+          slot="actions"
+          raised
+          data-mdc-dialog-action="add"
+          ?disabled=${!this.currentPlayerStats}
+          @click=${this.addPlayerStats}
+        >
+          Add
+        </mdc-button>
+      </mdc-dialog>`;
   }
 
   private renderPlayer(player: Player) {
     return html`${when(
-        player.stats.length,
-        () =>
-          html`${repeat(
-            player.stats,
-            (ps) => ps.id,
-            (ps) => html`<div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      player.stats.length,
+      () =>
+        html`${repeat(
+          player.stats,
+          (ps) => ps.id,
+          (ps) => html`<div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+          >
+            <mdc-card
+              @gcUpdateData=${{
+                handleEvent: (e: UpdatePlayerStatsDataEvent) =>
+                  this.updatePlayerStats(ps, e.data as object),
+              }}
             >
-              <mdc-card
-                @gcUpdateData=${{
-                  handleEvent: (e: UpdatePlayerStatsDataEvent) =>
-                    this.updatePlayerStats(ps, e.data as object),
+              <h3>${this.getPlayerStatsName(ps.id)}</h3>
+              <div>${this.renderPlayerStats(ps)}</div>
+              <mdc-button
+                slot="actions"
+                type="button"
+                icon="delete"
+                outlined
+                @click=${{
+                  handleEvent: () => this.removePlayerStats(ps),
                 }}
               >
-                <h3>${this.getPlayerStatsName(ps.id)}</h3>
-                <div>${this.renderPlayerStats(ps)}</div>
-                <mdc-button
-                  slot="actions"
-                  type="button"
-                  icon="delete"
-                  outlined
-                  @click=${{
-                    handleEvent: () => this.removePlayerStats(ps),
-                  }}
-                >
-                  Remove Stats
-                </mdc-button>
-              </mdc-card>
-            </div>`
-          )}`
-      )}
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <mdc-button
-          type="button"
-          outlined
-          @click=${{
-            handleEvent: () => (this.showAddStats = !this.showAddStats),
-          }}
-        >
-          Add new stats
-        </mdc-button>
-        ${when(
-          this.showAddStats,
-          () =>
-            html`<p>
-              <gc-add-player-stats
-                @gcAddPlayerStats=${this.addPlayerStats}
-              ></gc-add-player-stats>
-            </p>`
-        )}
-      </div>`;
+                Remove Stats
+              </mdc-button>
+            </mdc-card>
+          </div>`
+        )}`
+    )}`;
   }
 
   private renderPlayerStats(data: PlayerStatsData) {
@@ -222,13 +243,16 @@ export class GcPlayerElement extends LitElement {
     await this.sessionsService.updatePlayer(this.sId, this.player);
   }
 
-  private async addPlayerStats(event: AddPlayerStatsEvent) {
-    if (!this.player) {
+  private setCurrentPlayerStats(event: AddPlayerStatsEvent) {
+    this.currentPlayerStats = event.data;
+  }
+
+  private async addPlayerStats() {
+    if (!this.player || !this.currentPlayerStats) {
       return;
     }
 
-    this.player.stats = [...this.player.stats, event.data];
-    this.showAddStats = false;
+    this.player.stats = [...this.player.stats, this.currentPlayerStats];
     this.requestUpdate();
 
     await this.sessionsService.updatePlayer(this.sId, this.player);
