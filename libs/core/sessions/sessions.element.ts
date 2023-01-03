@@ -9,7 +9,9 @@ import {
   until,
   when,
 } from '@game-companion/lit';
+import '@game-companion/mdc/button';
 import '@game-companion/mdc/fab';
+import { layoutStyles } from '@game-companion/mdc/layout';
 import '@game-companion/mdc/top-app-bar';
 
 declare global {
@@ -22,11 +24,17 @@ declare global {
 export class GcSessionsElement extends LitElement {
   static readonly selector = 'gc-sessions';
   static override styles = [
+    layoutStyles,
     css`
       mdc-fab {
         position: fixed;
         right: 24px;
         bottom: 24px;
+      }
+
+      .title {
+        padding-top: 0;
+        padding-bottom: 0;
       }
     `,
   ];
@@ -43,11 +51,15 @@ export class GcSessionsElement extends LitElement {
       <mdc-top-app-bar appearance="fixed">
         <span slot="title">Sessions</span>
         ${until(
-          this.sessions.then((s) => this.renderSessions(s)),
+          this.sessions
+            .then((s) => this.renderSessions(s))
+            .catch((e) => this.renderError(e)),
           `Loading...`
         )}
         ${until(
-          this.inactiveSessions.then((s) => this.renderInactiveSessions(s))
+          this.inactiveSessions
+            .then((s) => this.renderInactiveSessions(s))
+            .catch((e) => this.renderError(e))
         )}
       </mdc-top-app-bar>
       <mdc-fab
@@ -71,9 +83,30 @@ export class GcSessionsElement extends LitElement {
   private renderInactiveSessions(sessions: Session[]) {
     return html`${when(
       sessions.length,
-      () => html`<h3>Inactive Sessions</h3>
+      () => html`<div class="mdc-layout-grid title">
+          <div class="mdc-layout-grid__inner">
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+              <h3>Inactive Sessions</h3>
+            </div>
+          </div>
+        </div>
         ${this.renderSessions(sessions)}`
     )}`;
+  }
+
+  private renderError(e: unknown) {
+    return html`<div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          Something went wrong! ${String(e)}
+        </div>
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <mdc-button type="button" oultined @click=${this.loadSessions}>
+            Reload
+          </mdc-button>
+        </div>
+      </div>
+    </div>`;
   }
 
   private loadSessions() {
