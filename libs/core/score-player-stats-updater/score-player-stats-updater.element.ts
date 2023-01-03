@@ -36,7 +36,7 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
   protected override render() {
     return html`<gc-num-input
       label=${this.scorePlayerStats.getName()}
-      value=${this.stats.scoreCount ?? '0'}
+      value=${this.scorePlayerStats.getFinalScore(this.stats)}
       min="0"
       @input=${this.updateScoreCount}
     ></gc-num-input>`;

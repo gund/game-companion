@@ -6,24 +6,23 @@ export interface ScorePlayerStatsData extends PlayerStatsData {
   scoreCount?: number;
 }
 
-export abstract class ScorePlayerStats
-  implements
-    PlayerStats<ScorePlayerStatsData>,
-    UpdatablePlayerStats<ScorePlayerStatsData>
+export abstract class ScorePlayerStats<
+  S extends ScorePlayerStatsData = ScorePlayerStatsData
+> implements PlayerStats<S>, UpdatablePlayerStats<S>
 {
   abstract getId(): string;
 
   abstract getName(): string;
 
-  renderStats(stats: ScorePlayerStatsData): unknown {
-    return html`${stats.scoreCount ?? 0}`;
+  renderStats(stats: S): unknown {
+    return html`${this.getFinalScore(stats)}`;
   }
 
-  getFinalScore(stats: ScorePlayerStatsData): number {
+  getFinalScore(stats: S): number {
     return stats.scoreCount ?? 0;
   }
 
-  renderUpdateStats(stats: ScorePlayerStatsData) {
+  renderUpdateStats(stats: S) {
     import('@game-companion/core/score-player-stats-updater');
 
     return html`<gc-score-player-stats-updater
