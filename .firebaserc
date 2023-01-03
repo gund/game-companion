@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "tfm-companion"
-  }
+  },
+  "targets": {
+    "tfm-companion": {
+      "hosting": {
+        "board-game-companion-app": [
+          "board-game-companion-app"
+        ],
+        "tfm-companion": [
+          "tfm-companion"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

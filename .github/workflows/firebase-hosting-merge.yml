@@ -11,10 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm ci && npx nx build tfm-companion --configuration=production
+      - run: npm ci && npx nx run-many --target=build --all=true
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        name: Deploy Terraforming Mars Companion App
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
           channelId: live
+          target: tfm-companion
+          projectId: tfm-companion
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        name: Deploy Game Companion App
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
+          channelId: live
+          target: board-game-companion-app
           projectId: tfm-companion
