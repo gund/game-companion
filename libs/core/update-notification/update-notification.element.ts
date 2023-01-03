@@ -16,13 +16,13 @@ declare global {
 export class GcUpdateNotificationElement extends LitElement {
   static readonly selector = 'gc-update-notification';
 
-  @property() declare updateInstalled: boolean;
+  @property() declare needRefresh: boolean;
   @property() declare offlineReady: boolean;
 
   constructor() {
     super();
 
-    this.updateInstalled = false;
+    this.needRefresh = false;
     this.offlineReady = false;
   }
 
@@ -31,7 +31,7 @@ export class GcUpdateNotificationElement extends LitElement {
         App is ready for offline!
         <mdc-button slot="actions">Cool!</mdc-button>
       </mdc-snackbar>
-      <mdc-snackbar ?open=${this.updateInstalled} hasDismiss timeoutMs="-1">
+      <mdc-snackbar ?open=${this.needRefresh} hasDismiss timeoutMs="-1">
         New update is installed!
         <mdc-button slot="actions" @click=${this.handleReload}
           >Reload</mdc-button
@@ -42,16 +42,27 @@ export class GcUpdateNotificationElement extends LitElement {
   protected override willUpdate(
     changedProps: PropertyValueMap<GcUpdateNotificationElement>
   ) {
-    if (
-      changedProps.has('updateInstalled') ||
-      changedProps.has('offlineReady')
-    ) {
+    if (changedProps.has('needRefresh') || changedProps.has('offlineReady')) {
       import('@game-companion/mdc/snackbar');
       import('@game-companion/mdc/button');
     }
   }
 
-  private async handleReload() {
-    window.location.reload();
+  private handleReload() {
+    this.dispatchEvent(
+      new GcUpdateNotificationRefreshEvent({
+        bubbles: true,
+        cancelable: false,
+        composed: true,
+      })
+    );
+  }
+}
+
+export class GcUpdateNotificationRefreshEvent extends Event {
+  static readonly eventName = 'gcUpdateNotificationRefresh';
+
+  constructor(eventInitDict?: EventInit) {
+    super(GcUpdateNotificationRefreshEvent.eventName, eventInitDict);
   }
 }

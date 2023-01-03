@@ -17,17 +17,19 @@ export class TfmAppElement extends mixinRootElement({
 }) {
   static readonly selector = 'tfm-companion-root';
 
-  @state() private declare updateInstalled: boolean;
+  @state() private declare needRefresh: boolean;
   @state() private declare offlineReady: boolean;
+
+  private updateSw: () => Promise<void>;
 
   constructor() {
     super();
 
-    this.updateInstalled = false;
+    this.needRefresh = false;
     this.offlineReady = false;
 
-    registerSW({
-      onNeedRefresh: () => (this.updateInstalled = true),
+    this.updateSw = registerSW({
+      onNeedRefresh: () => (this.needRefresh = true),
       onOfflineReady: () => (this.offlineReady = true),
     });
   }
@@ -35,8 +37,9 @@ export class TfmAppElement extends mixinRootElement({
   protected override render() {
     return html`${super.render()}
       <gc-update-notification
-        .updateInstalled=${this.updateInstalled}
+        .needRefresh=${this.needRefresh}
         .offlineReady=${this.offlineReady}
+        @gcUpdateNotificationRefresh=${this.updateSw}
       ></gc-update-notification>`;
   }
 }
