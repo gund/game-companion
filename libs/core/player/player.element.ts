@@ -65,6 +65,7 @@ export class GcPlayerElement extends LitElement {
   @state() private declare session?: Session;
   @state() private declare player?: Player;
   @state() private declare isLoading: boolean;
+  @state() private declare loadingError?: string;
   @state() private declare currentPlayerStats?: PlayerStatsData;
 
   private playerStatsDialogRef = createRef<MdcDialogElement>();
@@ -182,11 +183,15 @@ export class GcPlayerElement extends LitElement {
   }
 
   private renderFallback() {
-    return html`${when(
-      this.isLoading,
-      () => html`Loading Player...`,
-      () => html`Invalid Player!`
-    )}`;
+    return html`<div
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+    >
+      ${when(
+        this.isLoading,
+        () => html`Loading Player...`,
+        () => html`<b>Invalid Player!</b> ${this.loadingError}`
+      )}
+    </div>`;
   }
 
   protected override willUpdate(
@@ -202,8 +207,15 @@ export class GcPlayerElement extends LitElement {
 
   private async loadSession() {
     this.session = undefined;
+    this.loadingError = undefined;
 
     if (!this.sId) {
+      this.loadingError = String(new Error('No Session Id was provided!'));
+      return;
+    }
+
+    if (!this.pId) {
+      this.loadingError = String(new Error(`No Player Id was provided!`));
       return;
     }
 
@@ -211,6 +223,8 @@ export class GcPlayerElement extends LitElement {
       this.isLoading = true;
       this.session = await this.sessionsService.getById(this.sId);
       this.updatePlayer();
+    } catch (e) {
+      this.loadingError = String(e);
     } finally {
       this.isLoading = false;
     }
@@ -218,6 +232,12 @@ export class GcPlayerElement extends LitElement {
 
   private updatePlayer() {
     this.player = this.session?.players.find((p) => p.id === this.pId);
+
+    if (!this.player) {
+      this.loadingError = String(
+        new Error(`No Player with Id '${this.pId}' was found in this session!`)
+      );
+    }
   }
 
   private getPlayerStats(id: string) {
