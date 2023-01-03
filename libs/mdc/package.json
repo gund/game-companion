@@ -6,6 +6,10 @@
   "main": "./index.cjs",
   "module": "./index.js",
   "types": "./mdc/src/index.d.ts",
+  "dependencies": {
+    "@game-companion/lit": "^0.0.1",
+    "material-components-web": "^14.0.0"
+  },
   "exports": {
     ".": {
       "main": "./index.cjs",

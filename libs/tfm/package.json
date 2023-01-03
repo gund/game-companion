@@ -6,26 +6,21 @@
   "main": "./index.cjs",
   "module": "./index.js",
   "types": "./tfm/src/index.d.ts",
+  "dependencies": {
+    "@game-companion/core": "^0.0.1",
+    "@game-companion/lit": "^0.0.1",
+    "@game-companion/mdc": "^0.0.1"
+  },
   "exports": {
     ".": {
       "main": "./index.cjs",
       "module": "./index.js",
       "types": "./tfm/src/index.d.ts"
     },
-    "./vps-updater": {
-      "main": "./vps-updater.cjs",
-      "module": "./vps-updater.js",
-      "types": "./tfm/vps-updater/elements.d.ts"
-    },
-    "./card-vps-updater": {
-      "main": "./card-vps-updater.cjs",
-      "module": "./card-vps-updater.js",
-      "types": "./tfm/card-vps-updater/elements.d.ts"
-    },
-    "./card-vps-configurator": {
-      "main": "./card-vps-configurator.cjs",
-      "module": "./card-vps-configurator.js",
-      "types": "./tfm/card-vps-configurator/elements.d.ts"
+    "./*": {
+      "main": "./*.cjs",
+      "module": "./*.js",
+      "types": "./tfm/*/elements.d.ts"
     }
   }
 }

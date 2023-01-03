@@ -42,7 +42,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: [],
+      external: (module) => !/^\./.test(module) && !/\.ts$/.test(module),
     },
   },
 
