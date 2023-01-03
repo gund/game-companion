@@ -1,10 +1,11 @@
 import { Router } from '@lit-labs/router';
 import { LitElement } from 'lit';
+import { NavigatableRouter } from './navigatable-router.js';
 import type { PlayerStats } from './player-stats/index.js';
 import { getRoutes } from './routes.js';
 
 export interface GcRootElement extends LitElement {
-  router: Router;
+  router: NavigatableRouter;
   baseUrl: string;
   playerStats: PlayerStats[];
 }
@@ -24,7 +25,7 @@ export function mixinRootElement({
 
   return class GcRootElement extends LitElement {
     baseUrl = baseUrl;
-    router = new Router(this, getRoutes(baseUrl));
+    router = new NavigatableRouter(this, getRoutes(baseUrl));
     playerStats = playerStats;
 
     protected override render() {

@@ -253,7 +253,7 @@ export class GcNewSessionElement extends LitElement {
       this.error = undefined;
       this.isSaving = true;
       const session = await this.createSession();
-      await queryRootElement().router.goto(`/session/${session.id}`);
+      await queryRootElement().router.navigateTo(`/session/${session.id}`);
     } catch (e) {
       this.error = String(e);
     } finally {
