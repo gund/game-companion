@@ -14,7 +14,7 @@ export default defineConfig({
     }),
     VitePWA({
       devOptions: { enabled: false, type: 'module' },
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       injectRegister: null,
       manifest: {
         id: 'com.game-companion.tfm',
