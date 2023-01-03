@@ -1,5 +1,6 @@
 import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
 import '@game-companion/core/num-input';
+import { GcNumInputElement } from '@game-companion/core/num-input';
 import {
   css,
   customElement,
@@ -10,8 +11,15 @@ import {
 import type { CardVPsPlayerStatsData } from '@game-companion/tfm';
 import { CardVPsPlayerStats } from '@game-companion/tfm';
 
-@customElement('tfm-card-vps-player-stats-updater')
+declare global {
+  interface HTMLElementTagNameMap {
+    [TfmCardVPsPlayerStatsUpdaterElement.selector]: TfmCardVPsPlayerStatsUpdaterElement;
+  }
+}
+
+@customElement(TfmCardVPsPlayerStatsUpdaterElement.selector)
 export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
+  static readonly selector = 'tfm-card-vps-player-stats-updater';
   static override styles = [
     css`
       gc-num-input {
@@ -31,7 +39,7 @@ export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
       @input=${{
         handleEvent: (e: Event) =>
           this.updateScoreCount(
-            parseInt((e.target as HTMLInputElement).value || '0')
+            parseInt((e.target as GcNumInputElement).value)
           ),
       }}
     >

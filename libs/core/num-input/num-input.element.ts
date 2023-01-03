@@ -50,32 +50,6 @@ export class GcNumInputElement extends LitElement {
 
   private textFiledRef = createRef<MdcTextFieldElement>();
 
-  protected override render() {
-    return html`<gc-haptic-feedback event="input">
-        <mdc-text-field
-          type="number"
-          value=${live(this.value)}
-          label=${ifDefined(this.label)}
-          hintLabel=${ifDefined(this.hintLabel)}
-          hintPersistent
-          min=${ifDefined(this.min)}
-          max=${ifDefined(this.max)}
-          leadingIcon="remove"
-          leadingIconLabel="Decrement"
-          trailingIcon="add"
-          trailingIconLabel="Increment"
-          @mdcTextFieldIconClick:leading=${this.decrement}
-          @mdcTextFieldIconClick:trailing=${this.increment}
-          @input=${{
-            handleEvent: () =>
-              (this.value = this.textFiledRef.value?.value ?? ''),
-          }}
-          ${ref(this.textFiledRef)}
-        ></mdc-text-field>
-      </gc-haptic-feedback>
-      <div class="hidden"><slot name="hint"></slot></div>`;
-  }
-
   increment() {
     const currValue = parseInt(this.value);
 
@@ -102,6 +76,32 @@ export class GcNumInputElement extends LitElement {
 
   override blur() {
     this.textFiledRef.value?.blur();
+  }
+
+  protected override render() {
+    return html`<gc-haptic-feedback event="input">
+        <mdc-text-field
+          type="number"
+          value=${live(this.value)}
+          label=${ifDefined(this.label)}
+          hintLabel=${ifDefined(this.hintLabel)}
+          hintPersistent
+          min=${ifDefined(this.min)}
+          max=${ifDefined(this.max)}
+          leadingIcon="remove"
+          leadingIconLabel="Decrement"
+          trailingIcon="add"
+          trailingIconLabel="Increment"
+          @mdcTextFieldIconClick:leading=${this.decrement}
+          @mdcTextFieldIconClick:trailing=${this.increment}
+          @input=${{
+            handleEvent: () =>
+              (this.value = this.textFiledRef.value?.value || '0'),
+          }}
+          ${ref(this.textFiledRef)}
+        ></mdc-text-field>
+      </gc-haptic-feedback>
+      <div class="hidden"><slot name="hint"></slot></div>`;
   }
 
   protected override updated() {

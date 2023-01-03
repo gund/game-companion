@@ -1,5 +1,6 @@
 import { UpdatePlayerStatsDataEvent } from '@game-companion/core';
 import '@game-companion/core/num-input';
+import { GcNumInputElement } from '@game-companion/core/num-input';
 import { customElement, html, LitElement, state } from '@game-companion/lit';
 import '@game-companion/mdc/text-field';
 import type { CardVPsPlayerStatsData } from '@game-companion/tfm';
@@ -49,7 +50,7 @@ export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
   ) {
     return {
       handleEvent: (e: Event) =>
-        this.updateData(valueFn((e.target as HTMLInputElement).value)),
+        this.updateData(valueFn((e.target as GcNumInputElement).value)),
     };
   }
 }
