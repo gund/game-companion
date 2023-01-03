@@ -1,17 +1,21 @@
 import type { Player, Session } from '@game-companion/core';
 import { PlayerStatsRegistry, SessionsService } from '@game-companion/core';
 import {
+  createRef,
   css,
   customElement,
   html,
   LitElement,
   property,
   PropertyValueMap,
+  ref,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
 import '@game-companion/mdc/card';
+import '@game-companion/mdc/dialog';
+import { MdcDialogElement } from '@game-companion/mdc/dialog';
 import '@game-companion/mdc/icon-button';
 import { layoutStyles } from '@game-companion/mdc/layout';
 import '@game-companion/mdc/top-app-bar';
@@ -39,6 +43,11 @@ export class GcSessionElement extends LitElement {
 
   @state() private declare session?: Session;
   @state() private declare isLoading: boolean;
+  @state() private declare isFinishingSession: boolean;
+  @state() private declare loadingError?: string;
+  @state() private declare finishSessionError?: string;
+
+  private finishSessionDialogRef = createRef<MdcDialogElement>();
 
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
@@ -47,63 +56,94 @@ export class GcSessionElement extends LitElement {
     super();
 
     this.isLoading = false;
+    this.isFinishingSession = false;
   }
 
   protected override render() {
     return html`<mdc-top-app-bar appearance="fixed">
-      <span slot="title">
-        ${this.session?.isActive ? 'Active' : 'Inactive'} Session
-      </span>
-      <mdc-icon-button
-        slot="menu"
-        type="link"
-        href="/"
-        class="mdc-top-app-bar__navigation-icon"
-        icon="arrow_back"
-        aria-label="Back"
-      ></mdc-icon-button>
-      ${when(
-        this.session?.isActive,
-        () =>
-          html`<mdc-icon-button
-            slot="toolbar"
-            type="button"
-            class="mdc-top-app-bar__navigation-icon"
-            icon="stop_circle"
-            aria-label="Finish session"
-            @click=${this.finishSession}
-          ></mdc-icon-button>`
-      )}
-      ${when(
-        this.session,
-        () => this.renderSession(this.session!),
-        () => this.renderFallback()
-      )}
-    </mdc-top-app-bar>`;
+        <span slot="title">
+          ${this.session?.isActive ? 'Active' : 'Inactive'} Session
+        </span>
+        <mdc-icon-button
+          slot="menu"
+          type="link"
+          href="/"
+          class="mdc-top-app-bar__navigation-icon"
+          icon="arrow_back"
+          aria-label="Back"
+        ></mdc-icon-button>
+        ${when(
+          this.session?.isActive,
+          () =>
+            html`<mdc-icon-button
+              slot="toolbar"
+              type="button"
+              class="mdc-top-app-bar__navigation-icon"
+              icon="stop_circle"
+              aria-label="Finish session"
+              @click=${{
+                handleEvent: () => this.finishSessionDialogRef.value?.open(),
+              }}
+            ></mdc-icon-button>`
+        )}
+        <div class="mdc-layout-grid">
+          <div class="mdc-layout-grid__inner">
+            ${when(
+              this.session,
+              () => this.renderSession(this.session!),
+              () => this.renderFallback()
+            )}
+          </div>
+        </div>
+      </mdc-top-app-bar>
+      <mdc-dialog ${ref(this.finishSessionDialogRef)}>
+        <span slot="title">Finish Session?</span>
+        Are you sure you want to finish this session?<br />
+        You will not be able to modify any player stats anymore.
+        ${when(
+          this.finishSessionError,
+          () => html`<p>${this.finishSessionError}</p>`
+        )}
+        <mdc-button
+          slot="actions"
+          data-mdc-dialog-action="close"
+          data-mdc-dialog-button-default
+        >
+          Cancel
+        </mdc-button>
+        <mdc-button
+          slot="actions"
+          raised
+          ?disabled=${this.isFinishingSession}
+          @click=${this.finishSession}
+        >
+          ${this.isFinishingSession ? 'Finishing...' : 'Finish'}
+        </mdc-button>
+      </mdc-dialog>`;
   }
 
   private renderSession(session: Session) {
-    return html`<div class="mdc-layout-grid">
-      <div class="mdc-layout-grid__inner">
-        ${repeat(
-          session.players,
-          (p) => p.id,
-          (p) => html`<div
-            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
-          >
-            ${this.renderPlayer(p)}
-          </div>`
-        )}
-      </div>
-    </div>`;
+    return html`${repeat(
+      session.players,
+      (p) => p.id,
+      (p) => html`<div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      >
+        ${this.renderPlayer(p)}
+      </div>`
+    )}`;
   }
 
   private renderFallback() {
-    return html`${when(
-      this.isLoading,
-      () => html`<p>Loading session data...</p>`,
-      () => html`<p>Invalid session!</p>`
-    )}`;
+    return html`<div
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+    >
+      ${when(
+        this.isLoading,
+        () => html`Loading session data...`,
+        () => html`<b>Invalid session!</b> ${this.loadingError}`
+      )}
+    </div>`;
   }
 
   private renderPlayer(player: Player) {
@@ -115,29 +155,35 @@ export class GcSessionElement extends LitElement {
           () => html`${player.name} - ${this.getFinalPlayerScore(player)}`
         )}
       </h3>
-      ${when(
-        player.stats.length,
-        () => html`<div class="mdc-layout-grid player-stats">
-          <div class="mdc-layout-grid__inner">
-            ${repeat(
-              player.stats,
-              (ps) => ps.id,
-              (ps) => html`
-                <div
-                  class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
-                >
-                  ${this.getPlayerStatsName(ps.id)}
-                </div>
-                <div
-                  class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
-                >
-                  ${this.getPlayerStats(ps.id)?.renderStats(ps)}
-                </div>
-              `
-            )}
-          </div>
-        </div>`
-      )}
+      <div class="mdc-layout-grid player-stats">
+        <div class="mdc-layout-grid__inner">
+          ${when(
+            player.stats.length,
+            () =>
+              html` ${repeat(
+                player.stats,
+                (ps) => ps.id,
+                (ps) => html`
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
+                  >
+                    ${this.getPlayerStatsName(ps.id)}
+                  </div>
+                  <div
+                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
+                  >
+                    ${this.getPlayerStats(ps.id)?.renderStats(ps)}
+                  </div>
+                `
+              )}`,
+            () => html`<div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+            >
+              No player stats recorded.
+            </div>`
+          )}
+        </div>
+      </div>
       ${when(
         this.session?.isActive,
         () => html`<mdc-button
@@ -163,14 +209,18 @@ export class GcSessionElement extends LitElement {
 
   private async loadSession() {
     this.session = undefined;
+    this.loadingError = undefined;
 
     if (!this.sId) {
+      this.loadingError = String(new Error('No Session Id was provided!'));
       return;
     }
 
     try {
       this.isLoading = true;
       this.session = await this.sessionsService.getById(this.sId);
+    } catch (e) {
+      this.loadingError = String(e);
     } finally {
       this.isLoading = false;
     }
@@ -187,11 +237,17 @@ export class GcSessionElement extends LitElement {
   }
 
   private async finishSession() {
-    if (!confirm('Are you sure you want to finish this session?')) {
-      return;
-    }
+    this.isFinishingSession = true;
+    this.finishSessionError = undefined;
 
-    this.session = await this.sessionsService.finishSesssion(this.sId!);
+    try {
+      this.session = await this.sessionsService.finishSesssion(this.sId!);
+      this.finishSessionDialogRef.value?.close();
+    } catch (e) {
+      this.finishSessionError = String(e);
+    } finally {
+      this.isFinishingSession = false;
+    }
   }
 
   private getFinalPlayerScore(player: Player) {
