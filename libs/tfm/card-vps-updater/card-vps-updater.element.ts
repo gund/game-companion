@@ -36,7 +36,7 @@ export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
       }}
     >
       <span slot="hint">
-        ${this.data && this.playerStats?.renderStats(this.data)}
+        ${this.data && this.playerStats?.renderVps(this.data)}
       </span>
     </gc-num-input>`;
   }

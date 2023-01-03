@@ -27,8 +27,12 @@ export class CardVPsPlayerStats
   }
 
   renderStats(stats: CardVPsPlayerStatsData) {
-    return html`[${stats.cardName}:${stats.scoreCount ?? 0}]
-    ${this.getFinalScore(stats)}VPs (${stats.vpsRatio}/1 VP)`;
+    return html`<b>${stats.cardName}</b> ${stats.scoreCount ?? 0} -
+      ${this.renderVps(stats)}`;
+  }
+
+  renderVps(stats: CardVPsPlayerStatsData) {
+    return html`${this.getFinalScore(stats)}VPs (${stats.vpsRatio}/1 VP)`;
   }
 
   getFinalScore(stats: CardVPsPlayerStatsData): number {
