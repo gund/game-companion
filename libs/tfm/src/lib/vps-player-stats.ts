@@ -2,6 +2,9 @@ import type { ScorePlayerStatsData } from '@game-companion/core';
 import { ScorePlayerStats } from '@game-companion/core';
 
 export interface VpsPlayerStatsData extends ScorePlayerStatsData {
+  /**
+   * @deprecated Use {@link VpsPlayerStatsData.scoreCount} instead.
+   */
   vpsCount?: number;
 }
 
@@ -21,6 +24,7 @@ export class VPsPlayerStats extends ScorePlayerStats<VpsPlayerStatsData> {
         ...stats,
         scoreCount: stats.scoreCount ?? stats.vpsCount,
       };
+      delete stats.vpsCount;
     }
 
     return super.getFinalScore(stats);
