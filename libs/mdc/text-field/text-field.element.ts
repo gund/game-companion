@@ -186,6 +186,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             pattern=${ifDefined(this.pattern)}
             @input=${this.syncValue}
             @change=${this.replayEvent}
+            @blur=${this.handleBlur}
             ${ref(this.inputRef)}
           />
         </slot>
@@ -360,7 +361,13 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   }
 
   protected updateTabIndex(tabIndex?: string) {
-    this.lastTabIndex = this.getAttribute('tabindex') ?? '0';
+    const currentTabIndex = this.getAttribute('tabindex') ?? '0';
+
+    if (currentTabIndex === tabIndex) {
+      return;
+    }
+
+    this.lastTabIndex = currentTabIndex;
 
     if (tabIndex) {
       this.setAttribute('tabindex', tabIndex);
@@ -377,6 +384,8 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     if (!label) {
       return;
     }
+
+    this.focus();
 
     this.dispatchEvent(
       new MdcTextFieldIconClickEvent(type, {

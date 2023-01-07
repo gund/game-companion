@@ -6,6 +6,11 @@ export interface ScorePlayerStatsData extends PlayerStatsData {
   scoreCount?: number;
 }
 
+export interface ScoreRestrictionsPlayerStats {
+  min?: number;
+  max?: number;
+}
+
 export abstract class ScorePlayerStats<
   S extends ScorePlayerStatsData = ScorePlayerStatsData
 > implements PlayerStats<S>, UpdatablePlayerStats<S>
@@ -13,6 +18,8 @@ export abstract class ScorePlayerStats<
   abstract getId(): string;
 
   abstract getName(): string;
+
+  protected scoreRestrictions: ScoreRestrictionsPlayerStats = {};
 
   renderStats(stats: S): unknown {
     return html`${this.getFinalScore(stats)}`;
@@ -29,5 +36,9 @@ export abstract class ScorePlayerStats<
       .stats=${stats}
       .scorePlayerStats=${this}
     ></gc-score-player-stats-updater>`;
+  }
+
+  getScoreRestrictions(): ScoreRestrictionsPlayerStats {
+    return this.scoreRestrictions;
   }
 }

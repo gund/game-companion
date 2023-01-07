@@ -42,7 +42,7 @@ export class DbService {
 
   private db?: Promise<IDBPDatabase<DbSchema>>;
 
-  constructor(private dbName = 'tfm-db', private dbVersion = 1) {}
+  constructor(private dbName = 'game-companion-db', private dbVersion = 1) {}
 
   getDb(): Promise<IDBPDatabase<DbSchema>> {
     if (!this.db) {
