@@ -78,31 +78,36 @@ export class GcSessionElement extends LitElement {
           href="/"
           class="mdc-top-app-bar__navigation-icon"
           icon="arrow_back"
+          title="Back"
           aria-label="Back"
-        ></mdc-icon-button>
-        <mdc-icon-button
-          slot="toolbar"
-          type="button"
-          class="mdc-top-app-bar__navigation-icon"
-          icon="${this.isEditMode ? 'edit_off' : 'edit'}"
-          aria-label="Toggle edit mode"
-          @click=${{
-            handleEvent: () => (this.isEditMode = !this.isEditMode),
-          }}
         ></mdc-icon-button>
         ${when(
           this.session?.isActive,
           () =>
-            html`<mdc-icon-button
-              slot="toolbar"
-              type="button"
-              class="mdc-top-app-bar__navigation-icon"
-              icon="stop_circle"
-              aria-label="Finish session"
-              @click=${{
-                handleEvent: () => this.finishSessionDialogRef.value?.open(),
-              }}
-            ></mdc-icon-button>`
+            html`
+              <mdc-icon-button
+                slot="toolbar"
+                type="button"
+                class="mdc-top-app-bar__navigation-icon"
+                icon="${this.isEditMode ? 'edit_off' : 'edit'}"
+                title="Toggle edit mode"
+                aria-label="Toggle edit mode"
+                @click=${{
+                  handleEvent: () => (this.isEditMode = !this.isEditMode),
+                }}
+              ></mdc-icon-button>
+              <mdc-icon-button
+                slot="toolbar"
+                type="button"
+                class="mdc-top-app-bar__navigation-icon"
+                icon="stop_circle"
+                title="Finish session"
+                aria-label="Finish session"
+                @click=${{
+                  handleEvent: () => this.finishSessionDialogRef.value?.open(),
+                }}
+              ></mdc-icon-button>
+            `
         )}
         <div class="mdc-layout-grid">
           <div class="mdc-layout-grid__inner">

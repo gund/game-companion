@@ -93,12 +93,14 @@ export class GcPlayerElement extends LitElement {
           href="/session/${this.sId}"
           class="mdc-top-app-bar__navigation-icon"
           icon="arrow_back"
+          title="Back to session"
           aria-label="Back to session"
         ></mdc-icon-button>
         <mdc-icon-button
           slot="toolbar"
           type="button"
           icon="navigate_before"
+          title="Previous player"
           aria-label="Previous player"
           @click=${this.prevPlayer}
         ></mdc-icon-button>
@@ -106,6 +108,7 @@ export class GcPlayerElement extends LitElement {
           slot="toolbar"
           type="button"
           icon="navigate_next"
+          title="Next player"
           aria-label="Next player"
           @click=${this.nextPlayer}
         ></mdc-icon-button>
@@ -113,6 +116,7 @@ export class GcPlayerElement extends LitElement {
           slot="toolbar"
           type="button"
           icon="add_circle"
+          title="Add Player Stats"
           aria-label="Add Player Stats"
           @click=${{
             handleEvent: () => this.playerStatsDialogRef.value?.open(),

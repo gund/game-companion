@@ -87,6 +87,7 @@ export class GcNewSessionElement extends LitElement {
           href="/"
           class="mdc-top-app-bar__navigation-icon"
           icon="arrow_back"
+          title="Back"
           aria-label="Back"
         ></mdc-icon-button>
         <form @submit=${this.handleSubmit}>
@@ -102,6 +103,7 @@ export class GcNewSessionElement extends LitElement {
                       <mdc-icon-button
                         type="button"
                         icon="person_add"
+                        title="Add player"
                         aria-label="Add player"
                         @click=${{ handleEvent: () => this.addPlayer() }}
                       ></mdc-icon-button>

@@ -66,6 +66,7 @@ export class GcSessionsElement extends LitElement {
         type="link"
         href="/session/new"
         icon="group_add"
+        title="Create new session"
         aria-label="Create new session"
       ></mdc-fab>
     `;
