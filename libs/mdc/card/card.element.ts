@@ -1,11 +1,13 @@
 import {
   classMap,
+  createRef,
   css,
   customElement,
   html,
   LitElement,
   property,
   queryAssignedElements,
+  ref,
   state,
   unsafeCSS,
 } from '@game-companion/lit';
@@ -38,6 +40,8 @@ export class MdcCardElement extends LitElement {
 
   @state() declare actionsCount: number;
 
+  protected actionsSlotRef = createRef<HTMLSlotElement>();
+
   protected updateActions = () => {
     this.actionsCount = this.actionsSlotted.length;
   };
@@ -49,16 +53,13 @@ export class MdcCardElement extends LitElement {
     this.actionsCount = 0;
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.addEventListener('slotchange', this.updateActions);
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.removeEventListener('slotchange', this.updateActions);
+    this.actionsSlotRef.value?.removeEventListener(
+      'slotchange',
+      this.updateActions
+    );
   }
 
   protected override render() {
@@ -67,12 +68,17 @@ export class MdcCardElement extends LitElement {
         <slot></slot>
       </div>
       <div class="mdc-card__actions ${classMap(this.getActionsClassMap())}">
-        <slot name="actions"></slot>
+        <slot name="actions" ${ref(this.actionsSlotRef)}></slot>
       </div>
     </div>`;
   }
 
   protected override firstUpdated() {
+    this.actionsSlotRef.value?.addEventListener(
+      'slotchange',
+      this.updateActions
+    );
+
     this.updateActions();
   }
 

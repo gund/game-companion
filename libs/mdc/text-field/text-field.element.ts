@@ -51,6 +51,10 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
       .mdc-text-field {
         width: 100%;
       }
+
+      .mdc-text-field__icon {
+        user-select: none;
+      }
     `,
   ];
 

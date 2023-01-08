@@ -258,9 +258,13 @@ export class GcPlayerElement extends LitElement {
     this.player.stats = this.player.stats.map((ps) =>
       ps === playerStats ? { ...ps, ...data } : ps
     );
-    this.requestUpdate();
 
-    await this.sessionsService.updatePlayer(this.sId, this.player);
+    this.player = await this.sessionsService.updatePlayer(
+      this.sId,
+      this.player
+    );
+
+    this.requestUpdate();
   }
 
   private setCurrentPlayerStats(event: AddPlayerStatsEvent) {

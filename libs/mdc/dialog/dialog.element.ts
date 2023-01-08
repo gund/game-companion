@@ -1,5 +1,6 @@
 import {
   classMap,
+  createRef,
   css,
   customElement,
   html,
@@ -49,6 +50,8 @@ export class MdcDialogElement extends LitElement {
   @state() declare titleExists: boolean;
   @state() declare actionsExist: boolean;
 
+  protected titleSlotRef = createRef<HTMLSlotElement>();
+  protected actionsSlotRef = createRef<HTMLSlotElement>();
   protected dialog?: MDCDialog;
 
   protected handleSlotChanges = () => {
@@ -78,16 +81,17 @@ export class MdcDialogElement extends LitElement {
     this.dialog?.close(action);
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.addEventListener('slotchange', this.handleSlotChanges);
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.removeEventListener('slotchange', this.handleSlotChanges);
+    this.titleSlotRef.value?.removeEventListener(
+      'slotchange',
+      this.handleSlotChanges
+    );
+    this.actionsSlotRef.value?.removeEventListener(
+      'slotchange',
+      this.handleSlotChanges
+    );
     this.dialog?.destroy();
     this.dialog = undefined;
   }
@@ -112,7 +116,7 @@ export class MdcDialogElement extends LitElement {
             <h2
             class="mdc-dialog__title ${classMap(this.getTitleClassMap())}"
             id="dialog-title"
-          ><slot name="title"></slot></h2>
+          ><slot name="title" ${ref(this.titleSlotRef)}></slot></h2>
             ${when(
               this.fullscreen,
               () => html`<mdc-icon-button
@@ -129,7 +133,7 @@ export class MdcDialogElement extends LitElement {
           <div
             class="mdc-dialog__actions ${classMap(this.getActionsClassMap())}"
           >
-            <slot name="actions"></slot>
+            <slot name="actions" ${ref(this.actionsSlotRef)}></slot>
           </div>
         </div>
       </div>
@@ -138,6 +142,15 @@ export class MdcDialogElement extends LitElement {
   }
 
   protected override firstUpdated() {
+    this.titleSlotRef.value?.addEventListener(
+      'slotchange',
+      this.handleSlotChanges
+    );
+    this.actionsSlotRef.value?.addEventListener(
+      'slotchange',
+      this.handleSlotChanges
+    );
+
     this.handleSlotChanges();
   }
 

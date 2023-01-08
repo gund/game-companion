@@ -1,4 +1,10 @@
-import type { Player, Session } from '@game-companion/core';
+import {
+  isUpdatablePlayerStats,
+  Player,
+  PlayerStatsData,
+  Session,
+  UpdatePlayerStatsDataEvent,
+} from '@game-companion/core';
 import { PlayerStatsRegistry, SessionsService } from '@game-companion/core';
 import {
   createRef,
@@ -43,6 +49,7 @@ export class GcSessionElement extends LitElement {
 
   @state() private declare session?: Session;
   @state() private declare isLoading: boolean;
+  @state() private declare isEditMode: boolean;
   @state() private declare isFinishingSession: boolean;
   @state() private declare loadingError?: string;
   @state() private declare finishSessionError?: string;
@@ -56,6 +63,7 @@ export class GcSessionElement extends LitElement {
     super();
 
     this.isLoading = false;
+    this.isEditMode = false;
     this.isFinishingSession = false;
   }
 
@@ -71,6 +79,16 @@ export class GcSessionElement extends LitElement {
           class="mdc-top-app-bar__navigation-icon"
           icon="arrow_back"
           aria-label="Back"
+        ></mdc-icon-button>
+        <mdc-icon-button
+          slot="toolbar"
+          type="button"
+          class="mdc-top-app-bar__navigation-icon"
+          icon="${this.isEditMode ? 'edit_off' : 'edit'}"
+          aria-label="Toggle edit mode"
+          @click=${{
+            handleEvent: () => (this.isEditMode = !this.isEditMode),
+          }}
         ></mdc-icon-button>
         ${when(
           this.session?.isActive,
@@ -171,8 +189,12 @@ export class GcSessionElement extends LitElement {
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
+                    @gcUpdateData=${{
+                      handleEvent: (e: UpdatePlayerStatsDataEvent) =>
+                        this.updatePlayerStats(player, ps, e.data as object),
+                    }}
                   >
-                    ${this.getPlayerStats(ps.id)?.renderStats(ps)}
+                    ${this.renderPlayerStats(ps)}
                   </div>
                 `
               )}`,
@@ -193,10 +215,24 @@ export class GcSessionElement extends LitElement {
           outlined
           href="/session/${this.sId}/player/${player.id}"
         >
-          Edit Player
+          Edit stats
         </mdc-button>`
       )}
     </mdc-card>`;
+  }
+
+  private renderPlayerStats(data: PlayerStatsData) {
+    const playerStats = this.getPlayerStats(data.id);
+
+    if (!playerStats) {
+      return;
+    }
+
+    if (this.isEditMode && isUpdatablePlayerStats(playerStats)) {
+      return playerStats.renderUpdateStats(data);
+    } else {
+      return playerStats.renderStats(data);
+    }
   }
 
   protected override willUpdate(
@@ -256,5 +292,30 @@ export class GcSessionElement extends LitElement {
         score + (this.getPlayerStats(ps.id)?.getFinalScore(ps) ?? 0),
       0
     );
+  }
+
+  private async updatePlayerStats(
+    player: Player,
+    playerStats: PlayerStatsData,
+    data?: object
+  ) {
+    if (!this.session) {
+      return;
+    }
+
+    player.stats = player.stats.map((ps) =>
+      ps === playerStats ? { ...ps, ...data } : ps
+    );
+
+    const updatedPlayer = await this.sessionsService.updatePlayer(
+      this.session.id,
+      player
+    );
+
+    this.session.players = this.session.players.map((p) =>
+      p.id === player.id ? updatedPlayer : p
+    );
+
+    this.requestUpdate();
   }
 }

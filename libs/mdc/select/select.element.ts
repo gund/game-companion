@@ -18,6 +18,7 @@ import {
 import {
   asFormAssociatedInternal,
   formAssociatedMixin,
+  hiddenStyles,
 } from '@game-companion/mdc';
 import '@game-companion/mdc/icons-link';
 import listStyles from '@material/list/dist/mdc.list.min.css?inline';
@@ -42,6 +43,7 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
     unsafeCSS(menuSurfaceStyles),
     unsafeCSS(menuStyles),
     unsafeCSS(selectStyles),
+    hiddenStyles,
     css`
       :host {
         display: inline-block;
@@ -70,8 +72,16 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
   @state() protected declare options: HTMLElement[];
 
   protected anchorRef = createRef<HTMLElement>();
+  protected optionsSlotRef = createRef<HTMLSlotElement>();
   protected selectElement?: Element;
   protected select?: MDCSelect;
+
+  protected updateOptions = () => {
+    this.options = this.optionsSlotted.map(
+      (option) => option.cloneNode(true) as HTMLElement
+    );
+    this.initSelect(this.selectElement);
+  };
 
   constructor() {
     super();
@@ -115,15 +125,13 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
     this.setValue(this.getAttribute('value') ?? '');
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.addEventListener('slotchange', () => this.updateOptions());
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    this.optionsSlotRef.value?.removeEventListener(
+      'slotchange',
+      this.updateOptions
+    );
     this.select?.destroy();
     this.selectElement = undefined;
     this.select = undefined;
@@ -207,8 +215,20 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
           </ul>
         </div>
       </div>
-      <slot></slot>
+      <div class="hidden">
+        <slot ${ref(this.optionsSlotRef)}></slot>
+      </div>
       <mdc-icons-link></mdc-icons-link>`;
+  }
+
+  protected override firstUpdated() {
+    this.optionsSlotRef.value?.addEventListener(
+      'slotchange',
+      this.updateOptions
+    );
+
+    this.updateOptions();
+    this.updateValue('');
   }
 
   protected override willUpdate(
@@ -242,11 +262,6 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
       asFormAssociatedInternal(this).getInternals().ariaLabel =
         this.label ?? null;
     }
-  }
-
-  protected override firstUpdated() {
-    this.updateOptions();
-    this.updateValue('');
   }
 
   protected getClassMap() {
@@ -311,10 +326,5 @@ export class MdcSelectElement extends formAssociatedMixin(LitElement) {
     if (this.select) {
       this.select.setValue(value, true);
     }
-  }
-
-  protected updateOptions() {
-    this.options = [...this.optionsSlotted];
-    this.initSelect(this.selectElement);
   }
 }
