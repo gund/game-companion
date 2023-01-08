@@ -1,4 +1,9 @@
-import type { Player, PlayerStatsData, Session } from '@game-companion/core';
+import {
+  Player,
+  PlayerStatsData,
+  queryRootElement,
+  Session,
+} from '@game-companion/core';
 import {
   isUpdatablePlayerStats,
   PlayerStatsRegistry,
@@ -93,6 +98,20 @@ export class GcPlayerElement extends LitElement {
         <mdc-icon-button
           slot="toolbar"
           type="button"
+          icon="navigate_before"
+          aria-label="Previous player"
+          @click=${this.prevPlayer}
+        ></mdc-icon-button>
+        <mdc-icon-button
+          slot="toolbar"
+          type="button"
+          icon="navigate_next"
+          aria-label="Next player"
+          @click=${this.nextPlayer}
+        ></mdc-icon-button>
+        <mdc-icon-button
+          slot="toolbar"
+          type="button"
           icon="add_circle"
           aria-label="Add Player Stats"
           @click=${{
@@ -103,6 +122,7 @@ export class GcPlayerElement extends LitElement {
           <div class="mdc-layout-grid__inner">
             ${when(
               this.player,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               () => this.renderPlayer(this.player!),
               () => this.renderFallback()
             )}
@@ -291,5 +311,46 @@ export class GcPlayerElement extends LitElement {
     this.requestUpdate();
 
     await this.sessionsService.updatePlayer(this.sId, this.player);
+  }
+
+  private async prevPlayer() {
+    await this.cyclePlayer(false);
+  }
+
+  private async nextPlayer() {
+    await this.cyclePlayer(true);
+  }
+
+  private async cyclePlayer(isNext: boolean) {
+    if (!this.session || !this.player) {
+      return;
+    }
+
+    const currPlayerIdx = this.session.players.findIndex(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      (p) => p.id === this.player!.id
+    );
+
+    if (currPlayerIdx === -1) {
+      return;
+    }
+
+    let nextPlayerIdx = isNext ? currPlayerIdx + 1 : currPlayerIdx - 1;
+
+    if (nextPlayerIdx < 0) {
+      nextPlayerIdx = this.session.players.length - 1;
+    } else if (nextPlayerIdx > this.session.players.length - 1) {
+      nextPlayerIdx = 0;
+    }
+
+    const nextPlayer = this.session.players[nextPlayerIdx];
+
+    if (!nextPlayer) {
+      return;
+    }
+
+    await queryRootElement().router.navigateTo(
+      `/session/${this.session.id}/player/${nextPlayer.id}`
+    );
   }
 }
