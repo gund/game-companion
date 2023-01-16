@@ -21,11 +21,11 @@ export abstract class ScorePlayerStats<
 
   protected scoreRestrictions: ScoreRestrictionsPlayerStats = {};
 
-  renderStats(stats: S): unknown {
+  renderStats(stats: S) {
     return html`${this.getFinalScore(stats)}`;
   }
 
-  getFinalScore(stats: S): number {
+  getFinalScore(stats: S) {
     return stats.scoreCount ?? 0;
   }
 
@@ -34,11 +34,11 @@ export abstract class ScorePlayerStats<
 
     return html`<gc-score-player-stats-updater
       .stats=${stats}
-      .scorePlayerStats=${this}
+      .playerStats=${this}
     ></gc-score-player-stats-updater>`;
   }
 
-  getScoreRestrictions(): ScoreRestrictionsPlayerStats {
+  getScoreRestrictions() {
     return this.scoreRestrictions;
   }
 }

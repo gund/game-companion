@@ -34,12 +34,12 @@ export class GcHapticFeedbackElement extends LitElement {
     this.durationMs = 100;
   }
 
-  override connectedCallback(): void {
+  override connectedCallback() {
     super.connectedCallback();
     this.addEventListener(this.event, this.provideFeedback);
   }
 
-  override disconnectedCallback(): void {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener(this.event, this.provideFeedback);
   }

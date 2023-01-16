@@ -1,8 +1,11 @@
-import { mixinRootElement } from '@game-companion/core';
+import {
+  mixinRootElement,
+  GenericScorePlayerStats,
+  IncrementalScorePlayerStats,
+} from '@game-companion/core';
 import '@game-companion/core/update-notification';
 import { customElement, html, state } from '@game-companion/lit';
 import { registerSW } from 'virtual:pwa-register';
-import { GenericScorePlayerStats } from './score-player-stats';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -13,7 +16,10 @@ declare global {
 @customElement(GameAppElement.selector)
 export class GameAppElement extends mixinRootElement({
   selector: 'game-companion-root',
-  playerStats: [new GenericScorePlayerStats()],
+  playerStats: [
+    new GenericScorePlayerStats(),
+    new IncrementalScorePlayerStats(),
+  ],
 }) {
   static readonly selector = 'game-companion-root';
 

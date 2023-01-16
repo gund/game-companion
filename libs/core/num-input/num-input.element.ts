@@ -38,6 +38,9 @@ export class GcNumInputElement extends LitElement {
     `,
   ];
 
+  @property({ type: Boolean }) declare disabled: boolean;
+  @property({ type: Boolean }) declare required: boolean;
+  @property({ type: Boolean }) declare readonly: boolean;
   @property() declare value: string;
   @property() declare label?: string;
   @property() declare min?: string;
@@ -53,6 +56,9 @@ export class GcNumInputElement extends LitElement {
   constructor() {
     super();
 
+    this.disabled = false;
+    this.required = false;
+    this.readonly = false;
     this.value = '0';
   }
 
@@ -88,15 +94,18 @@ export class GcNumInputElement extends LitElement {
     return html`<gc-haptic-feedback event="input">
         <mdc-text-field
           type="number"
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          ?readonly=${this.readonly}
           value=${live(this.value)}
           label=${ifDefined(this.label)}
           hintLabel=${ifDefined(this.hintLabel)}
           hintPersistent
           min=${ifDefined(this.min)}
           max=${ifDefined(this.max)}
-          leadingIcon="remove"
+          leadingIcon=${this.readonly ? null : 'remove'}
           leadingIconLabel="Decrement"
-          trailingIcon="add"
+          trailingIcon=${this.readonly ? null : 'add'}
           trailingIconLabel="Increment"
           @mdcTextFieldIconClick:leading=${this.decrement}
           @mdcTextFieldIconClick:trailing=${this.increment}
@@ -115,7 +124,7 @@ export class GcNumInputElement extends LitElement {
   }
 
   private updateValue(value: string, skipEvents = false) {
-    if (value === this.value || !this.textFieldRef.value) {
+    if (this.readonly || value === this.value || !this.textFieldRef.value) {
       return;
     }
 

@@ -14,7 +14,6 @@ import {
   LitElement,
   live,
   property,
-  PropertyValueMap,
   state,
 } from '@game-companion/lit';
 
@@ -36,14 +35,14 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
   ];
 
   @property() declare stats: ScorePlayerStatsData;
-  @property() declare scorePlayerStats: ScorePlayerStats;
+  @property() declare playerStats: ScorePlayerStats;
 
   @state() declare scoreRestrictions: ScoreRestrictionsPlayerStats;
 
   protected override render() {
     return html`<gc-num-input
-      label=${this.scorePlayerStats.getName()}
-      value=${live(this.scorePlayerStats.getFinalScore(this.stats))}
+      label=${this.playerStats.getName()}
+      value=${live(this.playerStats.getFinalScore(this.stats))}
       required
       min="${ifDefined(this.scoreRestrictions.min)}"
       max="${ifDefined(this.scoreRestrictions.max)}"
@@ -52,14 +51,14 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
   }
 
   protected override willUpdate() {
-    this.scoreRestrictions = this.scorePlayerStats.getScoreRestrictions();
+    this.scoreRestrictions = this.playerStats.getScoreRestrictions();
   }
 
   protected updateScoreCount(event: Event) {
     this.dispatchEvent(
       new UpdatePlayerStatsDataEvent({
         scoreCount: parseInt((event.target as GcNumInputElement).value || '0'),
-      })
+      } as ScorePlayerStatsData)
     );
   }
 }
