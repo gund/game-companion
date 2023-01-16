@@ -12,6 +12,7 @@ import {
   html,
   ifDefined,
   LitElement,
+  live,
   property,
   PropertyValueMap,
   state,
@@ -42,7 +43,7 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
   protected override render() {
     return html`<gc-num-input
       label=${this.scorePlayerStats.getName()}
-      value=${this.scorePlayerStats.getFinalScore(this.stats)}
+      value=${live(this.scorePlayerStats.getFinalScore(this.stats))}
       required
       min="${ifDefined(this.scoreRestrictions.min)}"
       max="${ifDefined(this.scoreRestrictions.max)}"
@@ -57,7 +58,7 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
   protected updateScoreCount(event: Event) {
     this.dispatchEvent(
       new UpdatePlayerStatsDataEvent({
-        scoreCount: parseInt((event.target as GcNumInputElement).value),
+        scoreCount: parseInt((event.target as GcNumInputElement).value || '0'),
       })
     );
   }

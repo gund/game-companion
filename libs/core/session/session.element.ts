@@ -233,7 +233,11 @@ export class GcSessionElement extends LitElement {
       return;
     }
 
-    if (this.isEditMode && isUpdatablePlayerStats(playerStats)) {
+    if (
+      this.isEditMode &&
+      this.session?.isActive &&
+      isUpdatablePlayerStats(playerStats)
+    ) {
       return playerStats.renderUpdateStats(data);
     } else {
       return playerStats.renderStats(data);

@@ -32,9 +32,9 @@ export class GcUpdateNotificationElement extends LitElement {
         <mdc-button slot="actions">Cool!</mdc-button>
       </mdc-snackbar>
       <mdc-snackbar ?open=${this.needRefresh} hasDismiss timeoutMs="-1">
-        New update is installed!
+        New update is available!
         <mdc-button slot="actions" @click=${this.handleReload}
-          >Reload</mdc-button
+          >Update</mdc-button
         >
       </mdc-snackbar>`;
   }

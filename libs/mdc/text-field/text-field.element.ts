@@ -389,8 +389,6 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
       return;
     }
 
-    this.focus();
-
     this.dispatchEvent(
       new MdcTextFieldIconClickEvent(type, {
         bubbles: true,

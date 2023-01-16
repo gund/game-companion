@@ -48,34 +48,40 @@ export class GcNumInputElement extends LitElement {
 
   @state() private declare hintLabel?: string;
 
-  private textFiledRef = createRef<MdcTextFieldElement>();
+  private textFieldRef = createRef<MdcTextFieldElement>();
+
+  constructor() {
+    super();
+
+    this.value = '0';
+  }
 
   increment() {
-    const currValue = parseInt(this.value);
+    const newValue = parseInt(this.value || '0') + 1;
 
-    if (this.max && currValue >= parseInt(this.max)) {
+    if (this.max && newValue > parseInt(this.max)) {
       return;
     }
 
-    this.updateValue(String(currValue + 1));
+    this.updateValue(String(newValue));
   }
 
   decrement() {
-    const currValue = parseInt(this.value);
+    const newValue = parseInt(this.value || '0') - 1;
 
-    if (this.min && currValue <= parseInt(this.min)) {
+    if (this.min && newValue < parseInt(this.min)) {
       return;
     }
 
-    this.updateValue(String(currValue - 1));
+    this.updateValue(String(newValue));
   }
 
   override focus() {
-    this.textFiledRef.value?.focus();
+    this.textFieldRef.value?.focus();
   }
 
   override blur() {
-    this.textFiledRef.value?.blur();
+    this.textFieldRef.value?.blur();
   }
 
   protected override render() {
@@ -96,9 +102,9 @@ export class GcNumInputElement extends LitElement {
           @mdcTextFieldIconClick:trailing=${this.increment}
           @input=${{
             handleEvent: () =>
-              (this.value = this.textFiledRef.value?.value || '0'),
+              this.updateValue(this.textFieldRef.value?.value || '', true),
           }}
-          ${ref(this.textFiledRef)}
+          ${ref(this.textFieldRef)}
         ></mdc-text-field>
       </gc-haptic-feedback>
       <div class="hidden"><slot name="hint"></slot></div>`;
@@ -108,21 +114,31 @@ export class GcNumInputElement extends LitElement {
     setTimeout(() => this.updateHint());
   }
 
-  private updateValue(value: string) {
-    const inputRef = this.textFiledRef.value;
-
-    if (!inputRef) {
+  private updateValue(value: string, skipEvents = false) {
+    if (value === this.value || !this.textFieldRef.value) {
       return;
     }
 
-    inputRef.value = value;
+    this.value = value;
+    this.textFieldRef.value.value = value;
+    this.textFieldRef.value.focus();
 
-    inputRef.dispatchEvent(
-      new Event('input', { bubbles: true, cancelable: true, composed: true })
-    );
-    inputRef.dispatchEvent(
-      new Event('change', { bubbles: true, cancelable: true, composed: true })
-    );
+    if (!skipEvents) {
+      this.textFieldRef.value?.dispatchEvent(
+        new Event('input', {
+          bubbles: true,
+          cancelable: false,
+          composed: true,
+        })
+      );
+      this.textFieldRef.value?.dispatchEvent(
+        new Event('change', {
+          bubbles: true,
+          cancelable: false,
+          composed: true,
+        })
+      );
+    }
   }
 
   private updateHint() {
