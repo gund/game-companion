@@ -1,5 +1,5 @@
 name: Deploy to Firebase
-'on':
+on:
   workflow_run:
     workflows: ['Test']
     types:
@@ -11,21 +11,17 @@ jobs:
   build_and_deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    env:
-      BRANCH: ${{ github.event.workflow_run.head_branch }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ env.BRANCH }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 'lts/*'
           cache: 'npm'
       - uses: nrwl/nx-set-shas@v3
         with:
-          workflow-id: 'firebase-deploy.yml'
-          # error-on-no-successful-workflow: true
+          error-on-no-successful-workflow: true
       - run: npm ci
       - run: npx nx affected --target=deploy-firebase
         name: Deploying to Firebase
