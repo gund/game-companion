@@ -1,7 +1,7 @@
 # Game Companion Apps
 
 [![Test](https://github.com/gund/game-companion/actions/workflows/test.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/test.yml)
-[![Deploy](https://github.com/gund/game-companion/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/firebase-hosting-merge.yml)
+[![Deploy](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml)
 
 > Monorepo for board game companion apps
 

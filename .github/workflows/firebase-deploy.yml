@@ -1,11 +1,9 @@
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase
 'on':
   workflow_run:
     workflows: ['Test']
     types:
       - completed
-    branches:
-      - main
 
 jobs:
   build_and_deploy:
@@ -13,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 18
