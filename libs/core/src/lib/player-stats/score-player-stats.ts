@@ -11,9 +11,8 @@ export interface ScoreRestrictionsPlayerStats {
   max?: number;
 }
 
-export abstract class ScorePlayerStats<
-  S extends ScorePlayerStatsData = ScorePlayerStatsData
-> implements PlayerStats<S>, UpdatablePlayerStats<S>
+export abstract class ScorePlayerStats
+  implements PlayerStats, UpdatablePlayerStats
 {
   abstract getId(): string;
 
@@ -21,15 +20,15 @@ export abstract class ScorePlayerStats<
 
   protected scoreRestrictions: ScoreRestrictionsPlayerStats = {};
 
-  renderStats(stats: S) {
+  renderStats(stats: ScorePlayerStatsData) {
     return html`${this.getFinalScore(stats)}`;
   }
 
-  getFinalScore(stats: S) {
+  getFinalScore(stats: ScorePlayerStatsData) {
     return stats.scoreCount ?? 0;
   }
 
-  renderUpdateStats(stats: S) {
+  renderUpdateStats(stats: ScorePlayerStatsData) {
     import('@game-companion/core/score-player-stats-updater');
 
     return html`<gc-score-player-stats-updater

@@ -8,7 +8,7 @@ export interface VpsPlayerStatsData extends ScorePlayerStatsData {
   vpsCount?: number;
 }
 
-export class VPsPlayerStats extends ScorePlayerStats<VpsPlayerStatsData> {
+export class VPsPlayerStats extends ScorePlayerStats {
   getId(): string {
     return 'vps';
   }

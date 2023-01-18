@@ -6,9 +6,7 @@ import { ScorePlayerStatsData } from './score-player-stats.js';
 export interface IncrementalScorePlayerStatsData extends ScorePlayerStatsData {}
 
 export class IncrementalScorePlayerStats
-  implements
-    PlayerStats<IncrementalScorePlayerStatsData>,
-    UpdatablePlayerStats<IncrementalScorePlayerStatsData>
+  implements PlayerStats, UpdatablePlayerStats
 {
   getId() {
     return 'incremental-score';

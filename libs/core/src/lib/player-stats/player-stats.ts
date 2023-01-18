@@ -1,16 +1,14 @@
 import type { PlayerStatsData } from '../player.model.js';
 
-export interface PlayerStats<S extends PlayerStatsData = PlayerStatsData> {
+export interface PlayerStats {
   getId(): string;
   getName(): string;
-  renderStats(stats: S): unknown;
-  getFinalScore(stats: S): number;
+  renderStats(stats: PlayerStatsData): unknown;
+  getFinalScore(stats: PlayerStatsData): number;
 }
 
-export interface UpdatablePlayerStats<
-  S extends PlayerStatsData = PlayerStatsData
-> {
-  renderUpdateStats(stats: S): unknown;
+export interface UpdatablePlayerStats {
+  renderUpdateStats(stats: PlayerStatsData): unknown;
 }
 
 export interface ConfigurablePlayerStats {

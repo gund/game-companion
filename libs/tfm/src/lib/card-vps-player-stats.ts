@@ -13,10 +13,7 @@ export interface CardVPsPlayerStatsData extends PlayerStatsData {
 }
 
 export class CardVPsPlayerStats
-  implements
-    PlayerStats<CardVPsPlayerStatsData>,
-    UpdatablePlayerStats<CardVPsPlayerStatsData>,
-    ConfigurablePlayerStats
+  implements PlayerStats, UpdatablePlayerStats, ConfigurablePlayerStats
 {
   getId(): string {
     return 'card-vps';
