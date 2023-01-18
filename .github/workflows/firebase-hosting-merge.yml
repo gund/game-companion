@@ -14,23 +14,10 @@ jobs:
   build_and_deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}
     steps:
       - uses: actions/checkout@v3
       - run: npm ci
-      - run: npx nx run-many --target=build --all=true
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        name: Deploy Terraforming Mars Companion App
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
-          channelId: live
-          target: tfm-companion
-          projectId: tfm-companion
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        name: Deploy Game Companion App
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
-          channelId: live
-          target: board-game-companion-app
-          projectId: tfm-companion
+      - run: npx nx affected --target=deploy-firebase
+        name: Deploying to Firebase

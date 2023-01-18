@@ -52,6 +52,13 @@
       "options": {
         "lintFilePatterns": ["apps/game-companion/**/*.ts"]
       }
+    },
+    "deploy-firebase": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx firebase deploy --only hosting:board-game-companion-app --project tfm-companion"
+      },
+      "dependsOn": ["build"]
     }
   }
 }
