@@ -1,4 +1,4 @@
-import { ScorePlayerStats } from '@game-companion/core';
+import { ScorePlayerStats } from './score-player-stats.js';
 
 export class GenericScorePlayerStats extends ScorePlayerStats {
   getId(): string {
