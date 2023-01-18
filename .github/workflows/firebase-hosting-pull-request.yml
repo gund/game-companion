@@ -2,17 +2,31 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on PR
-'on': pull_request
+'on':
+  workflow_run:
+    workflows: ['Test']
+    types:
+      - completed
 
 jobs:
   build_and_preview:
-    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    if: "${{ github.event.workflow_run.conclusion == 'success' && github.event.pull_request.head.repo.full_name == github.repository }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm ci && npx nx build tfm-companion --configuration=production
+      - run: npm ci
+      - run: npx nx run-many --target=build --all=true
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        name: Deploy Terraforming Mars Companion App
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
+          target: tfm-companion
+          projectId: tfm-companion
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        name: Deploy Game Companion App
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}'
+          target: board-game-companion-app
           projectId: tfm-companion
