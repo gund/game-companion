@@ -57,8 +57,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx firebase deploy --only hosting:tfm-companion --project tfm-companion"
-      },
-      "dependsOn": ["build"]
+      }
     }
   }
 }

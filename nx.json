@@ -23,6 +23,10 @@
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "deploy-firebase": {
+      "dependsOn": ["build"],
+      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
