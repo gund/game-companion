@@ -1,6 +1,7 @@
 import {
   IncrementalScorePlayerStats,
   IncrementalScorePlayerStatsData,
+  ScoreRestrictionsPlayerStats,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
 import '@game-companion/mdc/button';
@@ -10,6 +11,7 @@ import {
   css,
   customElement,
   html,
+  ifDefined,
   LitElement,
   live,
   property,
@@ -50,6 +52,7 @@ export class IncrementalScorePlayerStatsUpdaterElement extends LitElement {
   @state() protected declare isEditScore: boolean;
   @state() protected declare score: number;
   @state() protected declare incrementScore: number;
+  @state() declare scoreRestrictions: ScoreRestrictionsPlayerStats;
 
   constructor() {
     super();
@@ -64,7 +67,7 @@ export class IncrementalScorePlayerStatsUpdaterElement extends LitElement {
       <div class="block">
         <mdc-text-field
           type="number"
-          label="Score"
+          label=${this.playerStats.getScoreLabel(this.stats)}
           value=${live(this.score)}
           ?readonly=${!this.isEditScore}
           trailingIcon=${this.isEditScore ? 'done' : 'edit'}
@@ -81,6 +84,8 @@ export class IncrementalScorePlayerStatsUpdaterElement extends LitElement {
           label="Change score by"
           value=${live(this.incrementScore)}
           ?disabled=${this.isEditScore}
+          min="${ifDefined(this.scoreRestrictions.min)}"
+          max="${ifDefined(this.scoreRestrictions.max)}"
           @input=${{
             handleEvent: (event: Event) =>
               (this.incrementScore = parseInt(
@@ -105,6 +110,8 @@ export class IncrementalScorePlayerStatsUpdaterElement extends LitElement {
     if (changedProps.has('stats')) {
       this.score = this.playerStats.getFinalScore(this.stats);
     }
+
+    this.scoreRestrictions = this.playerStats.getScoreRestrictions(this.stats);
   }
 
   protected toggleScoreEdit(event: Event) {

@@ -1,11 +1,11 @@
 import { ScorePlayerStats } from './score-player-stats.js';
 
 export class GenericScorePlayerStats extends ScorePlayerStats {
-  getId(): string {
+  override getId(): string {
     return 'generic-score';
   }
 
-  getName(): string {
+  override getName(): string {
     return 'Score';
   }
 }

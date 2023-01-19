@@ -41,16 +41,18 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
 
   protected override render() {
     return html`<gc-num-input
-      label=${this.playerStats.getName()}
+      label=${this.playerStats.getScoreLabel(this.stats)}
       value=${live(this.playerStats.getFinalScore(this.stats))}
       min="${ifDefined(this.scoreRestrictions.min)}"
       max="${ifDefined(this.scoreRestrictions.max)}"
       @input=${this.updateScoreCount}
-    ></gc-num-input>`;
+    >
+      <slot name="hint" slot="hint"></slot>
+    </gc-num-input>`;
   }
 
   protected override willUpdate() {
-    this.scoreRestrictions = this.playerStats.getScoreRestrictions();
+    this.scoreRestrictions = this.playerStats.getScoreRestrictions(this.stats);
   }
 
   protected updateScoreCount(event: Event) {

@@ -9,12 +9,16 @@ export interface VpsPlayerStatsData extends ScorePlayerStatsData {
 }
 
 export class VPsPlayerStats extends ScorePlayerStats {
-  getId(): string {
+  override getId(): string {
     return 'vps';
   }
 
-  getName(): string {
+  override getName(): string {
     return 'Victory Points';
+  }
+
+  override getScoreLabel(): string {
+    return this.getName();
   }
 
   override getFinalScore(stats: VpsPlayerStatsData): number {

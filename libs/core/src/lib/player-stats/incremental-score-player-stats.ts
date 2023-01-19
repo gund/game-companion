@@ -1,30 +1,26 @@
 import { html } from '@game-companion/lit';
 import { PlayerStats, UpdatablePlayerStats } from './player-stats.js';
-import { ScorePlayerStatsData } from './score-player-stats.js';
+import {
+  ScorePlayerStats,
+  ScorePlayerStatsData,
+} from './score-player-stats.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IncrementalScorePlayerStatsData extends ScorePlayerStatsData {}
 
 export class IncrementalScorePlayerStats
+  extends ScorePlayerStats
   implements PlayerStats, UpdatablePlayerStats
 {
-  getId() {
+  override getId() {
     return 'incremental-score';
   }
 
-  getName() {
+  override getName() {
     return 'Incremental Score';
   }
 
-  renderStats(stats: IncrementalScorePlayerStatsData) {
-    return html`${this.getFinalScore(stats)}`;
-  }
-
-  getFinalScore(stats: IncrementalScorePlayerStatsData) {
-    return stats.scoreCount ?? 0;
-  }
-
-  renderUpdateStats(stats: IncrementalScorePlayerStatsData) {
+  override renderUpdateStats(stats: IncrementalScorePlayerStatsData) {
     import('@game-companion/core/incremental-score-player-stats-updater');
 
     return html`<gc-incremental-score-player-stats-updater

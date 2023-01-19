@@ -1,4 +1,4 @@
-import { html } from '@game-companion/lit';
+import { html, ifDefined } from '@game-companion/lit';
 import { PlayerStatsData } from '../player.model.js';
 import { PlayerStats, UpdatablePlayerStats } from './player-stats.js';
 
@@ -11,33 +11,45 @@ export interface ScoreRestrictionsPlayerStats {
   max?: number;
 }
 
-export abstract class ScorePlayerStats
-  implements PlayerStats, UpdatablePlayerStats
-{
-  abstract getId(): string;
-
-  abstract getName(): string;
-
+export class ScorePlayerStats implements PlayerStats, UpdatablePlayerStats {
   protected scoreRestrictions: ScoreRestrictionsPlayerStats = {};
 
-  renderStats(stats: ScorePlayerStatsData) {
+  getId(): string {
+    throw new Error('Method not implemented.');
+  }
+
+  getName(): string {
+    throw new Error('Method not implemented.');
+  }
+
+  renderStats(stats: ScorePlayerStatsData): unknown {
     return html`${this.getFinalScore(stats)}`;
   }
 
-  getFinalScore(stats: ScorePlayerStatsData) {
+  getFinalScore(stats: ScorePlayerStatsData): number {
     return stats.scoreCount ?? 0;
   }
 
-  renderUpdateStats(stats: ScorePlayerStatsData) {
+  renderUpdateStats(stats: ScorePlayerStatsData, slot?: unknown): unknown {
     import('@game-companion/core/score-player-stats-updater');
 
     return html`<gc-score-player-stats-updater
       .stats=${stats}
       .playerStats=${this}
-    ></gc-score-player-stats-updater>`;
+    >
+      ${slot}
+    </gc-score-player-stats-updater>`;
   }
 
-  getScoreRestrictions() {
+  getScoreRestrictions(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    stats: ScorePlayerStatsData
+  ): ScoreRestrictionsPlayerStats {
     return this.scoreRestrictions;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getScoreLabel(stats: ScorePlayerStatsData): string {
+    return 'Score';
   }
 }

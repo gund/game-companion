@@ -1,15 +1,21 @@
-import type {
+import {
   ConfigurablePlayerStats,
   NameablePlayerStats,
+  NamedPlayerStats,
+  NamedPlayerStatsData,
   PlayerStats,
-  PlayerStatsData,
+  ScorePlayerStats,
+  ScorePlayerStatsData,
+  ScoreRestrictionsPlayerStats,
   UpdatablePlayerStats,
 } from '@game-companion/core';
 import { html } from '@game-companion/lit';
 
-export interface CardVPsPlayerStatsData extends PlayerStatsData {
-  cardName: string;
-  scoreCount: number;
+export interface CardVPsPlayerStatsData
+  extends NamedPlayerStatsData,
+    ScorePlayerStatsData {
+  /** @deprecated Use {@link NamedPlayerStatsData.name} instead */
+  cardName?: string;
   vpsRatio: number;
 }
 
@@ -20,6 +26,9 @@ export class CardVPsPlayerStats
     ConfigurablePlayerStats,
     NameablePlayerStats
 {
+  protected namedPlayerStats = new CardVpsNamedPlayerStats();
+  protected scorePlayerStats = new CardVpsScorePlayerStats();
+
   getId(): string {
     return 'card-vps';
   }
@@ -33,7 +42,16 @@ export class CardVPsPlayerStats
   }
 
   renderDisplayName(stats: CardVPsPlayerStatsData) {
-    return html`Card ${stats.cardName}`;
+    // Migrate from cardName to name
+    if (stats.name === undefined) {
+      stats = {
+        ...stats,
+        name: stats.cardName ?? '',
+      };
+      delete stats.cardName;
+    }
+
+    return html`Card ${stats.name}`;
   }
 
   renderVps(stats: CardVPsPlayerStatsData) {
@@ -41,21 +59,44 @@ export class CardVPsPlayerStats
   }
 
   getFinalScore(stats: CardVPsPlayerStatsData): number {
-    return Math.floor(stats.scoreCount / stats.vpsRatio);
+    return Math.floor((stats.scoreCount ?? 0) / stats.vpsRatio);
   }
 
   renderUpdateStats(stats: CardVPsPlayerStatsData) {
-    import('@game-companion/tfm/card-vps-updater');
-
-    return html`<tfm-card-vps-player-stats-updater
-      .data=${stats}
-      .playerStats=${this}
-    ></tfm-card-vps-player-stats-updater>`;
+    return html`${this.scorePlayerStats.renderUpdateStats(stats, this)}`;
   }
 
   renderConfiguration() {
     import('@game-companion/tfm/card-vps-configurator');
 
-    return html`<tfm-card-vps-player-stats-configurator></tfm-card-vps-player-stats-configurator>`;
+    return html`<tfm-card-vps-player-stats-configurator .playerStats=${this}>
+      <span slot="name">${this.namedPlayerStats.renderConfiguration()}</span>
+    </tfm-card-vps-player-stats-configurator>`;
+  }
+}
+
+export class CardVpsNamedPlayerStats extends NamedPlayerStats {
+  override getInputLabel(): string {
+    return 'Card Name';
+  }
+}
+
+export class CardVpsScorePlayerStats extends ScorePlayerStats {
+  override getScoreRestrictions(): ScoreRestrictionsPlayerStats {
+    return { min: 0 };
+  }
+
+  override getScoreLabel(): string {
+    return 'Card Points';
+  }
+
+  override renderUpdateStats(
+    stats: CardVPsPlayerStatsData,
+    playerStats?: CardVPsPlayerStats
+  ) {
+    return html`${super.renderUpdateStats(
+      stats,
+      html`<span slot="hint">${playerStats?.renderVps(stats)}</span>`
+    )}`;
   }
 }

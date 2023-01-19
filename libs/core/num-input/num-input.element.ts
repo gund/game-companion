@@ -3,6 +3,7 @@ import {
   createRef,
   css,
   customElement,
+  getNodesText,
   html,
   ifDefined,
   LitElement,
@@ -66,8 +67,8 @@ export class GcNumInputElement extends LitElement {
   increment() {
     const newValue = parseInt(this.value || '0') + 1;
 
-    if (this.max && newValue > parseInt(this.max)) {
-      return;
+    if (this.max && newValue > parseFloat(this.max)) {
+      return this.updateValue(this.max);
     }
 
     this.updateValue(String(newValue));
@@ -76,8 +77,8 @@ export class GcNumInputElement extends LitElement {
   decrement() {
     const newValue = parseInt(this.value || '0') - 1;
 
-    if (this.min && newValue < parseInt(this.min)) {
-      return;
+    if (this.min && newValue < parseFloat(this.min)) {
+      return this.updateValue(this.min);
     }
 
     this.updateValue(String(newValue));
@@ -118,11 +119,13 @@ export class GcNumInputElement extends LitElement {
           ${ref(this.textFieldRef)}
         ></mdc-text-field>
       </gc-haptic-feedback>
-      <div class="hidden"><slot name="hint"></slot></div>`;
+      <div class="hidden">
+        <slot name="hint"></slot>
+      </div>`;
   }
 
   protected override updated() {
-    setTimeout(() => this.updateHint());
+    this.updateHint();
   }
 
   private updateValue(value: string, skipEvents = false) {
@@ -152,10 +155,7 @@ export class GcNumInputElement extends LitElement {
     }
   }
 
-  private updateHint() {
-    this.hintLabel = this.hintSlot.reduce(
-      (txt, hint) => (txt += hint.textContent),
-      ''
-    );
+  private async updateHint() {
+    this.hintLabel = await getNodesText(this.hintSlot);
   }
 }
