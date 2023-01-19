@@ -33,6 +33,8 @@ jobs:
     needs: main
     if: ${{ needs.main.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: './.firebase-key.json'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -45,7 +47,10 @@ jobs:
         with:
           error-on-no-successful-workflow: true
       - run: npm ci
+      - run: echo '${{ secrets.FIREBASE_KEY }}' >> ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+        name: Authenticate to Firebase
       - run: npx nx affected --target=deploy-firebase
         name: Deploying to Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}
+      - run: rm ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+        name: Cleanup Firebase Authentication
+        if: ${{ always() }}
