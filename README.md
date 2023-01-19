@@ -1,7 +1,10 @@
 # Game Companion Apps
 
 [![Test](https://github.com/gund/game-companion/actions/workflows/test.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/test.yml)
-[![Deploy](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml)
+
+<!-- Deploy workflow inlined until wirkflow_run workflows are supported by NX -->
+<!-- See https://github.com/nrwl/nx/discussions/14485 -->
+<!-- [![Deploy](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/gund/game-companion/actions/workflows/firebase-deploy.yml) -->
 
 > Monorepo for board game companion apps
 

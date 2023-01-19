@@ -27,3 +27,25 @@ jobs:
     uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.8
     with:
       number-of-agents: 3
+
+  deploy:
+    name: Deploy to Firebase
+    needs: main
+    if: ${{ needs.main.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          error-on-no-successful-workflow: true
+      - run: npm ci
+      - run: npx nx affected --target=deploy-firebase
+        name: Deploying to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_COMPANION }}
