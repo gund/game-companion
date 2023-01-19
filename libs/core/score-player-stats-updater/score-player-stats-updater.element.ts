@@ -43,7 +43,6 @@ export class GcScorePlayerStatsUpdaterElement extends LitElement {
     return html`<gc-num-input
       label=${this.playerStats.getName()}
       value=${live(this.playerStats.getFinalScore(this.stats))}
-      required
       min="${ifDefined(this.scoreRestrictions.min)}"
       max="${ifDefined(this.scoreRestrictions.max)}"
       @input=${this.updateScoreCount}

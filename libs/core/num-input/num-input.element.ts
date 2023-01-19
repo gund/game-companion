@@ -45,6 +45,7 @@ export class GcNumInputElement extends LitElement {
   @property() declare label?: string;
   @property() declare min?: string;
   @property() declare max?: string;
+  @property() declare step?: string;
 
   @queryAssignedElements({ slot: 'hint' })
   private declare hintSlot: HTMLElement[];
@@ -103,6 +104,7 @@ export class GcNumInputElement extends LitElement {
           hintPersistent
           min=${ifDefined(this.min)}
           max=${ifDefined(this.max)}
+          step=${ifDefined(this.step)}
           leadingIcon=${this.readonly ? null : 'remove'}
           leadingIconLabel="Decrement"
           trailingIcon=${this.readonly ? null : 'add'}

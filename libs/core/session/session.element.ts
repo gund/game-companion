@@ -1,4 +1,5 @@
 import {
+  isNameablePlayerStats,
   isUpdatablePlayerStats,
   Player,
   PlayerStatsData,
@@ -175,7 +176,7 @@ export class GcSessionElement extends LitElement {
         ${when(
           this.session?.isActive,
           () => html`${player.name}`,
-          () => html`${player.name} - ${this.getFinalPlayerScore(player)}`
+          () => html`${player.name} ${this.getFinalPlayerScore(player)}`
         )}
       </h3>
       <div class="mdc-layout-grid player-stats">
@@ -190,7 +191,7 @@ export class GcSessionElement extends LitElement {
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
                   >
-                    ${this.getPlayerStatsName(ps.id)}
+                    ${this.getPlayerStatsName(ps)}
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 mdc-layout-grid__cell--span-6-desktop"
@@ -277,8 +278,18 @@ export class GcSessionElement extends LitElement {
       .find((ps) => ps.getId() === id);
   }
 
-  private getPlayerStatsName(id: string) {
-    return this.getPlayerStats(id)?.getName() ?? `Unknown(${id})`;
+  private getPlayerStatsName(data: PlayerStatsData) {
+    const playerStats = this.getPlayerStats(data.id);
+
+    if (!playerStats) {
+      return `Unknown(${data.id})`;
+    }
+
+    if (isNameablePlayerStats(playerStats)) {
+      return playerStats.renderDisplayName(data);
+    }
+
+    return playerStats.getName();
   }
 
   private async finishSession() {

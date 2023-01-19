@@ -316,7 +316,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     const needRevalidate = value !== this.inputRef.value?.value;
 
     this.value = value;
-    this.innerText = this.value;
+    this.innerText = this.value || ' ';
     asFormAssociatedInternal(this).getInternals().setFormValue(this.value);
 
     if (!needRevalidate) {

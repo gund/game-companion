@@ -15,6 +15,10 @@ export interface ConfigurablePlayerStats {
   renderConfiguration(): unknown;
 }
 
+export interface NameablePlayerStats {
+  renderDisplayName(stats: PlayerStatsData): unknown;
+}
+
 export class UpdatePlayerStatsDataEvent extends Event {
   static readonly eventName = 'gcUpdateData';
 
@@ -41,5 +45,14 @@ export function isConfigurablePlayerStats(
   return (
     typeof (playerStats as PlayerStats & ConfigurablePlayerStats)
       .renderConfiguration === 'function'
+  );
+}
+
+export function isNameablePlayerStats(
+  playerStats: PlayerStats
+): playerStats is PlayerStats & NameablePlayerStats {
+  return (
+    typeof (playerStats as PlayerStats & NameablePlayerStats)
+      .renderDisplayName === 'function'
   );
 }

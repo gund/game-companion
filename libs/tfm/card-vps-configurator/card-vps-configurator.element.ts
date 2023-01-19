@@ -26,9 +26,10 @@ export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
         <gc-num-input
           label="VP Ratio"
           value=${this.data.vpsRatio}
-          min="1"
+          min="0"
+          step="0.1"
           @input=${this.getUpdateHandler((vpsRatio) => ({
-            vpsRatio: parseInt(vpsRatio),
+            vpsRatio: parseFloat(vpsRatio),
           }))}
         ></gc-num-input>
       </p>
@@ -38,7 +39,7 @@ export class TfmCardVPsPlayerStatsConfiguratorElement extends LitElement {
   private updateData(chunk: Partial<CardVPsPlayerStatsData>) {
     Object.assign(this.data, chunk);
 
-    if (this.data.cardName === '' || this.data.vpsRatio < 1) {
+    if (this.data.cardName === '' || this.data.vpsRatio < 0.1) {
       this.dispatchEvent(new UpdatePlayerStatsDataEvent());
     } else {
       this.dispatchEvent(new UpdatePlayerStatsDataEvent(this.data));

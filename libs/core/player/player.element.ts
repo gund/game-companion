@@ -1,4 +1,5 @@
 import {
+  isNameablePlayerStats,
   Player,
   PlayerStatsData,
   queryRootElement,
@@ -173,7 +174,7 @@ export class GcPlayerElement extends LitElement {
                   this.updatePlayerStats(ps, e.data as object),
               }}
             >
-              <h3>${this.getPlayerStatsName(ps.id)}</h3>
+              <div>${this.getPlayerStatsName(ps)}</div>
               <div>${this.renderPlayerStats(ps)}</div>
               <mdc-button
                 slot="actions"
@@ -270,8 +271,18 @@ export class GcPlayerElement extends LitElement {
       .find((ps) => ps.getId() === id);
   }
 
-  private getPlayerStatsName(id: string) {
-    return this.getPlayerStats(id)?.getName() ?? `Unknown(${id})`;
+  private getPlayerStatsName(data: PlayerStatsData) {
+    const playerStats = this.getPlayerStats(data.id);
+
+    if (!playerStats) {
+      return `Unknown(${data.id})`;
+    }
+
+    if (isNameablePlayerStats(playerStats)) {
+      return playerStats.renderDisplayName(data);
+    }
+
+    return html`${playerStats.getName()}`;
   }
 
   private async updatePlayerStats(playerStats: PlayerStatsData, data?: object) {

@@ -33,7 +33,7 @@ export class TfmCardVPsPlayerStatsUpdaterElement extends LitElement {
 
   protected override render() {
     return html`<gc-num-input
-      label=${this.data?.cardName}
+      label="Card Points"
       value=${this.data?.scoreCount}
       min="0"
       @input=${{

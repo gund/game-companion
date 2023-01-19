@@ -1,5 +1,6 @@
 import type {
   ConfigurablePlayerStats,
+  NameablePlayerStats,
   PlayerStats,
   PlayerStatsData,
   UpdatablePlayerStats,
@@ -13,7 +14,11 @@ export interface CardVPsPlayerStatsData extends PlayerStatsData {
 }
 
 export class CardVPsPlayerStats
-  implements PlayerStats, UpdatablePlayerStats, ConfigurablePlayerStats
+  implements
+    PlayerStats,
+    UpdatablePlayerStats,
+    ConfigurablePlayerStats,
+    NameablePlayerStats
 {
   getId(): string {
     return 'card-vps';
@@ -24,8 +29,11 @@ export class CardVPsPlayerStats
   }
 
   renderStats(stats: CardVPsPlayerStatsData) {
-    return html`<b>${stats.cardName}</b> ${stats.scoreCount ?? 0} -
-      ${this.renderVps(stats)}`;
+    return html`${stats.scoreCount ?? 0} - ${this.renderVps(stats)}`;
+  }
+
+  renderDisplayName(stats: CardVPsPlayerStatsData) {
+    return html`Card ${stats.cardName}`;
   }
 
   renderVps(stats: CardVPsPlayerStatsData) {

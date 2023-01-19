@@ -1,5 +1,6 @@
-import type { Player, PlayerStatsData } from '@game-companion/core';
 import {
+  Player,
+  PlayerStatsData,
   PlayerStatsRegistry,
   queryRootElement,
   SessionsService,
@@ -145,7 +146,7 @@ export class GcNewSessionElement extends LitElement {
                             readonly
                             class="global-stats-field"
                             label="Global Player Stats"
-                            value=${this.getPlayerStatsName(ps.id)}
+                            value=${this.getPlayerStatsName(ps)}
                             trailingIcon="delete"
                             trailingIconLabel="Remove Global Stat"
                             @mdcTextFieldIconClick:trailing=${{
@@ -233,13 +234,16 @@ export class GcNewSessionElement extends LitElement {
     this.globalStats = this.globalStats.filter((ps) => ps !== data);
   }
 
-  private getPlayerStatsName(id: string) {
-    return (
-      this.playerStatsRegistry
-        .getAvailable()
-        .find((ps) => ps.getId() === id)
-        ?.getName() ?? `Unknown(${id})`
-    );
+  private getPlayerStatsName(data: PlayerStatsData) {
+    const playerStats = this.playerStatsRegistry
+      .getAvailable()
+      .find((ps) => ps.getId() === data.id);
+
+    if (!playerStats) {
+      return `Unknown(${data.id})`;
+    }
+
+    return playerStats.getName();
   }
 
   private async handleSubmit(e: SubmitEvent) {
