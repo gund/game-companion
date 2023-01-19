@@ -1,4 +1,4 @@
-import { html, ifDefined } from '@game-companion/lit';
+import { html } from '@game-companion/lit';
 import { PlayerStatsData } from '../player.model.js';
 import { PlayerStats, UpdatablePlayerStats } from './player-stats.js';
 

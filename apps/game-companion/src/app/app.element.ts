@@ -2,6 +2,7 @@ import {
   mixinRootElement,
   GenericScorePlayerStats,
   IncrementalScorePlayerStats,
+  NamedScorePlayerStats,
 } from '@game-companion/core';
 import '@game-companion/core/update-notification';
 import { customElement, html, state } from '@game-companion/lit';
@@ -19,6 +20,7 @@ export class GameAppElement extends mixinRootElement({
   playerStats: [
     new GenericScorePlayerStats(),
     new IncrementalScorePlayerStats(),
+    new NamedScorePlayerStats(),
   ],
 }) {
   static readonly selector = 'game-companion-root';
