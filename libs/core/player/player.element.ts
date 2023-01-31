@@ -20,12 +20,15 @@ import {
   property,
   PropertyValueMap,
   ref,
-  render,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
-import { ConfirmDialogService, DialogService } from '@game-companion/mdc';
+import {
+  ConfirmDialogService,
+  DialogService,
+  SnackbarService,
+} from '@game-companion/mdc';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/card';
 import '@game-companion/mdc/dialog';
@@ -80,6 +83,7 @@ export class GcPlayerElement extends LitElement {
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
   private confirmDialogService = new ConfirmDialogService(new DialogService());
+  private snackbarService = new SnackbarService();
 
   constructor() {
     super();
@@ -193,7 +197,25 @@ export class GcPlayerElement extends LitElement {
               </mdc-button>
             </mdc-card>
           </div>`
-        )}`
+        )}`,
+      () => html`<div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      >
+        <h3>Player has no stats!</h3>
+        <mdc-button
+          type="link"
+          href="#"
+          @click=${{
+            handleEvent: (e: Event) => {
+              e.preventDefault();
+              this.playerStatsDialogRef.value?.open();
+            },
+          }}
+        >
+          Add Player Stats
+        </mdc-button>
+        to start tracking score.
+      </div>`
     )}`;
   }
 
@@ -298,12 +320,19 @@ export class GcPlayerElement extends LitElement {
       ps === playerStats ? { ...ps, ...data } : ps
     );
 
-    this.player = await this.sessionsService.updatePlayer(
-      this.sId,
-      this.player
-    );
+    try {
+      this.player = await this.sessionsService.updatePlayer(
+        this.sId,
+        this.player
+      );
 
-    this.requestUpdate();
+      this.requestUpdate();
+    } catch (e) {
+      await this.snackbarService.open({
+        content: `Failed to update Player: ${String(e)}`,
+        hasDismiss: true,
+      });
+    }
   }
 
   private setCurrentPlayerStats(event: AddPlayerStatsEvent) {
@@ -314,11 +343,28 @@ export class GcPlayerElement extends LitElement {
     if (!this.player || !this.currentPlayerStats) {
       return;
     }
+    const playerStats = this.currentPlayerStats;
 
-    this.player.stats = [...this.player.stats, this.currentPlayerStats];
+    this.player.stats = [...this.player.stats, playerStats];
     this.requestUpdate();
 
-    await this.sessionsService.updatePlayer(this.sId, this.player);
+    try {
+      await this.sessionsService.updatePlayer(this.sId, this.player);
+      await this.snackbarService.open({
+        content: 'Player Stats added!',
+        hasDismiss: true,
+      });
+    } catch (e) {
+      this.player.stats = this.player.stats.filter(
+        (stats) => stats !== playerStats
+      );
+      this.requestUpdate();
+
+      await this.snackbarService.open({
+        content: `Failed to add Player Stats: ${String(e)}`,
+        hasDismiss: true,
+      });
+    }
   }
 
   private async confirmRemovePlayerStats(data: PlayerStatsData) {
@@ -332,7 +378,16 @@ export class GcPlayerElement extends LitElement {
 
       if (isConfirmed) {
         await this.removePlayerStats(data);
+        await this.snackbarService.open({
+          content: 'Removed Player Stats!',
+          hasDismiss: true,
+        });
       }
+    } catch (e) {
+      await this.snackbarService.open({
+        content: `Unable to remove Player Stats: ${String(e)}`,
+        hasDismiss: true,
+      });
     } finally {
       this.isRemovingPlayerStats = false;
     }

@@ -3,26 +3,29 @@ import {
   isUpdatablePlayerStats,
   Player,
   PlayerStatsData,
+  PlayerStatsRegistry,
   Session,
+  SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
-import { PlayerStatsRegistry, SessionsService } from '@game-companion/core';
 import {
-  createRef,
   css,
   customElement,
   html,
   LitElement,
   property,
   PropertyValueMap,
-  ref,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
+import {
+  ConfirmDialogService,
+  DialogService,
+  SnackbarService,
+} from '@game-companion/mdc';
 import '@game-companion/mdc/card';
 import '@game-companion/mdc/dialog';
-import { MdcDialogElement } from '@game-companion/mdc/dialog';
 import '@game-companion/mdc/icon-button';
 import { layoutStyles } from '@game-companion/mdc/layout';
 import '@game-companion/mdc/top-app-bar';
@@ -53,12 +56,11 @@ export class GcSessionElement extends LitElement {
   @state() private declare isEditMode: boolean;
   @state() private declare isFinishingSession: boolean;
   @state() private declare loadingError?: string;
-  @state() private declare finishSessionError?: string;
-
-  private finishSessionDialogRef = createRef<MdcDialogElement>();
 
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
+  private confirmDialogService = new ConfirmDialogService(new DialogService());
+  private snackbarService = new SnackbarService();
 
   constructor() {
     super();
@@ -70,80 +72,55 @@ export class GcSessionElement extends LitElement {
 
   protected override render() {
     return html`<mdc-top-app-bar appearance="fixed">
-        <span slot="title">
-          ${this.session?.isActive ? 'Active' : 'Inactive'} Session
-        </span>
-        <mdc-icon-button
-          slot="menu"
-          type="link"
-          href="/"
-          class="mdc-top-app-bar__navigation-icon"
-          icon="arrow_back"
-          title="Back"
-          aria-label="Back"
-        ></mdc-icon-button>
-        ${when(
-          this.session?.isActive,
-          () =>
-            html`
-              <mdc-icon-button
-                slot="toolbar"
-                type="button"
-                class="mdc-top-app-bar__navigation-icon"
-                icon="${this.isEditMode ? 'edit_off' : 'edit'}"
-                title="Toggle edit mode"
-                aria-label="Toggle edit mode"
-                @click=${{
-                  handleEvent: () => (this.isEditMode = !this.isEditMode),
-                }}
-              ></mdc-icon-button>
-              <mdc-icon-button
-                slot="toolbar"
-                type="button"
-                class="mdc-top-app-bar__navigation-icon"
-                icon="stop_circle"
-                title="Finish session"
-                aria-label="Finish session"
-                @click=${{
-                  handleEvent: () => this.finishSessionDialogRef.value?.open(),
-                }}
-              ></mdc-icon-button>
-            `
-        )}
-        <div class="mdc-layout-grid">
-          <div class="mdc-layout-grid__inner">
-            ${when(
-              this.session,
-              () => this.renderSession(this.session!),
-              () => this.renderFallback()
-            )}
-          </div>
+      <span slot="title">
+        ${this.session?.isActive ? 'Active' : 'Inactive'} Session
+      </span>
+      <mdc-icon-button
+        slot="menu"
+        type="link"
+        href="/"
+        class="mdc-top-app-bar__navigation-icon"
+        icon="arrow_back"
+        title="Back"
+        aria-label="Back"
+      ></mdc-icon-button>
+      ${when(
+        this.session?.isActive,
+        () =>
+          html`
+            <mdc-icon-button
+              slot="toolbar"
+              type="button"
+              class="mdc-top-app-bar__navigation-icon"
+              icon="${this.isEditMode ? 'edit_off' : 'edit'}"
+              title="Toggle edit mode"
+              aria-label="Toggle edit mode"
+              @click=${{
+                handleEvent: () => (this.isEditMode = !this.isEditMode),
+              }}
+            ></mdc-icon-button>
+            <mdc-icon-button
+              slot="toolbar"
+              type="button"
+              class="mdc-top-app-bar__navigation-icon"
+              icon="stop_circle"
+              title="Finish session"
+              aria-label="Finish session"
+              ?disabled=${this.isFinishingSession}
+              @click=${this.finishSession}
+            ></mdc-icon-button>
+          `
+      )}
+      <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          ${when(
+            this.session,
+            () => this.renderSession(this.session!),
+            () => this.renderFallback()
+          )}
         </div>
-      </mdc-top-app-bar>
-      <mdc-dialog ${ref(this.finishSessionDialogRef)}>
-        <span slot="title">Finish Session?</span>
-        Are you sure you want to finish this session?<br />
-        You will not be able to modify any player stats anymore.
-        ${when(
-          this.finishSessionError,
-          () => html`<p>${this.finishSessionError}</p>`
-        )}
-        <mdc-button
-          slot="actions"
-          data-mdc-dialog-action="close"
-          data-mdc-dialog-button-default
-        >
-          Cancel
-        </mdc-button>
-        <mdc-button
-          slot="actions"
-          raised
-          ?disabled=${this.isFinishingSession}
-          @click=${this.finishSession}
-        >
-          ${this.isFinishingSession ? 'Finishing...' : 'Finish'}
-        </mdc-button>
-      </mdc-dialog>`;
+      </div>
+    </mdc-top-app-bar>`;
   }
 
   private renderSession(session: Session) {
@@ -294,13 +271,23 @@ export class GcSessionElement extends LitElement {
 
   private async finishSession() {
     this.isFinishingSession = true;
-    this.finishSessionError = undefined;
 
     try {
-      this.session = await this.sessionsService.finishSesssion(this.sId!);
-      this.finishSessionDialogRef.value?.close();
+      const isConfirmed = await this.confirmDialogService.confirm({
+        title: 'Finish Session?',
+        content: html`Are you sure you want to finish this session?<br />
+          You will not be able to modify any player stats anymore.`,
+        yesText: 'Finish',
+      });
+
+      if (isConfirmed) {
+        this.session = await this.sessionsService.finishSesssion(this.sId!);
+      }
     } catch (e) {
-      this.finishSessionError = String(e);
+      await this.snackbarService.open({
+        content: `Failed to finish session: ${String(e)}`,
+        hasDismiss: true,
+      });
     } finally {
       this.isFinishingSession = false;
     }
@@ -327,15 +314,22 @@ export class GcSessionElement extends LitElement {
       ps === playerStats ? { ...ps, ...data } : ps
     );
 
-    const updatedPlayer = await this.sessionsService.updatePlayer(
-      this.session.id,
-      player
-    );
+    try {
+      const updatedPlayer = await this.sessionsService.updatePlayer(
+        this.session.id,
+        player
+      );
 
-    this.session.players = this.session.players.map((p) =>
-      p.id === player.id ? updatedPlayer : p
-    );
+      this.session.players = this.session.players.map((p) =>
+        p.id === player.id ? updatedPlayer : p
+      );
 
-    this.requestUpdate();
+      this.requestUpdate();
+    } catch (e) {
+      await this.snackbarService.open({
+        content: `Failed to update Player ${player.name}: ${String(e)}`,
+        hasDismiss: true,
+      });
+    }
   }
 }

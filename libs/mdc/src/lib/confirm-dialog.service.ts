@@ -33,7 +33,7 @@ export class ConfirmDialogService {
 
     return new Promise<boolean>((resolve) =>
       dialogRef
-        .getDialogElement()
+        .getElement()
         .addEventListener(
           'MDCDialog:closing',
           ((event: MDCDialogCloseEvent) =>

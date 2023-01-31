@@ -2,3 +2,7 @@
 
 @import url('@material/typography/dist/mdc.typography.min.css');
 @import url('./reset.css');
+
+:not(:defined) {
+  display: none;
+}

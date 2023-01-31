@@ -93,7 +93,10 @@ export class MdcSnackbarElement extends LitElement {
   protected override render() {
     return html`<aside
       class="mdc-snackbar ${classMap(this.getClassMap())}"
-      @MDCSnackbar:closed=${this.handleClosed}
+      @MDCSnackbar:opening=${this.handleOpened}
+      @MDCSnackbar:closing=${this.handleClosed}
+      @MDCSnackbar:opened=${this.syncEvent}
+      @MDCSnackbar:closed=${this.syncEvent}
       ${ref(this.initSnackbar)}
     >
       <div class="mdc-snackbar__surface" aria-relevant="additions">
@@ -204,7 +207,28 @@ export class MdcSnackbarElement extends LitElement {
     this.leadingMql = undefined;
   }
 
-  protected handleClosed() {
+  protected handleOpened(event: CustomEvent) {
+    this.isOpen = true;
+    this.syncEvent(event);
+  }
+
+  protected handleClosed(event: CustomEvent) {
     this.isOpen = false;
+    this.syncEvent(event);
+  }
+
+  protected syncEvent(event: CustomEvent) {
+    const newEvent = new CustomEvent(event.type, {
+      detail: event.detail,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    this.dispatchEvent(newEvent);
+
+    if (newEvent.defaultPrevented) {
+      event.preventDefault();
+    }
   }
 }

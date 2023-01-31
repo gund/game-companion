@@ -26,7 +26,7 @@ export class DialogService {
             options.title,
             () => html`<span slot="title">${options.title}</span>`
           )}
-          ${when(options.content, () => html`${options.content}`)}
+          ${options.content}
         </mdc-dialog>
       `,
       dialogContainer
@@ -56,45 +56,6 @@ export class DialogService {
     );
     this.openedDialogs.clear();
   }
-
-  protected setElementContent(
-    element: Element,
-    content: string | Node | Node[]
-  ) {
-    if (typeof content === 'string') {
-      element.textContent = content;
-    } else if (Array.isArray(content)) {
-      element.append(...content);
-    } else {
-      element.appendChild(content);
-    }
-  }
-}
-
-export class SimpleDialogRef implements DialogRef {
-  constructor(
-    protected dialogElem: MdcDialogElement,
-    protected onClose: () => void
-  ) {
-    this.dialogElem.addEventListener(
-      'MDCDialog:closed',
-      () => this.handleClosed(),
-      { once: true }
-    );
-  }
-
-  getDialogElement(): MdcDialogElement {
-    return this.dialogElem;
-  }
-
-  async close(action?: string) {
-    this.dialogElem.close(action);
-  }
-
-  protected handleClosed() {
-    this.dialogElem.remove();
-    this.onClose();
-  }
 }
 
 export interface DialogServiceConfig {
@@ -109,6 +70,32 @@ export interface OpenDialogOptions {
 }
 
 export interface DialogRef {
-  getDialogElement(): MdcDialogElement;
+  getElement(): MdcDialogElement;
   close(action?: string): Promise<void>;
+}
+
+export class SimpleDialogRef implements DialogRef {
+  constructor(
+    protected dialogElem: MdcDialogElement,
+    protected onClose: () => void
+  ) {
+    this.dialogElem.addEventListener(
+      'MDCDialog:closed',
+      () => this.handleClosed(),
+      { once: true }
+    );
+  }
+
+  getElement(): MdcDialogElement {
+    return this.dialogElem;
+  }
+
+  async close(action?: string) {
+    this.dialogElem.close(action);
+  }
+
+  protected handleClosed() {
+    this.dialogElem.remove();
+    this.onClose();
+  }
 }
