@@ -1,13 +1,11 @@
 import {
   isNameablePlayerStats,
+  isUpdatablePlayerStats,
   Player,
   PlayerStatsData,
+  PlayerStatsRegistry,
   queryRootElement,
   Session,
-} from '@game-companion/core';
-import {
-  isUpdatablePlayerStats,
-  PlayerStatsRegistry,
   SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
@@ -22,10 +20,12 @@ import {
   property,
   PropertyValueMap,
   ref,
+  render,
   repeat,
   state,
   when,
 } from '@game-companion/lit';
+import { ConfirmDialogService, DialogService } from '@game-companion/mdc';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/card';
 import '@game-companion/mdc/dialog';
@@ -68,9 +68,10 @@ export class GcPlayerElement extends LitElement {
   @property() declare sId: string;
   @property() declare pId: string;
 
+  @state() private declare isLoading: boolean;
+  @state() private declare isRemovingPlayerStats: boolean;
   @state() private declare session?: Session;
   @state() private declare player?: Player;
-  @state() private declare isLoading: boolean;
   @state() private declare loadingError?: string;
   @state() private declare currentPlayerStats?: PlayerStatsData;
 
@@ -78,11 +79,13 @@ export class GcPlayerElement extends LitElement {
 
   private sessionsService = new SessionsService();
   private playerStatsRegistry = new PlayerStatsRegistry();
+  private confirmDialogService = new ConfirmDialogService(new DialogService());
 
   constructor() {
     super();
 
     this.isLoading = false;
+    this.isRemovingPlayerStats = false;
   }
 
   protected override render() {
@@ -181,8 +184,9 @@ export class GcPlayerElement extends LitElement {
                 type="button"
                 icon="delete"
                 outlined
+                ?disabled=${this.isRemovingPlayerStats}
                 @click=${{
-                  handleEvent: () => this.removePlayerStats(ps),
+                  handleEvent: () => this.confirmRemovePlayerStats(ps),
                 }}
               >
                 Remove Stats
@@ -315,6 +319,23 @@ export class GcPlayerElement extends LitElement {
     this.requestUpdate();
 
     await this.sessionsService.updatePlayer(this.sId, this.player);
+  }
+
+  private async confirmRemovePlayerStats(data: PlayerStatsData) {
+    try {
+      this.isRemovingPlayerStats = true;
+
+      const isConfirmed = await this.confirmDialogService.confirm({
+        title: 'Are you sure you want to remove Player Stats?',
+        content: html`Player Stats name: ${this.getPlayerStatsName(data)}`,
+      });
+
+      if (isConfirmed) {
+        await this.removePlayerStats(data);
+      }
+    } finally {
+      this.isRemovingPlayerStats = false;
+    }
   }
 
   private async removePlayerStats(data: PlayerStatsData) {

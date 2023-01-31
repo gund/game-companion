@@ -101,6 +101,8 @@ export class MdcDialogElement extends LitElement {
       class="mdc-dialog ${classMap(this.getDialogClassMap())}"
       @MDCDialog:opening=${this.syncOpen}
       @MDCDialog:closing=${this.syncOpen}
+      @MDCDialog:opened=${this.replayEvent}
+      @MDCDialog:closed=${this.replayEvent}
       ${ref(this.initDialog)}
     >
       <div class="mdc-dialog__container">
@@ -199,7 +201,24 @@ export class MdcDialogElement extends LitElement {
     };
   }
 
-  protected syncOpen() {
+  protected syncOpen(event: CustomEvent) {
     this.isOpen = this.dialog?.isOpen ?? false;
+
+    this.replayEvent(event);
+  }
+
+  protected replayEvent(event: CustomEvent) {
+    const newEvent = new CustomEvent(event.type, {
+      detail: event.detail,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    this.dispatchEvent(newEvent);
+
+    if (newEvent.defaultPrevented) {
+      event.preventDefault();
+    }
   }
 }
