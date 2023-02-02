@@ -26,8 +26,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@game-companion/context": ["libs/context/src/index.ts"],
-      "@game-companion/context/*": ["libs/context/*/index.ts"],
+      "@game-companion/context": ["libs/context/src/lib/index.ts"],
+      "@game-companion/context/*": ["libs/context/src/*/index.ts"],
       "@game-companion/core": ["libs/core/src/lib/index.ts"],
       "@game-companion/core/*": ["libs/core/src/*/index.ts"],
       "@game-companion/lit": ["libs/lit/src/index.ts"],

@@ -5,7 +5,6 @@ import {
   ScorePlayerStatsData,
 } from './score-player-stats.js';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IncrementalScorePlayerStatsData extends ScorePlayerStatsData {}
 
 export class IncrementalScorePlayerStats
