@@ -1,8 +1,10 @@
 import {
   IncrementalScorePlayerStats,
+  UpdatePlayerStatsDataEvent,
+} from '@game-companion/core';
+import type {
   IncrementalScorePlayerStatsData,
   ScoreRestrictionsPlayerStats,
-  UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
 import '@game-companion/mdc/button';
 import '@game-companion/core/num-input';

@@ -1,4 +1,3 @@
-import { Router } from '@lit-labs/router';
 import { LitElement } from 'lit';
 import { NavigatableRouter } from './navigatable-router.js';
 import type { PlayerStats } from './player-stats/index.js';

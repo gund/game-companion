@@ -1,4 +1,6 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import checker from 'vite-plugin-checker';
 import { VitePWA } from 'vite-plugin-pwa';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
@@ -9,8 +11,9 @@ export default defineConfig({
   },
 
   plugins: [
-    viteTsConfigPaths({
-      root: '../../',
+    viteTsConfigPaths({ root: '../../' }),
+    checker({
+      typescript: { tsconfigPath: resolve(__dirname, 'tsconfig.app.json') },
     }),
     VitePWA({
       devOptions: { enabled: false, type: 'module' },
@@ -21,8 +24,8 @@ export default defineConfig({
         name: 'Game Companion App',
         short_name: 'Game Companion',
         description: 'Game Companion App',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#5b217f',
+        background_color: '#5b217f',
         display: 'standalone',
         orientation: 'portrait-primary',
         icons: [

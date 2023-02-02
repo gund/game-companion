@@ -2,21 +2,32 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
+    "baseUrl": ".",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "NodeNext",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "noEmitHelpers": true,
+    "strict": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noImplicitOverride": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "forceConsistentCasingInFileNames": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@game-companion/context": ["libs/context/src/index.ts"],
+      "@game-companion/context/*": ["libs/context/*/index.ts"],
       "@game-companion/core": ["libs/core/src/index.ts"],
       "@game-companion/core/*": ["libs/core/*/index.ts"],
       "@game-companion/lit": ["libs/lit/src/index.ts"],
@@ -26,5 +37,5 @@
       "@game-companion/tfm/*": ["libs/tfm/*/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp", "dist"]
 }

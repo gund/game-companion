@@ -1,14 +1,12 @@
 import {
   isNameablePlayerStats,
   isUpdatablePlayerStats,
-  Player,
-  PlayerStatsData,
   PlayerStatsRegistry,
   queryRootElement,
-  Session,
   SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
+import type { Session, Player, PlayerStatsData } from '@game-companion/core';
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {

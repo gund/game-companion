@@ -1,10 +1,10 @@
 import {
   Player,
-  PlayerStatsData,
   PlayerStatsRegistry,
   queryRootElement,
   SessionsService,
 } from '@game-companion/core';
+import type { PlayerStatsData } from '@game-companion/core';
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {

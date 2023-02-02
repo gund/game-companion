@@ -4,10 +4,10 @@ import {
   Player,
   PlayerStatsData,
   PlayerStatsRegistry,
-  Session,
   SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
+import type { Session } from '@game-companion/core';
 import {
   css,
   customElement,

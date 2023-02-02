@@ -1,16 +1,19 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
+import checker from 'vite-plugin-checker';
 import { VitePWA } from 'vite-plugin-pwa';
+import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   server: {
-    port: 4200,
+    port: 4300,
     host: 'localhost',
   },
 
   plugins: [
-    viteTsConfigPaths({
-      root: '../../',
+    viteTsConfigPaths({ root: '../../' }),
+    checker({
+      typescript: { tsconfigPath: resolve(__dirname, 'tsconfig.app.json') },
     }),
     VitePWA({
       devOptions: { enabled: false, type: 'module' },
