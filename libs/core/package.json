@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",
-  "types": "./core/src/index.d.ts",
+  "types": "./core/src/lib/index.d.ts",
   "dependencies": {
     "@game-companion/lit": "^0.0.1",
     "@game-companion/mdc": "^0.0.1",
@@ -16,12 +16,12 @@
     ".": {
       "main": "./index.cjs",
       "module": "./index.js",
-      "types": "./core/src/index.d.ts"
+      "types": "./core/src/lib/index.d.ts"
     },
     "./*": {
       "main": "./*.cjs",
       "module": "./*.js",
-      "types": "./core/*/elements.d.ts"
+      "types": "./core/src/*/index.d.ts"
     }
   }
 }

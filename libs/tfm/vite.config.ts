@@ -5,10 +5,10 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 import dts from 'vite-plugin-dts';
 import { join } from 'path';
 
-const entries = glob.sync('./*/index.ts', { cwd: __dirname });
+const entries = glob.sync('./src/*/index.ts', { cwd: __dirname });
 const entriesObj = entries.reduce((obj, entry) => {
-  const [part] = entry.split('/');
-  const name = part === 'src' ? 'index' : part;
+  const [, , libName] = entry.split('/');
+  const name = libName === 'lib' ? 'index' : libName;
   obj[name] = entry;
   return obj;
 }, {} as Record<string, string>);
