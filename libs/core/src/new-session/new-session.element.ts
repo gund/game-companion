@@ -132,16 +132,16 @@ export class GcNewSessionElement extends LitElement {
                           value=${p.name}
                           leadingIcon="person"
                           trailingIcon=${ifDefined(
-                            i > 0 ? 'person_remove' : null
+                            i > 0 ? 'person_remove' : null,
                           )}
                           trailingIconLabel=${ifDefined(
-                            i > 0 ? 'Remove player' : null
+                            i > 0 ? 'Remove player' : null,
                           )}
                           @mdcTextFieldIconClick:trailing=${{
                             handleEvent: () => this.removePlayer(p),
                           }}
                         >
-                        </mdc-text-field>`
+                        </mdc-text-field>`,
                     )}
                   </div>
                   <div
@@ -164,9 +164,9 @@ export class GcNewSessionElement extends LitElement {
                             @mdcTextFieldIconClick:trailing=${{
                               handleEvent: () => this.removeGlobalStats(ps),
                             }}
-                          ></mdc-text-field>`
+                          ></mdc-text-field>`,
                         )}`,
-                      () => html`<p>No global stats added!</p>`
+                      () => html`<p>No global stats added!</p>`,
                     )}
                   </div>
                   <div
@@ -209,7 +209,7 @@ export class GcNewSessionElement extends LitElement {
       id: this.sessionsService.genId(),
       name: '',
       stats: [],
-    }
+    },
   ) {
     this.players = [...this.players, player];
     return player;
@@ -225,7 +225,7 @@ export class GcNewSessionElement extends LitElement {
         (player.stats = [
           ...this.globalStats.map((ps) => ({ ...ps })),
           ...player.stats,
-        ])
+        ]),
     );
     return this.sessionsService.createSession({ players: this.players });
   }

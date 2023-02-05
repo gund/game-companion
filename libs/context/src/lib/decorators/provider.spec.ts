@@ -66,7 +66,7 @@ describe('@contextProvider()', () => {
     const instance = new Test();
 
     expect(Test.prototype).toEqual(
-      expect.objectContaining({ someMethod: expect.any(Function) })
+      expect.objectContaining({ someMethod: expect.any(Function) }),
     );
     expect(instance).toBeInstanceOf(Test);
   });
@@ -97,7 +97,7 @@ describe('@contextProvider()', () => {
     const instance = new Test();
 
     expect(
-      Object.keys(Object.getPrototypeOf(Object.getPrototypeOf(instance)))
+      Object.keys(Object.getPrototypeOf(Object.getPrototypeOf(instance))),
     ).toEqual(expect.arrayContaining(['prop1', 'prop2']));
   });
 
@@ -213,7 +213,7 @@ describe('@contextProvider()', () => {
       instance.prop = 'updated-value';
 
       expect(instance.prop).toBe('initial-value');
-      expect(provideSpy).toHaveBeenCalledTimes(2);
+      expect(provideSpy).toHaveBeenCalledTimes(1);
       expect(provideSpy).toHaveBeenCalledWith('key', 'initial-value');
       expect(provideSpy).not.toHaveBeenCalledWith('key', 'updated-value');
     });

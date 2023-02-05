@@ -142,7 +142,7 @@ export class GcPlayerElement extends LitElement {
               this.player,
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               () => this.renderPlayer(this.player!),
-              () => this.renderFallback()
+              () => this.renderFallback(),
             )}
           </div>
         </div>
@@ -202,7 +202,7 @@ export class GcPlayerElement extends LitElement {
                 Remove Stats
               </mdc-button>
             </mdc-card>
-          </div>`
+          </div>`,
         )}`,
       () => html`<div
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
@@ -221,7 +221,7 @@ export class GcPlayerElement extends LitElement {
           Add Player Stats
         </mdc-button>
         to start tracking score.
-      </div>`
+      </div>`,
     )}`;
   }
 
@@ -246,13 +246,13 @@ export class GcPlayerElement extends LitElement {
       ${when(
         this.isLoading,
         () => html`Loading Player...`,
-        () => html`<b>Invalid Player!</b> ${this.loadingError}`
+        () => html`<b>Invalid Player!</b> ${this.loadingError}`,
       )}
     </div>`;
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<GcPlayerElement>
+    changedProps: PropertyValueMap<GcPlayerElement>,
   ) {
     if (changedProps.has('sId')) {
       this.loadSession();
@@ -292,7 +292,7 @@ export class GcPlayerElement extends LitElement {
 
     if (!this.player) {
       this.loadingError = String(
-        new Error(`No Player with Id '${this.pId}' was found in this session!`)
+        new Error(`No Player with Id '${this.pId}' was found in this session!`),
       );
     }
   }
@@ -323,13 +323,13 @@ export class GcPlayerElement extends LitElement {
     }
 
     this.player.stats = this.player.stats.map((ps) =>
-      ps === playerStats ? { ...ps, ...data } : ps
+      ps === playerStats ? { ...ps, ...data } : ps,
     );
 
     try {
       this.player = await this.sessionsService.updatePlayer(
         this.sId,
-        this.player
+        this.player,
       );
 
       this.requestUpdate();
@@ -362,7 +362,7 @@ export class GcPlayerElement extends LitElement {
       });
     } catch (e) {
       this.player.stats = this.player.stats.filter(
-        (stats) => stats !== playerStats
+        (stats) => stats !== playerStats,
       );
       this.requestUpdate();
 
@@ -425,7 +425,7 @@ export class GcPlayerElement extends LitElement {
 
     const currPlayerIdx = this.session.players.findIndex(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (p) => p.id === this.player!.id
+      (p) => p.id === this.player!.id,
     );
 
     if (currPlayerIdx === -1) {
@@ -447,7 +447,7 @@ export class GcPlayerElement extends LitElement {
     }
 
     this.router?.navigateTo(
-      `/session/${this.session.id}/player/${nextPlayer.id}`
+      `/session/${this.session.id}/player/${nextPlayer.id}`,
     );
   }
 }

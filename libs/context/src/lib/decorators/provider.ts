@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContextProvider } from '../context-provider.js';
+import {
+  ContextProvider,
+  ContextProviderOptions,
+} from '../context-provider.js';
 import { Type } from '../type.js';
 import {
   collectPropContext,
@@ -9,29 +12,31 @@ import {
 } from './metadata.js';
 
 export function contextProvider(
-  options?: ContextProviderClassOptions
+  options?: ContextProviderClassOptions,
 ): <T extends Type<EventTarget>>(target: T) => void | T;
 export function contextProvider(
-  key: unknown
+  key: unknown,
+  options?: ContextProviderPropOptions,
 ): (
   target: Object,
   prop?: string | symbol,
-  descriptor?: PropertyDescriptor
+  descriptor?: PropertyDescriptor,
 ) => void;
 export function contextProvider(
-  keyOrClassOptions?: unknown | ContextProviderClassOptions
+  keyOrClassOptions?: unknown | ContextProviderClassOptions,
+  propOptions?: ContextProviderPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
     target: Object | T,
     prop?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): void | T => {
     if (typeof target === 'object' && prop !== undefined) {
       return collectPropContext(
         target.constructor,
         prop,
         keyOrClassOptions,
-        descriptor
+        descriptor,
       );
     }
 
@@ -45,7 +50,8 @@ export function contextProvider(
       const ctx = preInitContextProvider(
         target,
         metadata,
-        keyOrClassOptions as ContextProviderClassOptions
+        keyOrClassOptions as ContextProviderClassOptions,
+        propOptions,
       );
 
       class ContextProvided extends (target as any) {
@@ -55,7 +61,7 @@ export function contextProvider(
             this,
             metadata,
             ctx,
-            keyOrClassOptions as ContextProviderClassOptions
+            keyOrClassOptions as ContextProviderClassOptions,
           );
         }
       }
@@ -65,9 +71,13 @@ export function contextProvider(
   };
 }
 
-export interface ContextProviderClassOptions {
+export interface ContextProviderClassOptions extends ContextProviderOptions {
   connectOn?: string;
   disconnectOn?: string;
+}
+
+export interface ContextProviderPropOptions {
+  shouldUpdate?(value: unknown, oldValue?: unknown): boolean;
 }
 
 const providerKey = Symbol('context-provider');
@@ -79,10 +89,13 @@ export function getProviderFrom(instance: any): ContextProvider | undefined {
 function preInitContextProvider(
   target: Function,
   metadata: ContextTargetMetadata,
-  options?: ContextProviderClassOptions
+  options?: ContextProviderClassOptions,
+  propOptions?: ContextProviderPropOptions,
 ) {
   const connectOn = options?.connectOn;
   const disconnectOn = options?.disconnectOn;
+  const shouldUpdate =
+    propOptions?.shouldUpdate ?? ((value, oldValue) => value !== oldValue);
   const propsMetadata = Object.entries(metadata.props);
 
   const ctx = {
@@ -125,9 +138,14 @@ function preInitContextProvider(
       configurable: meta.descriptor?.configurable ?? true,
       enumerable: meta.descriptor?.enumerable ?? true,
       get,
-      set(val) {
-        set.call(this, val);
-        ctx.ctxProvider.provide(meta.key, get.call(this));
+      set(incomingValue) {
+        const oldValue = get.call(this);
+        set.call(this, incomingValue);
+        const value = get.call(this);
+
+        if (shouldUpdate(value, oldValue)) {
+          ctx.ctxProvider.provide(meta.key, value);
+        }
       },
     });
   });
@@ -139,13 +157,16 @@ function initContextProvider(
   instance: object & Record<string | symbol, any>,
   metadata: ContextTargetMetadata,
   ctx: ReturnType<typeof preInitContextProvider>,
-  options?: ContextProviderClassOptions
+  options?: ContextProviderClassOptions,
 ) {
   const connectOn = options?.connectOn;
   const disconnectOn = options?.disconnectOn;
   const propsMetadata = Object.entries(metadata.props);
 
-  const ctxProvider = new ContextProvider(instance as any);
+  const ctxProvider = new ContextProvider(instance as any, {
+    disposeOnDisconnect: true,
+    ...options,
+  });
   instance[providerKey] = ctx.ctxProvider = ctxProvider;
 
   if (connectOn && Object.prototype.hasOwnProperty.call(instance, connectOn)) {

@@ -57,7 +57,7 @@ describe('@webContextConsumer()', () => {
       expect(innerConsumerSpy).toHaveBeenCalledWith(
         Test.prototype,
         'prop',
-        undefined
+        undefined,
       );
     });
   });
@@ -81,7 +81,7 @@ describe('@webContextConsumer()', () => {
         expect.objectContaining({
           get: expect.any(Function),
           set: expect.any(Function),
-        })
+        }),
       );
     });
   });

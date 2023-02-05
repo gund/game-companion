@@ -15,9 +15,9 @@ export class SessionsService {
       .iterate(
         IDBKeyRange.bound(
           [BooleanNumber.False, TextRange.Upper],
-          [BooleanNumber.True, TextRange.Upper]
+          [BooleanNumber.True, TextRange.Upper],
         ),
-        'prev'
+        'prev',
       );
 
     const sessions: Session[] = [];
@@ -35,7 +35,7 @@ export class SessionsService {
     const sessions = await db.getAllFromIndex(
       'sessions',
       'isActive',
-      BooleanNumber.False
+      BooleanNumber.False,
     );
 
     return sessions.map((s) => this.deserializeSession(s));
@@ -74,7 +74,7 @@ export class SessionsService {
     const { session, tx } = await this.findByIdTx(sId, 'readwrite');
 
     session.players = session.players.map((p) =>
-      p.id === player.id ? player : p
+      p.id === player.id ? player : p,
     );
 
     await tx.store.put(this.serializeSession(session));
@@ -98,7 +98,7 @@ export class SessionsService {
 
   private async findByIdTx<M extends IDBTransactionMode = 'readonly'>(
     sId: string,
-    mode: M = 'readonly' as any
+    mode: M = 'readonly' as any,
   ) {
     const db = await this.dbService.getDb();
     const tx = db.transaction('sessions', mode);

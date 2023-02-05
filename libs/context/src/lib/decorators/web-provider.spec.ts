@@ -52,14 +52,14 @@ describe('@webContextProvider()', () => {
   describe('as prop decorator', () => {
     it('should call contextProvider() with original args', () => {
       class Test {
-        @webContextProvider('key') prop = 'value';
+        @webContextProvider('key', 'prop-options' as any) prop = 'value';
       }
 
-      expect(contextProviderSpy).toHaveBeenCalledWith('key');
+      expect(contextProviderSpy).toHaveBeenCalledWith('key', 'prop-options');
       expect(innerProviderSpy).toHaveBeenCalledWith(
         Test.prototype,
         'prop',
-        undefined
+        undefined,
       );
     });
   });
@@ -67,7 +67,7 @@ describe('@webContextProvider()', () => {
   describe('as getter/setter decorator', () => {
     it('should call contextProvider() with original args', () => {
       class Test {
-        @webContextProvider('key')
+        @webContextProvider('key', 'prop-options' as any)
         get prop() {
           return 'value';
         }
@@ -76,14 +76,14 @@ describe('@webContextProvider()', () => {
         }
       }
 
-      expect(contextProviderSpy).toHaveBeenCalledWith('key');
+      expect(contextProviderSpy).toHaveBeenCalledWith('key', 'prop-options');
       expect(innerProviderSpy).toHaveBeenCalledWith(
         Test.prototype,
         'prop',
         expect.objectContaining({
           get: expect.any(Function),
           set: expect.any(Function),
-        })
+        }),
       );
     });
   });

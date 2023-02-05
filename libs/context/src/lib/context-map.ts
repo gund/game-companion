@@ -4,5 +4,5 @@ declare global {
 
 export type InferContext<
   TKey,
-  TFallback = unknown
+  TFallback = unknown,
 > = TKey extends keyof ContextMap ? ContextMap[TKey] : TFallback;

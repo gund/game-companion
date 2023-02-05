@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContextConsumer } from '../context-consumer.js';
+import {
+  ContextConsumer,
+  ContextConsumerConsumeOptions,
+  ContextConsumerOptions,
+} from '../context-consumer.js';
 import { Type } from '../type.js';
 import {
   collectPropContext,
@@ -9,34 +13,38 @@ import {
 } from './metadata.js';
 
 export function contextConsumer(
-  options?: ContextConsumerClassOptions
+  options?: ContextConsumerClassOptions,
 ): <T extends Type<EventTarget>>(target: T) => void | T;
 export function contextConsumer(
-  key: unknown
+  key: unknown,
+  options?: ContextConsumerPropOptions,
 ): (
   target: Object,
   prop?: string | symbol,
-  descriptor?: PropertyDescriptor
+  descriptor?: PropertyDescriptor,
 ) => void;
 export function contextConsumer(
-  keyOrClassOptions?: unknown | ContextConsumerClassOptions
+  keyOrClassOptions?: unknown | ContextConsumerClassOptions,
+  propOptions?: ContextConsumerPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
     target: Object | T,
     prop?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): void | T => {
     if (typeof target === 'object' && prop !== undefined) {
-      return collectPropContext(
+      return collectPropContext<ContextTargetMetadataExtras>(
         target.constructor,
         prop,
         keyOrClassOptions,
-        descriptor
+        descriptor,
+        { propOptions },
       );
     }
 
     if (typeof target === 'function') {
-      const metadata = getTargetContextMetadata(target);
+      const metadata =
+        getTargetContextMetadata<ContextTargetMetadataExtras>(target);
 
       if (Object.keys(metadata.props).length === 0) {
         return target as T;
@@ -44,7 +52,7 @@ export function contextConsumer(
 
       const ctx = preInitContextConsumer(
         target,
-        keyOrClassOptions as ContextConsumerClassOptions
+        keyOrClassOptions as ContextConsumerClassOptions,
       );
 
       class ContextConsumed extends (target as any) {
@@ -54,7 +62,7 @@ export function contextConsumer(
             this,
             metadata,
             ctx,
-            keyOrClassOptions as ContextConsumerClassOptions
+            keyOrClassOptions as ContextConsumerClassOptions,
           );
         }
       }
@@ -64,9 +72,16 @@ export function contextConsumer(
   };
 }
 
-export interface ContextConsumerClassOptions {
+export interface ContextConsumerClassOptions extends ContextConsumerOptions {
   connectOn?: string;
   disconnectOn?: string;
+}
+
+export interface ContextConsumerPropOptions
+  extends ContextConsumerConsumeOptions {}
+
+interface ContextTargetMetadataExtras {
+  propOptions?: ContextConsumerPropOptions;
 }
 
 const consumerKey = Symbol('context-consumer');
@@ -77,7 +92,7 @@ export function getConsumerFrom(instance: any): ContextConsumer | undefined {
 
 function preInitContextConsumer(
   target: Function,
-  options?: ContextConsumerClassOptions
+  options?: ContextConsumerClassOptions,
 ) {
   const connectOn = options?.connectOn;
   const disconnectOn = options?.disconnectOn;
@@ -109,15 +124,15 @@ function preInitContextConsumer(
 
 function initContextConsumer(
   instance: object & Record<string | symbol, any>,
-  metadata: ContextTargetMetadata,
+  metadata: ContextTargetMetadata<ContextTargetMetadataExtras>,
   ctx: ReturnType<typeof preInitContextConsumer>,
-  options?: ContextConsumerClassOptions
+  options?: ContextConsumerClassOptions,
 ) {
   const connectOn = options?.connectOn;
   const disconnectOn = options?.disconnectOn;
   const propsMetadata = Object.entries(metadata.props);
 
-  const ctxConsumer = new ContextConsumer(instance as any);
+  const ctxConsumer = new ContextConsumer(instance as any, options);
   instance[consumerKey] = ctx.ctxConsumer = ctxConsumer;
 
   if (connectOn && Object.prototype.hasOwnProperty.call(instance, connectOn)) {
@@ -134,7 +149,11 @@ function initContextConsumer(
   }
 
   propsMetadata.forEach(([propName, meta]) => {
-    ctxConsumer.consume(meta.key, (value) => (instance[propName] = value));
+    ctxConsumer.consume(
+      meta.key,
+      (value) => (instance[propName] = value),
+      meta.propOptions,
+    );
   });
 
   return instance;

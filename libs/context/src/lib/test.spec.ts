@@ -37,7 +37,7 @@ describe('Context API', () => {
       }
 
       protected override willUpdate(
-        changedProps: PropertyValueMap<TestElement>
+        changedProps: PropertyValueMap<TestElement>,
       ): void {
         if (changedProps.has('ctx1')) {
           this.ctxProvider.provide('ctx1', this.ctx1);
@@ -68,11 +68,11 @@ describe('Context API', () => {
 
         this.ctxConsumer.consume<string>(
           'ctx1',
-          (value) => (this.ctx1 = value)
+          (value) => (this.ctx1 = value),
         );
         this.ctxConsumer.consume<string>(
           'ctx2',
-          (value) => (this.ctx2 = value)
+          (value) => (this.ctx2 = value),
         );
       }
 
@@ -92,7 +92,7 @@ describe('Context API', () => {
     }
 
     const elem = await fixture<TestElement>(
-      html`<x-test ctx1="value1" ctx2="value2"></x-test>`
+      html`<x-test ctx1="value1" ctx2="value2"></x-test>`,
     );
 
     const parentElem =

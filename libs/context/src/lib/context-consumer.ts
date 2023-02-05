@@ -12,35 +12,75 @@ export class ContextConsumer {
 
   constructor(
     protected host: EventTarget,
-    protected config?: ContextConsumerOptions
+    protected config?: ContextConsumerOptions,
   ) {}
 
   consume<T, K extends string | symbol | number = string>(
     key: K,
-    callback: ContextCallback<InferContext<K, T>>
+    callback: ContextCallback<InferContext<K, T>>,
+    options?: ContextConsumerConsumeOptions,
   ): () => void;
-  consume<T>(key: unknown, callback: ContextCallback<T>): () => void;
-  consume<T>(key: unknown, callback: ContextCallback<T>) {
-    this.ctxCallbacksMap.set(key, callback);
+  consume<T>(
+    key: unknown,
+    callback: ContextCallback<T>,
+    options?: ContextConsumerConsumeOptions,
+  ): () => void;
+  consume(
+    key: unknown,
+    callback: ContextCallback,
+    options?: ContextConsumerConsumeOptions,
+  ) {
+    const unConsume = () => this.unConsume(key);
+    const shouldSpyOnCtx = options?.timeout === 0 || options?.once === true;
+
+    let contextReceived = false;
+    function ctxSpy(this: unknown, ...args: unknown[]) {
+      contextReceived = true;
+      if (options?.once) {
+        unConsume();
+      }
+      return callback.apply(this, args);
+    }
+    const ctxCallback = shouldSpyOnCtx ? ctxSpy : callback;
+
+    this.ctxCallbacksMap.set(key, ctxCallback);
     this.requestContext(key);
 
-    return () => this.unConsume(key);
+    const checkCtx = () => {
+      if (!contextReceived) {
+        unConsume();
+        throw new Error(
+          `ContextConsumer: Context ${String(key)} is not provided!`,
+        );
+      }
+    };
+
+    if (options?.timeout === 0) {
+      checkCtx();
+    } else if (options?.timeout && options?.timeout > 0) {
+      setTimeout(checkCtx, options.timeout);
+    }
+
+    return unConsume;
   }
 
   unConsume(key: unknown) {
     this.ctxCallbacksMap.delete(key);
     this.host.dispatchEvent(
-      new ContextRequestRemoveEvent({ key, requestee: this.host })
+      new ContextRequestRemoveEvent({ key, requestee: this.host }),
     );
   }
 
   connect() {
+    if (this.isConnected) {
+      return;
+    }
     this.isConnected = true;
     console.debug('ContextConsumer: Connected', this.host);
 
     this.host.addEventListener(
       ContextProvideEvent.EventName,
-      this.handleContextProvide as EventListener
+      this.handleContextProvide as EventListener,
     );
 
     if (!this.config?.noRequestOnConnect) {
@@ -49,22 +89,29 @@ export class ContextConsumer {
   }
 
   disconnect() {
+    if (!this.isConnected) {
+      return;
+    }
     this.isConnected = false;
     console.debug('ContextConsumer: Disconnected', this.host);
 
+    if (this.config?.disposeOnDisconnect) {
+      this.dispose();
+    }
+
     this.host.removeEventListener(
       ContextProvideEvent.EventName,
-      this.handleContextProvide as EventListener
+      this.handleContextProvide as EventListener,
     );
 
     this.host.dispatchEvent(
-      new ContextRequestRemoveEvent({ requestee: this.host })
+      new ContextRequestRemoveEvent({ requestee: this.host }),
     );
   }
 
   dispose() {
-    this.disconnect();
     this.ctxCallbacksMap.clear();
+    this.disconnect();
   }
 
   protected requestWholeContext() {
@@ -83,7 +130,7 @@ export class ContextConsumer {
         ...this.config?.defaultEventInit,
         key,
         requestee: this.host,
-      })
+      }),
     );
   }
 
@@ -91,7 +138,7 @@ export class ContextConsumer {
     console.debug(
       'ContextConsumer: Received context',
       event.contextKey,
-      event.contextValue
+      event.contextValue,
     );
 
     this.ctxCallbacksMap.get(event.contextKey)?.(event.contextValue);
@@ -99,10 +146,16 @@ export class ContextConsumer {
 }
 
 export interface ContextConsumerOptions {
+  disposeOnDisconnect?: boolean;
   noRequestOnConnect?: boolean;
   defaultEventInit?: EventInit;
 }
 
 export interface ContextCallback<T = unknown> extends Function {
   (ctx: T): void;
+}
+
+export interface ContextConsumerConsumeOptions {
+  once?: boolean;
+  timeout?: number;
 }

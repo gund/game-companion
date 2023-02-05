@@ -1,29 +1,32 @@
 const ctxKey = Symbol('context-metadata');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getTargetContextMetadata(target: any): ContextTargetMetadata {
+export function getTargetContextMetadata<TExtras = object>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  target: any,
+): ContextTargetMetadata<TExtras> {
   return (
     target[ctxKey] ??
     (target[ctxKey] = { props: Object.create(null) } as ContextTargetMetadata)
   );
 }
 
-export function collectPropContext(
+export function collectPropContext<TExtras = object>(
   target: unknown,
   prop: string | symbol,
   key: unknown,
-  descriptor?: PropertyDescriptor
+  descriptor?: PropertyDescriptor,
+  extras?: TExtras,
 ) {
   const metadata = getTargetContextMetadata(target);
-  metadata.props[prop] = { key, descriptor };
+  metadata.props[prop] = { ...extras, key, descriptor };
 }
 
-export interface ContextTargetMetadata {
-  props: ContextPropsMetadata;
+export interface ContextTargetMetadata<TExtras = object> {
+  props: ContextPropsMetadata<TExtras>;
 }
 
-export interface ContextPropsMetadata {
-  [propName: string | symbol]: ContextPropMetadata;
+export interface ContextPropsMetadata<TExtras = object> {
+  [propName: string | symbol]: ContextPropMetadata & TExtras;
 }
 
 export interface ContextPropMetadata {

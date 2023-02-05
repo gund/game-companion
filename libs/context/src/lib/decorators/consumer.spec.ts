@@ -66,7 +66,7 @@ describe('@contextConsumer()', () => {
     const instance = new Test();
 
     expect(Test.prototype).toEqual(
-      expect.objectContaining({ someMethod: expect.any(Function) })
+      expect.objectContaining({ someMethod: expect.any(Function) }),
     );
     expect(instance).toBeInstanceOf(Test);
   });
@@ -74,8 +74,8 @@ describe('@contextConsumer()', () => {
   it('should consume context', () => {
     @contextConsumer()
     class Test extends EventTargetStub {
-      @contextConsumer('key1') prop1 = 'value1';
-      @contextConsumer('key2') prop2 = 'value2';
+      @contextConsumer('key1', 'options1' as any) prop1 = 'value1';
+      @contextConsumer('key2', 'options2' as any) prop2 = 'value2';
     }
 
     const instance = new Test();
@@ -83,25 +83,38 @@ describe('@contextConsumer()', () => {
     expect(instance.prop1).toBe('value1');
     expect(instance.prop2).toBe('value2');
     expect(consumeSpy).toHaveBeenCalledTimes(2);
-    expect(consumeSpy).toHaveBeenCalledWith('key1', expect.any(Function));
-    expect(consumeSpy).toHaveBeenCalledWith('key2', expect.any(Function));
+    expect(consumeSpy).toHaveBeenCalledWith(
+      'key1',
+      expect.any(Function),
+      'options1',
+    );
+    expect(consumeSpy).toHaveBeenCalledWith(
+      'key2',
+      expect.any(Function),
+      'options2',
+    );
   });
 
   it('should allow update context in prop', () => {
     @contextConsumer()
     class Test extends EventTargetStub {
-      @contextConsumer('key') prop = 'initial-value';
+      @contextConsumer('key1') prop1 = 'initial-value1';
+      @contextConsumer('key2') prop2 = 'initial-value2';
     }
 
     const instance = new Test();
 
-    expect(instance.prop).toBe('initial-value');
+    expect(instance.prop1).toBe('initial-value1');
+    expect(instance.prop2).toBe('initial-value2');
 
     const updateCb1 = consumeSpy.mock.calls[0][1];
+    const updateCb2 = consumeSpy.mock.calls[1][1];
 
-    updateCb1('updated-value');
+    updateCb1('updated-value1');
+    updateCb2('updated-value2');
 
-    expect(instance.prop).toBe('updated-value');
+    expect(instance.prop1).toBe('updated-value1');
+    expect(instance.prop2).toBe('updated-value2');
   });
 
   it('should allow update context in getter/setter', () => {

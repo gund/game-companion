@@ -57,12 +57,12 @@ export class GcSessionsElement extends LitElement {
           this.sessions
             .then((s) => this.renderSessions(s))
             .catch((e) => this.renderError(e)),
-          `Loading...`
+          `Loading...`,
         )}
         ${until(
           this.inactiveSessions
             .then((s) => this.renderInactiveSessions(s))
-            .catch((e) => this.renderError(e))
+            .catch((e) => this.renderError(e)),
         )}
       </mdc-top-app-bar>
       <mdc-fab
@@ -94,7 +94,7 @@ export class GcSessionsElement extends LitElement {
             </div>
           </div>
         </div>
-        ${this.renderSessions(sessions)}`
+        ${this.renderSessions(sessions)}`,
     )}`;
   }
 

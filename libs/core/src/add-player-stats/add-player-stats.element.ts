@@ -50,7 +50,7 @@ export class GcAddPlayerStatsElement extends LitElement {
           (ps) =>
             html`<mdc-select-option data-value=${ps.getId()}>
               ${ps.getName()}
-            </mdc-select-option>`
+            </mdc-select-option>`,
         )}
       </mdc-select>
       ${when(
@@ -65,7 +65,7 @@ export class GcAddPlayerStatsElement extends LitElement {
           ${(
             this.selectedPlayerStats as PlayerStats & ConfigurablePlayerStats
           ).renderConfiguration()}
-        </p>`
+        </p>`,
       )}`;
   }
 

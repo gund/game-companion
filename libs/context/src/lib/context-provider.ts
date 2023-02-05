@@ -15,31 +15,41 @@ export class ContextProvider {
 
   constructor(
     protected host: EventTarget,
-    protected config?: ContextProviderOptions
+    protected config?: ContextProviderOptions,
   ) {}
 
   provide<K extends string | symbol | number>(
     key: K,
-    value: InferContext<K>
-  ): void;
-  provide(key: unknown, value: unknown): void;
+    value: InferContext<K>,
+  ): () => void;
+  provide(key: unknown, value: unknown): () => void;
   provide(key: unknown, value: unknown) {
     this.ctxMap.set(key, value);
     this.broadcastContext(key, value);
+
+    return () => this.unProvide(key);
+  }
+
+  unProvide(key: unknown) {
+    this.ctxMap.delete(key);
+    this.broadcastContext(key, undefined);
   }
 
   connect() {
+    if (this.isConnected) {
+      return;
+    }
     this.isConnected = true;
     console.debug('ContextProvider: Connected', this.host);
 
     this.host.addEventListener(
       ContextRequestEvent.EventName,
-      this.handleContextRequest as EventListener
+      this.handleContextRequest as EventListener,
     );
 
     this.host.addEventListener(
       ContextRequestRemoveEvent.EventName,
-      this.cleanup as EventListener
+      this.cleanup as EventListener,
     );
 
     if (!this.config?.noBroadcastOnConnect) {
@@ -47,27 +57,34 @@ export class ContextProvider {
     }
   }
 
-  disconnect() {
+  disconnect(isDisposed = false) {
+    if (!this.isConnected) {
+      return;
+    }
     this.isConnected = false;
     console.debug('ContextProvider: Disconnected', this.host);
 
+    if (this.config?.disposeOnDisconnect) {
+      this.dispose();
+    } else if (!isDisposed) {
+      this.scheduleCleanup();
+    }
+
     this.host.removeEventListener(
       ContextRequestEvent.EventName,
-      this.handleContextRequest as EventListener
+      this.handleContextRequest as EventListener,
     );
 
     this.host.removeEventListener(
       ContextRequestRemoveEvent.EventName,
-      this.cleanup as EventListener
+      this.cleanup as EventListener,
     );
-
-    this.scheduleCleanup();
   }
 
   dispose() {
-    this.disconnect();
     this.ctxMap.clear();
     this.requesteeMap.clear();
+    this.disconnect(true);
   }
 
   protected broadcastWholeContext() {
@@ -90,7 +107,7 @@ export class ContextProvider {
         console.debug(
           'ContextProvider: Broadcasting context',
           event,
-          target.deref()
+          target.deref(),
         );
       target.deref()?.dispatchEvent(event);
     });
@@ -108,7 +125,7 @@ export class ContextProvider {
     }
     console.debug(
       'ContextProvider: Handling context request',
-      event.contextKey
+      event.contextKey,
     );
 
     event.stopImmediatePropagation();
@@ -129,7 +146,7 @@ export class ContextProvider {
     }
 
     this.scheduledCleanup = this.schedule.call(undefined, () =>
-      this.cleanup(event)
+      this.cleanup(event),
     );
   };
 
@@ -138,7 +155,7 @@ export class ContextProvider {
     console.debug(
       'ContextProvider: Cleaning up requestees',
       this.requesteeMap,
-      event
+      event,
     );
     const eventTarget = event?.contextRequestee.deref();
     const eventContextKey = event?.contextKey;
@@ -165,6 +182,7 @@ export class ContextProvider {
 }
 
 export interface ContextProviderOptions {
+  disposeOnDisconnect?: boolean;
   noBroadcastOnConnect?: boolean;
   noCleanupWhenIdle?: boolean;
   defaultEventInit?: EventInit;

@@ -50,7 +50,7 @@ describe('Decorator Context API', () => {
     }
 
     const elem = await fixture<TestElement>(
-      html`<x-test ctx1="value1" ctx2="value2"></x-test>`
+      html`<x-test ctx1="value1" ctx2="value2"></x-test>`,
     );
 
     const parentElem =

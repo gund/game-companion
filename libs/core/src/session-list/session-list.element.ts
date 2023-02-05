@@ -54,7 +54,7 @@ export class GcSessionListElement extends LitElement {
                 >From ${this.sessionHelper.formatSince(s)}</span
               >
             </a>
-          </mdc-list-item>`
+          </mdc-list-item>`,
         )}
       </mdc-list>`,
       () => html`<div class="mdc-layout-grid no-sessions">
@@ -63,7 +63,7 @@ export class GcSessionListElement extends LitElement {
             <h3>No sessions found!</h3>
           </div>
         </div>
-      </div>`
+      </div>`,
     )}`;
   }
 }

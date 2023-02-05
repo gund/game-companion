@@ -114,14 +114,14 @@ export class GcSessionElement extends LitElement {
               ?disabled=${this.isFinishingSession}
               @click=${this.finishSession}
             ></mdc-icon-button>
-          `
+          `,
       )}
       <div class="mdc-layout-grid">
         <div class="mdc-layout-grid__inner">
           ${when(
             this.session,
             () => this.renderSession(this.session!),
-            () => this.renderFallback()
+            () => this.renderFallback(),
           )}
         </div>
       </div>
@@ -136,7 +136,7 @@ export class GcSessionElement extends LitElement {
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         ${this.renderPlayer(p)}
-      </div>`
+      </div>`,
     )}`;
   }
 
@@ -147,7 +147,7 @@ export class GcSessionElement extends LitElement {
       ${when(
         this.isLoading,
         () => html`Loading session data...`,
-        () => html`<b>Invalid session!</b> ${this.loadingError}`
+        () => html`<b>Invalid session!</b> ${this.loadingError}`,
       )}
     </div>`;
   }
@@ -158,7 +158,7 @@ export class GcSessionElement extends LitElement {
         ${when(
           this.session?.isActive,
           () => html`${player.name}`,
-          () => html`${player.name} ${this.getFinalPlayerScore(player)}`
+          () => html`${player.name} ${this.getFinalPlayerScore(player)}`,
         )}
       </h3>
       <div class="mdc-layout-grid player-stats">
@@ -184,13 +184,13 @@ export class GcSessionElement extends LitElement {
                   >
                     ${this.renderPlayerStats(ps)}
                   </div>
-                `
+                `,
               )}`,
             () => html`<div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
             >
               No player stats recorded.
-            </div>`
+            </div>`,
           )}
         </div>
       </div>
@@ -204,7 +204,7 @@ export class GcSessionElement extends LitElement {
           href="/session/${this.sId}/player/${player.id}"
         >
           Edit stats
-        </mdc-button>`
+        </mdc-button>`,
       )}
     </mdc-card>`;
   }
@@ -228,7 +228,7 @@ export class GcSessionElement extends LitElement {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<GcSessionElement>
+    changedProps: PropertyValueMap<GcSessionElement>,
   ) {
     if (changedProps.has('sId')) {
       this.loadSession();
@@ -302,31 +302,31 @@ export class GcSessionElement extends LitElement {
     return player.stats.reduce(
       (score, ps) =>
         score + (this.getPlayerStats(ps.id)?.getFinalScore(ps) ?? 0),
-      0
+      0,
     );
   }
 
   private async updatePlayerStats(
     player: Player,
     playerStats: PlayerStatsData,
-    data?: object
+    data?: object,
   ) {
     if (!this.session) {
       return;
     }
 
     player.stats = player.stats.map((ps) =>
-      ps === playerStats ? { ...ps, ...data } : ps
+      ps === playerStats ? { ...ps, ...data } : ps,
     );
 
     try {
       const updatedPlayer = await this.sessionsService.updatePlayer(
         this.session.id,
-        player
+        player,
       );
 
       this.session.players = this.session.players.map((p) =>
-        p.id === player.id ? updatedPlayer : p
+        p.id === player.id ? updatedPlayer : p,
       );
 
       this.requestUpdate();
