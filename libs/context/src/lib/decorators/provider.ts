@@ -44,6 +44,7 @@ export function contextProvider(
 
       const ctx = preInitContextProvider(
         target,
+        metadata,
         keyOrClassOptions as ContextProviderClassOptions
       );
 
@@ -77,10 +78,12 @@ export function getProviderFrom(instance: any): ContextProvider | undefined {
 
 function preInitContextProvider(
   target: Function,
+  metadata: ContextTargetMetadata,
   options?: ContextProviderClassOptions
 ) {
   const connectOn = options?.connectOn;
   const disconnectOn = options?.disconnectOn;
+  const propsMetadata = Object.entries(metadata.props);
 
   const ctx = {
     ctxProvider: undefined! as ContextProvider,
@@ -103,6 +106,31 @@ function preInitContextProvider(
       return ctx.targetDisconnectMethod.apply(this, args);
     };
   }
+
+  propsMetadata.forEach(([propName, meta]) => {
+    const propKey = Symbol.for(propName);
+
+    const get =
+      meta.descriptor?.get ??
+      function (this: any) {
+        return this[propKey];
+      };
+    const set =
+      meta.descriptor?.set ??
+      function (this: any, value: any) {
+        this[propKey] = value;
+      };
+
+    Object.defineProperty(target.prototype, propName, {
+      configurable: meta.descriptor?.configurable ?? true,
+      enumerable: meta.descriptor?.enumerable ?? true,
+      get,
+      set(val) {
+        set.call(this, val);
+        ctx.ctxProvider.provide(meta.key, get.call(this));
+      },
+    });
+  });
 
   return ctx;
 }
@@ -134,28 +162,17 @@ function initContextProvider(
   }
 
   propsMetadata.forEach(([propName, meta]) => {
-    let value: unknown;
+    const value: unknown = instance[propName];
 
-    if (meta.descriptor) {
-      value = meta.descriptor.get?.() ?? meta.descriptor.value;
+    if (!meta.descriptor) {
+      // Delete shadowing prop
+      delete instance[propName];
+      // Reset initial value
+      instance[propName] = value;
     } else {
-      value = instance[propName];
+      // Set initial context value
+      ctxProvider.provide(meta.key, value);
     }
-
-    ctxProvider.provide(meta.key, value);
-
-    const get = meta.descriptor?.get ?? (() => value);
-    const set = meta.descriptor?.set ?? ((val: unknown) => (value = val));
-
-    Object.defineProperty(instance, propName, {
-      configurable: meta.descriptor?.configurable ?? true,
-      enumerable: meta.descriptor?.enumerable ?? true,
-      get,
-      set(val) {
-        set.call(this, val);
-        ctxProvider.provide(meta.key, get.call(this));
-      },
-    });
   });
 
   return instance;

@@ -18,15 +18,6 @@ export interface DbSchema extends DBSchema {
   };
 }
 
-export enum BooleanNumber {
-  False,
-  True,
-}
-
-export enum TextRange {
-  Upper = '\uFFFF',
-}
-
 export class DbService {
   private migrations: Record<string, OpenDBCallbacks<DbSchema>['upgrade']> = {
     1: (db) => {
@@ -65,4 +56,13 @@ export class DbService {
 
     return this.db;
   }
+}
+
+export enum BooleanNumber {
+  False,
+  True,
+}
+
+export enum TextRange {
+  Upper = '\uFFFF',
 }

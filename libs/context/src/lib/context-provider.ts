@@ -128,7 +128,9 @@ export class ContextProvider {
       return;
     }
 
-    this.scheduledCleanup = this.schedule(() => this.cleanup(event));
+    this.scheduledCleanup = this.schedule.call(undefined, () =>
+      this.cleanup(event)
+    );
   };
 
   protected cleanup(event?: ContextRequestRemoveEvent) {

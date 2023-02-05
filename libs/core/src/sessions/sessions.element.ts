@@ -1,3 +1,4 @@
+import { webContextConsumer } from '@game-companion/context';
 import { Session, SessionsService } from '@game-companion/core';
 import '@game-companion/core/session-list';
 import {
@@ -21,6 +22,7 @@ declare global {
 }
 
 @customElement(GcSessionsElement.selector)
+@webContextConsumer()
 export class GcSessionsElement extends LitElement {
   static readonly selector = 'gc-sessions';
   static override styles = [
@@ -39,7 +41,8 @@ export class GcSessionsElement extends LitElement {
     `,
   ];
 
-  private sessionsService = new SessionsService();
+  @webContextConsumer(SessionsService)
+  private declare sessionsService: SessionsService;
 
   @state()
   private declare sessions: Promise<Session[]>;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BooleanNumber, DbService, TextRange } from './db.service.js';
 import type { Player } from './player.model.js';
 import type { Session } from './session.model.js';

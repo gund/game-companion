@@ -87,7 +87,7 @@ describe('@contextProvider()', () => {
     expect(provideSpy).toHaveBeenCalledWith('key2', 'initial-value2');
   });
 
-  it('should make context props enumerable', () => {
+  it('should make context props enumerable on prototype', () => {
     @contextProvider()
     class Test extends EventTargetStub {
       @contextProvider('key1') prop1 = 'initial-value1';
@@ -96,9 +96,9 @@ describe('@contextProvider()', () => {
 
     const instance = new Test();
 
-    expect(Object.getOwnPropertyNames(instance)).toEqual(
-      expect.arrayContaining(['prop1', 'prop2'])
-    );
+    expect(
+      Object.keys(Object.getPrototypeOf(Object.getPrototypeOf(instance)))
+    ).toEqual(expect.arrayContaining(['prop1', 'prop2']));
   });
 
   it('should make context props configurable', () => {

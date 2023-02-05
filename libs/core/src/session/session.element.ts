@@ -1,3 +1,5 @@
+import { webContextConsumer } from '@game-companion/context';
+import type { Session } from '@game-companion/core';
 import {
   isNameablePlayerStats,
   isUpdatablePlayerStats,
@@ -7,7 +9,6 @@ import {
   SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
-import type { Session } from '@game-companion/core';
 import {
   css,
   customElement,
@@ -19,11 +20,7 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import {
-  ConfirmDialogService,
-  DialogService,
-  SnackbarService,
-} from '@game-companion/mdc';
+import { ConfirmDialogService, SnackbarService } from '@game-companion/mdc';
 import '@game-companion/mdc/card';
 import '@game-companion/mdc/dialog';
 import '@game-companion/mdc/icon-button';
@@ -37,6 +34,7 @@ declare global {
 }
 
 @customElement(GcSessionElement.selector)
+@webContextConsumer()
 export class GcSessionElement extends LitElement {
   static readonly selector = 'gc-session';
   static override styles = [
@@ -57,10 +55,17 @@ export class GcSessionElement extends LitElement {
   @state() private declare isFinishingSession: boolean;
   @state() private declare loadingError?: string;
 
-  private sessionsService = new SessionsService();
-  private playerStatsRegistry = new PlayerStatsRegistry();
-  private confirmDialogService = new ConfirmDialogService(new DialogService());
-  private snackbarService = new SnackbarService();
+  @webContextConsumer(PlayerStatsRegistry)
+  private declare playerStatsRegistry: PlayerStatsRegistry;
+
+  @webContextConsumer(SessionsService)
+  private declare sessionsService: SessionsService;
+
+  @webContextConsumer(ConfirmDialogService)
+  private declare confirmDialogService: ConfirmDialogService;
+
+  @webContextConsumer(SnackbarService)
+  private declare snackbarService: SnackbarService;
 
   constructor() {
     super();

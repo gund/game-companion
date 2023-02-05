@@ -1,7 +1,7 @@
 import { RouteConfig } from '@lit-labs/router';
 import { html } from 'lit';
 
-export function getRoutes(baseUrl?: string): RouteConfig[] {
+export function getRoutes(baseUrl = '/'): RouteConfig[] {
   return [
     {
       path: `${baseUrl}`,

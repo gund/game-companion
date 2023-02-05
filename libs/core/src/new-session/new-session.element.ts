@@ -1,10 +1,11 @@
+import { webContextConsumer } from '@game-companion/context';
+import type { PlayerStatsData } from '@game-companion/core';
 import {
+  NavigatableRouter,
   Player,
   PlayerStatsRegistry,
-  queryRootElement,
   SessionsService,
 } from '@game-companion/core';
-import type { PlayerStatsData } from '@game-companion/core';
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
@@ -13,6 +14,7 @@ import {
   html,
   ifDefined,
   LitElement,
+  PropertyValueMap,
   repeat,
   state,
   when,
@@ -31,6 +33,7 @@ declare global {
 }
 
 @customElement(GcNewSessionElement.selector)
+@webContextConsumer()
 export class GcNewSessionElement extends LitElement {
   static readonly selector = 'gc-new-session';
   static override styles = [
@@ -65,8 +68,14 @@ export class GcNewSessionElement extends LitElement {
   @state()
   private declare isSaving: boolean;
 
-  private sessionsService = new SessionsService();
-  private playerStatsRegistry = new PlayerStatsRegistry();
+  @webContextConsumer(NavigatableRouter)
+  private router?: NavigatableRouter;
+
+  @webContextConsumer(PlayerStatsRegistry)
+  private declare playerStatsRegistry: PlayerStatsRegistry;
+
+  @webContextConsumer(SessionsService)
+  private declare sessionsService: SessionsService;
 
   constructor() {
     super();
@@ -74,7 +83,10 @@ export class GcNewSessionElement extends LitElement {
     this.players = [];
     this.globalStats = [];
     this.isSaving = false;
+  }
 
+  override connectedCallback() {
+    super.connectedCallback();
     this.addPlayer();
   }
 
@@ -259,7 +271,7 @@ export class GcNewSessionElement extends LitElement {
       this.error = undefined;
       this.isSaving = true;
       const session = await this.createSession();
-      await queryRootElement().router.navigateTo(`/session/${session.id}`);
+      await this.router?.navigateTo(`/session/${session.id}`);
     } catch (e) {
       this.error = String(e);
     } finally {

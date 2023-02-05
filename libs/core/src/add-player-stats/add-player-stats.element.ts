@@ -1,3 +1,4 @@
+import { webContextConsumer } from '@game-companion/context';
 import type {
   ConfigurablePlayerStats,
   PlayerStats,
@@ -26,6 +27,7 @@ declare global {
 }
 
 @customElement(GcAddPlayerStatsElement.selector)
+@webContextConsumer()
 export class GcAddPlayerStatsElement extends LitElement {
   static readonly selector = 'gc-add-player-stats';
 
@@ -34,7 +36,8 @@ export class GcAddPlayerStatsElement extends LitElement {
   @state()
   private declare selectedPlayerStatsData?: PlayerStatsData;
 
-  private playerStatsRegistry = new PlayerStatsRegistry();
+  @webContextConsumer(PlayerStatsRegistry)
+  private declare playerStatsRegistry: PlayerStatsRegistry;
 
   protected override render() {
     return html`<mdc-select
@@ -42,7 +45,7 @@ export class GcAddPlayerStatsElement extends LitElement {
         @change=${this.selectGlobalStats}
       >
         ${repeat(
-          this.playerStatsRegistry.getAvailable(),
+          this.playerStatsRegistry.getAvailable() ?? [],
           (ps) => ps.getId(),
           (ps) =>
             html`<mdc-select-option data-value=${ps.getId()}>

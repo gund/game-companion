@@ -7,6 +7,7 @@
   "module": "./index.js",
   "types": "./core/src/lib/index.d.ts",
   "dependencies": {
+    "@game-companion/context": "^0.0.1",
     "@game-companion/lit": "^0.0.1",
     "@game-companion/mdc": "^0.0.1",
     "@lit-labs/router": "^0.1.1",
