@@ -3,22 +3,25 @@ export class ContextProvideEvent extends Event {
 
   contextKey;
   contextValue;
+  contextProvider;
 
-  constructor(init: ContextProvideEventInit) {
+  constructor({ key, value, provider, ...init }: ContextProvideEventInit) {
     super(ContextProvideEvent.EventName, {
       bubbles: false,
       cancelable: false,
       ...init,
     });
 
-    this.contextKey = init.key;
-    this.contextValue = init.value;
+    this.contextKey = key;
+    this.contextValue = value;
+    this.contextProvider = new WeakRef(provider);
   }
 }
 
 export interface ContextProvideEventInit extends EventInit {
   key: unknown;
   value: unknown;
+  provider: EventTarget;
 }
 
 export class ContextRequestEvent extends Event {

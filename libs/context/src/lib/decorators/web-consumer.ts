@@ -2,20 +2,20 @@ import { Type } from '../type.js';
 import { contextConsumer, ContextConsumerClassOptions } from './consumer.js';
 
 export function webContextConsumer(
+  options?: WebContextConsumerClassOptions,
+): <T extends Type<EventTarget>>(target: T) => void | T;
+export function webContextConsumer(
   key: unknown,
 ): (
-  target: Object,
+  target: EventTarget,
   prop?: string | symbol,
   descriptor?: PropertyDescriptor,
 ) => void;
 export function webContextConsumer(
-  options?: WebContextConsumerClassOptions,
-): <T extends Type<EventTarget>>(target: T) => void | T;
-export function webContextConsumer(
   keyOrClassOptions?: unknown | WebContextConsumerClassOptions,
 ) {
   return <T extends Type<EventTarget>>(
-    target: Object | T,
+    target: EventTarget | T,
     prop?: string | symbol,
     descriptor?: PropertyDescriptor,
   ): void | T => {

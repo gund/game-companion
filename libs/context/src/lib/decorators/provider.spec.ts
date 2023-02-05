@@ -233,22 +233,6 @@ describe('@contextProvider()', () => {
       expect(connectSpy).not.toHaveBeenCalled();
     });
 
-    it('should call ContextProvider.connect() on connectOn prop', () => {
-      @contextProvider({ connectOn: 'doConnect' })
-      class Test extends EventTargetStub {
-        @contextProvider('key') prop = 'value';
-        doConnect = () => {};
-      }
-
-      const instance = new Test();
-
-      expect(connectSpy).not.toHaveBeenCalled();
-
-      instance.doConnect();
-
-      expect(connectSpy).toHaveBeenCalledTimes(1);
-    });
-
     it('should call ContextProvider.connect() on connectOn method', () => {
       @contextProvider({ connectOn: 'doConnect' })
       class Test extends EventTargetStub {
@@ -278,22 +262,6 @@ describe('@contextProvider()', () => {
       instance.disconnectedCallback();
 
       expect(disconnectSpy).not.toHaveBeenCalled();
-    });
-
-    it('should call ContextProvider.disconnect() on disconnectOn prop', () => {
-      @contextProvider({ disconnectOn: 'doDisconnect' })
-      class Test extends EventTargetStub {
-        @contextProvider('key') prop = 'value';
-        doDisconnect = () => {};
-      }
-
-      const instance = new Test();
-
-      expect(disconnectSpy).not.toHaveBeenCalled();
-
-      instance.doDisconnect();
-
-      expect(disconnectSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should call ContextProvider.disconnect() on disconnectOn method', () => {

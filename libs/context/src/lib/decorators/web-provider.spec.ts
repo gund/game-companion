@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SpyInstance } from 'vitest';
 import { contextProvider } from './provider.js';
-import { webContextProvider } from './web-provider.js';
+import {
+  webContextProvider,
+  WebContextProviderClassOptions,
+} from './web-provider.js';
 
 vi.mock('./provider.js');
 
@@ -37,7 +40,7 @@ describe('@webContextProvider()', () => {
     });
 
     it('should call contextProvider() with passed extra config', () => {
-      @webContextProvider({ extra: true } as any)
+      @webContextProvider({ extra: true } as WebContextProviderClassOptions)
       class Test extends EventTargetStub {}
 
       expect(contextProviderSpy).toHaveBeenCalledWith({
@@ -51,7 +54,7 @@ describe('@webContextProvider()', () => {
 
   describe('as prop decorator', () => {
     it('should call contextProvider() with original args', () => {
-      class Test {
+      class Test extends EventTargetStub {
         @webContextProvider('key', 'prop-options' as any) prop = 'value';
       }
 
@@ -66,7 +69,7 @@ describe('@webContextProvider()', () => {
 
   describe('as getter/setter decorator', () => {
     it('should call contextProvider() with original args', () => {
-      class Test {
+      class Test extends EventTargetStub {
         @webContextProvider('key', 'prop-options' as any)
         get prop() {
           return 'value';

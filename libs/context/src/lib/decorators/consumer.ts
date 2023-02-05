@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ContextConsumer,
@@ -6,11 +5,7 @@ import {
   ContextConsumerOptions,
 } from '../context-consumer.js';
 import { Type } from '../type.js';
-import {
-  collectPropContext,
-  ContextTargetMetadata,
-  getTargetContextMetadata,
-} from './metadata.js';
+import { collectPropContext, getTargetContextMetadata } from './metadata.js';
 
 export function contextConsumer(
   options?: ContextConsumerClassOptions,
@@ -19,7 +14,7 @@ export function contextConsumer(
   key: unknown,
   options?: ContextConsumerPropOptions,
 ): (
-  target: Object,
+  target: EventTarget,
   prop?: string | symbol,
   descriptor?: PropertyDescriptor,
 ) => void;
@@ -28,7 +23,7 @@ export function contextConsumer(
   propOptions?: ContextConsumerPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
-    target: Object | T,
+    target: EventTarget | T,
     prop?: string | symbol,
     descriptor?: PropertyDescriptor,
   ): void | T => {
@@ -50,20 +45,42 @@ export function contextConsumer(
         return target as T;
       }
 
-      const ctx = preInitContextConsumer(
-        target,
-        keyOrClassOptions as ContextConsumerClassOptions,
-      );
+      const classOptions = keyOrClassOptions as
+        | ContextConsumerClassOptions
+        | undefined;
+      const connectOn = classOptions?.connectOn ?? '';
+      const disconnectOn = classOptions?.disconnectOn ?? '';
 
-      class ContextConsumed extends (target as any) {
-        constructor(...args: unknown[]) {
+      class ContextConsumed
+        extends (target as Type<FlexibleEventTarget>)
+        implements WithContextConsumer
+      {
+        #ctxConsumer = new ContextConsumer(this, classOptions);
+
+        constructor(...args: any[]) {
           super(...args);
-          initContextConsumer(
-            this,
-            metadata,
-            ctx,
-            keyOrClassOptions as ContextConsumerClassOptions,
-          );
+
+          Object.entries(metadata.props).forEach(([propName, meta]) => {
+            this.#ctxConsumer.consume(
+              meta.key,
+              (value) => (this[propName] = value),
+              meta.propOptions,
+            );
+          });
+        }
+
+        getContextConsumer() {
+          return this.#ctxConsumer;
+        }
+
+        [connectOn]() {
+          this.#ctxConsumer.connect();
+          (super[connectOn as keyof EventTarget] as any)();
+        }
+
+        [disconnectOn]() {
+          this.#ctxConsumer.disconnect();
+          (super[disconnectOn as keyof EventTarget] as any)();
         }
       }
 
@@ -80,81 +97,28 @@ export interface ContextConsumerClassOptions extends ContextConsumerOptions {
 export interface ContextConsumerPropOptions
   extends ContextConsumerConsumeOptions {}
 
+export interface WithContextConsumer {
+  getContextConsumer(): ContextConsumer;
+}
+
 interface ContextTargetMetadataExtras {
   propOptions?: ContextConsumerPropOptions;
 }
 
-const consumerKey = Symbol('context-consumer');
+interface FlexibleEventTarget
+  extends EventTarget,
+    Record<string | symbol, any> {}
 
-export function getConsumerFrom(instance: any): ContextConsumer | undefined {
-  return instance[consumerKey];
+export function isWithContextConsumer<T>(
+  obj: T,
+): obj is T & WithContextConsumer {
+  return typeof (obj as WithContextConsumer).getContextConsumer === 'function';
 }
 
-function preInitContextConsumer(
-  target: Function,
-  options?: ContextConsumerClassOptions,
-) {
-  const connectOn = options?.connectOn;
-  const disconnectOn = options?.disconnectOn;
-
-  const ctx = {
-    ctxConsumer: undefined! as ContextConsumer,
-    targetConnectMethod: (() => void 0) as Function,
-    targetDisconnectMethod: (() => void 0) as Function,
-  };
-
-  if (connectOn) {
-    ctx.targetConnectMethod = target.prototype[connectOn];
-    target.prototype[connectOn] = function (...args: unknown[]) {
-      ctx.ctxConsumer!.connect();
-      return ctx.targetConnectMethod.apply(this, args);
-    };
+export function getConsumerFrom(obj: unknown): ContextConsumer | undefined {
+  if (!isWithContextConsumer(obj)) {
+    return;
   }
 
-  if (disconnectOn) {
-    ctx.targetDisconnectMethod = target.prototype[disconnectOn];
-    target.prototype[disconnectOn] = function (...args: unknown[]) {
-      ctx.ctxConsumer!.disconnect();
-      return ctx.targetDisconnectMethod.apply(this, args);
-    };
-  }
-
-  return ctx;
-}
-
-function initContextConsumer(
-  instance: object & Record<string | symbol, any>,
-  metadata: ContextTargetMetadata<ContextTargetMetadataExtras>,
-  ctx: ReturnType<typeof preInitContextConsumer>,
-  options?: ContextConsumerClassOptions,
-) {
-  const connectOn = options?.connectOn;
-  const disconnectOn = options?.disconnectOn;
-  const propsMetadata = Object.entries(metadata.props);
-
-  const ctxConsumer = new ContextConsumer(instance as any, options);
-  instance[consumerKey] = ctx.ctxConsumer = ctxConsumer;
-
-  if (connectOn && Object.prototype.hasOwnProperty.call(instance, connectOn)) {
-    ctx.targetConnectMethod = instance[connectOn];
-    instance[connectOn] = instance.constructor.prototype[connectOn];
-  }
-
-  if (
-    disconnectOn &&
-    Object.prototype.hasOwnProperty.call(instance, disconnectOn)
-  ) {
-    ctx.targetDisconnectMethod = instance[disconnectOn];
-    instance[disconnectOn] = instance.constructor.prototype[disconnectOn];
-  }
-
-  propsMetadata.forEach(([propName, meta]) => {
-    ctxConsumer.consume(
-      meta.key,
-      (value) => (instance[propName] = value),
-      meta.propOptions,
-    );
-  });
-
-  return instance;
+  return obj.getContextConsumer();
 }

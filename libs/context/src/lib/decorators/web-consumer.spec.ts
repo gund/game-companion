@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SpyInstance } from 'vitest';
 import { contextConsumer } from './consumer.js';
-import { webContextConsumer } from './web-consumer.js';
+import {
+  webContextConsumer,
+  WebContextConsumerClassOptions,
+} from './web-consumer.js';
 
 vi.mock('./consumer.js');
 
@@ -36,7 +39,7 @@ describe('@webContextConsumer()', () => {
     });
 
     it('should call contextConsumer() with passed extra config', () => {
-      @webContextConsumer({ extra: true } as any)
+      @webContextConsumer({ extra: true } as WebContextConsumerClassOptions)
       class Test extends EventTargetStub {}
 
       expect(contextConsumerSpy).toHaveBeenCalledWith({
@@ -49,7 +52,7 @@ describe('@webContextConsumer()', () => {
 
   describe('as prop decorator', () => {
     it('should call contextProvider() with original args', () => {
-      class Test {
+      class Test extends EventTargetStub {
         @webContextConsumer('key') prop = 'value';
       }
 
@@ -64,7 +67,7 @@ describe('@webContextConsumer()', () => {
 
   describe('as getter/setter decorator', () => {
     it('should call contextProvider() with original args', () => {
-      class Test {
+      class Test extends EventTargetStub {
         @webContextConsumer('key')
         get prop() {
           return 'value';

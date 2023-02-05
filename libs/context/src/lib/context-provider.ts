@@ -12,11 +12,14 @@ export class ContextProvider {
   protected scheduledCleanup?: number;
   protected schedule =
     'requestIdleCallback' in globalThis ? requestIdleCallback : setTimeout;
+  protected log;
 
   constructor(
     protected host: EventTarget,
     protected config?: ContextProviderOptions,
-  ) {}
+  ) {
+    this.log = this.config?.debug ? console.debug : () => void 0;
+  }
 
   provide<K extends string | symbol | number>(
     key: K,
@@ -40,7 +43,7 @@ export class ContextProvider {
       return;
     }
     this.isConnected = true;
-    console.debug('ContextProvider: Connected', this.host);
+    this.log('ContextProvider: Connected', this.host);
 
     this.host.addEventListener(
       ContextRequestEvent.EventName,
@@ -62,7 +65,7 @@ export class ContextProvider {
       return;
     }
     this.isConnected = false;
-    console.debug('ContextProvider: Disconnected', this.host);
+    this.log('ContextProvider: Disconnected', this.host);
 
     if (this.config?.disposeOnDisconnect) {
       this.dispose();
@@ -100,11 +103,12 @@ export class ContextProvider {
       ...this.config?.defaultEventInit,
       key: key,
       value: value,
+      provider: this.host,
     });
 
     this.requesteeMap.get(key)?.forEach((target) => {
       target.deref() &&
-        console.debug(
+        this.log(
           'ContextProvider: Broadcasting context',
           event,
           target.deref(),
@@ -123,9 +127,11 @@ export class ContextProvider {
     if (!this.ctxMap.has(event.contextKey)) {
       return;
     }
-    console.debug(
+
+    this.log(
       'ContextProvider: Handling context request',
       event.contextKey,
+      this.host,
     );
 
     event.stopImmediatePropagation();
@@ -150,15 +156,21 @@ export class ContextProvider {
     );
   };
 
-  protected cleanup(event?: ContextRequestRemoveEvent) {
+  protected cleanup = (event?: ContextRequestRemoveEvent) => {
     this.scheduledCleanup = undefined;
-    console.debug(
-      'ContextProvider: Cleaning up requestees',
-      this.requesteeMap,
-      event,
-    );
     const eventTarget = event?.contextRequestee.deref();
     const eventContextKey = event?.contextKey;
+    const totalRefsBefore = Array.from(this.requesteeMap.values()).reduce(
+      (count, targets) => count + targets.size,
+      0,
+    );
+
+    this.log(
+      'ContextProvider: Cleaning up',
+      this.requesteeMap,
+      event,
+      this.host,
+    );
 
     this.requesteeMap.forEach((targets, key) => {
       targets.forEach((targetRef) => {
@@ -177,8 +189,16 @@ export class ContextProvider {
       }
     });
 
-    console.debug('Cleanup done', this.requesteeMap);
-  }
+    const totalRefsAfter = Array.from(this.requesteeMap.values()).reduce(
+      (count, targets) => count + targets.size,
+      0,
+    );
+
+    this.log(
+      `Cleaned up ${totalRefsBefore - totalRefsAfter} refs!`,
+      this.requesteeMap,
+    );
+  };
 }
 
 export interface ContextProviderOptions {
@@ -186,4 +206,5 @@ export interface ContextProviderOptions {
   noBroadcastOnConnect?: boolean;
   noCleanupWhenIdle?: boolean;
   defaultEventInit?: EventInit;
+  debug?: boolean;
 }

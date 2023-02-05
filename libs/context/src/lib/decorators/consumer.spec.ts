@@ -156,22 +156,6 @@ describe('@contextConsumer()', () => {
       expect(connectSpy).not.toHaveBeenCalled();
     });
 
-    it('should call ContextConsumer.connect() on connectOn prop', () => {
-      @contextConsumer({ connectOn: 'doConnect' })
-      class Test extends EventTargetStub {
-        @contextConsumer('key') prop = 'value';
-        doConnect = () => {};
-      }
-
-      const instance = new Test();
-
-      expect(connectSpy).not.toHaveBeenCalled();
-
-      instance.doConnect();
-
-      expect(connectSpy).toHaveBeenCalledTimes(1);
-    });
-
     it('should call ContextConsumer.connect() on connectOn method', () => {
       @contextConsumer({ connectOn: 'doConnect' })
       class Test extends EventTargetStub {
@@ -201,22 +185,6 @@ describe('@contextConsumer()', () => {
       instance.disconnectedCallback();
 
       expect(disconnectSpy).not.toHaveBeenCalled();
-    });
-
-    it('should call ContextConsumer.disconnect() on disconnectOn prop', () => {
-      @contextConsumer({ disconnectOn: 'doDisconnect' })
-      class Test extends EventTargetStub {
-        @contextConsumer('key') prop = 'value';
-        doDisconnect = () => {};
-      }
-
-      const instance = new Test();
-
-      expect(disconnectSpy).not.toHaveBeenCalled();
-
-      instance.doDisconnect();
-
-      expect(disconnectSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should call ContextConsumer.disconnect() on disconnectOn method', () => {

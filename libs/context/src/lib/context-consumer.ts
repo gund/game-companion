@@ -6,14 +6,17 @@ import {
 import { InferContext } from './context-map.js';
 
 export class ContextConsumer {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected ctxCallbacksMap = new Map<unknown, ContextCallback<any>>();
+  protected ctxCallbacksMap = new Map<unknown, ContextCallback>();
+  protected ctxProvidersMap = new Map<unknown, WeakRef<EventTarget>>();
   protected isConnected = false;
+  protected log;
 
   constructor(
     protected host: EventTarget,
     protected config?: ContextConsumerOptions,
-  ) {}
+  ) {
+    this.log = this.config?.debug ? console.debug : () => void 0;
+  }
 
   consume<T, K extends string | symbol | number = string>(
     key: K,
@@ -66,6 +69,7 @@ export class ContextConsumer {
 
   unConsume(key: unknown) {
     this.ctxCallbacksMap.delete(key);
+
     this.host.dispatchEvent(
       new ContextRequestRemoveEvent({ key, requestee: this.host }),
     );
@@ -76,7 +80,7 @@ export class ContextConsumer {
       return;
     }
     this.isConnected = true;
-    console.debug('ContextConsumer: Connected', this.host);
+    this.log('ContextConsumer: Connected', this.host);
 
     this.host.addEventListener(
       ContextProvideEvent.EventName,
@@ -93,7 +97,7 @@ export class ContextConsumer {
       return;
     }
     this.isConnected = false;
-    console.debug('ContextConsumer: Disconnected', this.host);
+    this.log('ContextConsumer: Disconnected', this.host);
 
     if (this.config?.disposeOnDisconnect) {
       this.dispose();
@@ -104,9 +108,14 @@ export class ContextConsumer {
       this.handleContextProvide as EventListener,
     );
 
-    this.host.dispatchEvent(
-      new ContextRequestRemoveEvent({ requestee: this.host }),
+    const ctxRemoveEvent = new ContextRequestRemoveEvent({
+      requestee: this.host,
+    });
+    this.host.dispatchEvent(ctxRemoveEvent);
+    this.ctxProvidersMap.forEach((provider) =>
+      provider.deref()?.dispatchEvent(ctxRemoveEvent),
     );
+    this.ctxProvidersMap.clear();
   }
 
   dispose() {
@@ -123,7 +132,7 @@ export class ContextConsumer {
       return;
     }
 
-    console.debug('ContextConsumer: Requesting context', key);
+    this.log('ContextConsumer: Requesting context', key, this.host);
 
     this.host.dispatchEvent(
       new ContextRequestEvent({
@@ -135,13 +144,15 @@ export class ContextConsumer {
   }
 
   protected handleContextProvide = (event: ContextProvideEvent) => {
-    console.debug(
+    this.log(
       'ContextConsumer: Received context',
       event.contextKey,
       event.contextValue,
+      this.host,
     );
 
     this.ctxCallbacksMap.get(event.contextKey)?.(event.contextValue);
+    this.ctxProvidersMap.set(event.contextKey, event.contextProvider);
   };
 }
 
@@ -149,6 +160,7 @@ export interface ContextConsumerOptions {
   disposeOnDisconnect?: boolean;
   noRequestOnConnect?: boolean;
   defaultEventInit?: EventInit;
+  debug?: boolean;
 }
 
 export interface ContextCallback<T = unknown> extends Function {

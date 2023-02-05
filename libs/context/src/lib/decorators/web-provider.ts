@@ -6,22 +6,22 @@ import {
 } from './provider.js';
 
 export function webContextProvider(
+  options?: WebContextProviderClassOptions,
+): <T extends Type<EventTarget>>(target: T) => void | T;
+export function webContextProvider(
   key: unknown,
   propOptions?: WebContextProviderPropOptions,
 ): (
-  target: Object,
+  target: EventTarget,
   prop?: string | symbol,
   descriptor?: PropertyDescriptor,
 ) => void;
-export function webContextProvider(
-  options?: WebContextProviderClassOptions,
-): <T extends Type<EventTarget>>(target: T) => void | T;
 export function webContextProvider(
   keyOrClassOptions?: unknown | WebContextProviderClassOptions,
   propOptions?: WebContextProviderPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
-    target: Object | T,
+    target: EventTarget | T,
     prop?: string | symbol,
     descriptor?: PropertyDescriptor,
   ): void | T => {
