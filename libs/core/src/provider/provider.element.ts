@@ -6,6 +6,7 @@ import {
   PlayerStatsRegistry,
   SessionHelper,
   SessionsService,
+  SettingsService,
 } from '@game-companion/core';
 import { customElement, LitElement, property } from '@game-companion/lit';
 import {
@@ -43,11 +44,14 @@ export class GcProviderElement extends LitElement {
   @webContextProvider(SessionsService)
   sessionsService = new SessionsService(this.dbService);
 
+  @webContextProvider(SettingsService)
+  settingsService = new SettingsService(this.dbService);
+
   @webContextProvider(SessionHelper)
   sessionHelper = new SessionHelper();
 
   @webContextProvider(DialogService)
-  dialogService = new DialogService();
+  dialogService = new DialogService({ renderRoot: this });
 
   @webContextProvider(ConfirmDialogService)
   confirmDialogService = new ConfirmDialogService(this.dialogService);

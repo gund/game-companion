@@ -1,6 +1,7 @@
+import { webContextConsumer } from '@game-companion/context';
+import { SettingsService } from '@game-companion/core';
 import {
   customElement,
-  html,
   LitElement,
   property,
   PropertyValueMap,
@@ -13,14 +14,22 @@ declare global {
 }
 
 @customElement(GcHapticFeedbackElement.selector)
+@webContextConsumer()
 export class GcHapticFeedbackElement extends LitElement {
   static readonly selector = 'gc-haptic-feedback';
 
   @property() declare event: string;
   @property() declare durationMs: number;
 
-  private provideFeedback = () => {
-    if (typeof window.navigator.vibrate !== 'function') {
+  @webContextConsumer(SettingsService)
+  declare settingsService: SettingsService;
+
+  private isEnabled?: Promise<boolean>;
+
+  private provideFeedback = async () => {
+    const isEnabled = await this.isEnabled;
+
+    if (typeof window.navigator.vibrate !== 'function' || !isEnabled) {
       return;
     }
 
@@ -36,6 +45,11 @@ export class GcHapticFeedbackElement extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.isEnabled = this.settingsService
+      .getById('haptic-enabled')
+      .then((s) => !!s?.value);
+
     this.addEventListener(this.event, this.provideFeedback);
   }
 
@@ -44,16 +58,16 @@ export class GcHapticFeedbackElement extends LitElement {
     this.removeEventListener(this.event, this.provideFeedback);
   }
 
+  protected override createRenderRoot() {
+    return this;
+  }
+
   protected override willUpdate(
-    changedProps: PropertyValueMap<GcHapticFeedbackElement>
+    changedProps: PropertyValueMap<GcHapticFeedbackElement>,
   ) {
     if (changedProps.has('event')) {
       this.removeEventListener(changedProps.get('event'), this.provideFeedback);
       this.addEventListener(this.event, this.provideFeedback);
     }
-  }
-
-  protected override render() {
-    return html`<slot></slot>`;
   }
 }

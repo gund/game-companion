@@ -6,3 +6,4 @@ export * from './session.model.js';
 export * from './sessions.service.js';
 export * from './navigatable-router.js';
 export * from './db.service.js';
+export * from './settings.service.js';

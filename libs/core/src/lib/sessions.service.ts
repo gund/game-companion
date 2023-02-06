@@ -3,8 +3,36 @@ import { BooleanNumber, DbService, TextRange } from './db.service.js';
 import type { Player } from './player.model.js';
 import type { Session } from './session.model.js';
 
+declare global {
+  interface GcDbSchema {
+    sessions: {
+      key: string;
+      value: Session;
+      indexes: {
+        isActive: BooleanNumber;
+        createdAt: Date;
+        'isActive-createdAt': [BooleanNumber, Date | string];
+      };
+    };
+  }
+}
+
 export class SessionsService {
-  constructor(private dbService = new DbService()) {}
+  constructor(private dbService: DbService) {
+    this.initDb();
+  }
+
+  private initDb() {
+    this.dbService.addMigration(1, (db) => {
+      const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id' });
+      sessionsStore.createIndex('isActive', 'isActive');
+      sessionsStore.createIndex('createdAt', 'createdAt');
+      sessionsStore.createIndex('isActive-createdAt', [
+        'isActive',
+        'createdAt',
+      ]);
+    });
+  }
 
   async getActive(): Promise<Session[]> {
     const db = await this.dbService.getDb();

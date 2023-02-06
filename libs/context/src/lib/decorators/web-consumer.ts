@@ -1,11 +1,16 @@
 import { Type } from '../type.js';
-import { contextConsumer, ContextConsumerClassOptions } from './consumer.js';
+import {
+  contextConsumer,
+  ContextConsumerClassOptions,
+  ContextConsumerPropOptions,
+} from './consumer.js';
 
 export function webContextConsumer(
   options?: WebContextConsumerClassOptions,
 ): <T extends Type<EventTarget>>(target: T) => void | T;
 export function webContextConsumer(
   key: unknown,
+  options?: ContextConsumerPropOptions,
 ): (
   target: EventTarget,
   prop?: string | symbol,
@@ -13,6 +18,7 @@ export function webContextConsumer(
 ) => void;
 export function webContextConsumer(
   keyOrClassOptions?: unknown | WebContextConsumerClassOptions,
+  propOptions?: ContextConsumerPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
     target: EventTarget | T,
@@ -27,7 +33,11 @@ export function webContextConsumer(
       })<T>(target as T);
     }
 
-    return contextConsumer(keyOrClassOptions)(target, prop, descriptor);
+    return contextConsumer(keyOrClassOptions, propOptions)(
+      target,
+      prop,
+      descriptor,
+    );
   };
 }
 

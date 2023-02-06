@@ -17,6 +17,7 @@ import {
   asFormAssociatedInternal,
   formAssociatedMixin,
   hiddenStyles,
+  replayEvent,
 } from '@game-companion/mdc';
 import '@game-companion/mdc/icons-link';
 import floatingLabelStyles from '@material/floating-label/dist/mdc.floating-label.min.css?inline';
@@ -152,7 +153,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             <span class="mdc-notched-outline__notch"></span>
             <span class="mdc-floating-label" id="label">${this.label}</span>
             <span class="mdc-notched-outline__trailing"></span>
-          </span>`
+          </span>`,
         )}
         ${when(
           this.leadingIcon,
@@ -168,7 +169,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
               }}
               ${ref(this.initLeadingIcon)}
               >${this.leadingIcon}</i
-            >`
+            >`,
         )}
         <slot name="control">
           <input
@@ -189,7 +190,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
             maxlength=${ifDefined(this.maxlength)}
             pattern=${ifDefined(this.pattern)}
             @input=${this.syncValue}
-            @change=${this.replayEvent}
+            @change=${replayEvent}
             @blur=${this.handleBlur}
             ${ref(this.inputRef)}
           />
@@ -208,11 +209,11 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
               }}
               ${ref(this.initTrailingIcon)}
               >${this.trailingIcon}</i
-            >`
+            >`,
         )}
         ${when(
           this.mode === 'filled',
-          () => html`<span class="mdc-line-ripple"></span>`
+          () => html`<span class="mdc-line-ripple"></span>`,
         )}
       </label>
       ${when(
@@ -220,13 +221,13 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
         () => html`<div class="mdc-text-field-helper-line">
           <div
             class="mdc-text-field-helper-text ${classMap(
-              this.getHintClassMap()
+              this.getHintClassMap(),
             )}"
             aria-hidden="true"
           >
             ${this.hintLabel}
           </div>
-        </div>`
+        </div>`,
       )}
       <div class="hidden"><slot></slot></div>
       <mdc-icons-link></mdc-icons-link>`;
@@ -239,7 +240,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<MdcTextFieldElement>
+    changedProps: PropertyValueMap<MdcTextFieldElement>,
   ) {
     if (changedProps.has('value')) {
       this.updateValue(this.value);
@@ -247,13 +248,13 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
 
     if (changedProps.has('required')) {
       asFormAssociatedInternal(this).getInternals().ariaRequired = String(
-        this.required
+        this.required,
       );
     }
 
     if (changedProps.has('disabled')) {
       asFormAssociatedInternal(this).getInternals().ariaDisabled = String(
-        this.disabled
+        this.disabled,
       );
 
       if (this.disabled) {
@@ -265,7 +266,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
 
     if (changedProps.has('readonly')) {
       asFormAssociatedInternal(this).getInternals().ariaReadOnly = String(
-        this.readonly
+        this.readonly,
       );
     }
 
@@ -338,7 +339,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
       .setValidity(
         this.inputRef.value?.validity,
         this.inputRef.value?.validationMessage,
-        this.inputRef.value
+        this.inputRef.value,
       );
   }
 
@@ -346,21 +347,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
     this.updateValue(this.inputRef.value?.value ?? '');
 
     if (event) {
-      this.replayEvent(event);
-    }
-  }
-
-  protected replayEvent(event: Event) {
-    const newEvent = new Event(event.type, {
-      bubbles: event.bubbles,
-      cancelable: event.cancelable,
-      composed: true,
-    });
-
-    this.dispatchEvent(newEvent);
-
-    if (newEvent.defaultPrevented) {
-      event.preventDefault();
+      replayEvent.call(this, event);
     }
   }
 
@@ -394,7 +381,7 @@ export class MdcTextFieldElement extends formAssociatedMixin(LitElement) {
         bubbles: true,
         cancelable: true,
         composed: true,
-      })
+      }),
     );
   }
 }

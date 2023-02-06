@@ -24,5 +24,10 @@ export function getRoutes(baseUrl = '/'): RouteConfig[] {
         html`<gc-player .sId=${sid} .pId=${pid}></gc-player>`,
       enter: () => import('@game-companion/core/player').then(),
     },
+    {
+      path: `${baseUrl}settings`,
+      render: () => html`<gc-settings></gc-settings>`,
+      enter: () => import('@game-companion/core/settings').then(),
+    },
   ];
 }

@@ -53,10 +53,10 @@ describe('@webContextConsumer()', () => {
   describe('as prop decorator', () => {
     it('should call contextProvider() with original args', () => {
       class Test extends EventTargetStub {
-        @webContextConsumer('key') prop = 'value';
+        @webContextConsumer('key', 'options' as any) prop = 'value';
       }
 
-      expect(contextConsumerSpy).toHaveBeenCalledWith('key');
+      expect(contextConsumerSpy).toHaveBeenCalledWith('key', 'options');
       expect(innerConsumerSpy).toHaveBeenCalledWith(
         Test.prototype,
         'prop',
@@ -68,7 +68,7 @@ describe('@webContextConsumer()', () => {
   describe('as getter/setter decorator', () => {
     it('should call contextProvider() with original args', () => {
       class Test extends EventTargetStub {
-        @webContextConsumer('key')
+        @webContextConsumer('key', 'options' as any)
         get prop() {
           return 'value';
         }
@@ -77,7 +77,7 @@ describe('@webContextConsumer()', () => {
         }
       }
 
-      expect(contextConsumerSpy).toHaveBeenCalledWith('key');
+      expect(contextConsumerSpy).toHaveBeenCalledWith('key', 'options');
       expect(innerConsumerSpy).toHaveBeenCalledWith(
         Test.prototype,
         'prop',
