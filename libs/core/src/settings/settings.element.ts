@@ -14,6 +14,8 @@ import { ConfirmDialogService } from '@game-companion/mdc';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/card';
 import { layoutStyles } from '@game-companion/mdc/layout';
+import '@game-companion/mdc/switch';
+import { MdcSwitchElement } from '@game-companion/mdc/switch';
 import '@game-companion/mdc/top-app-bar';
 
 declare global {
@@ -178,10 +180,11 @@ export class GcSettingsElement extends LitElement {
   private renderSetting(setting: Setting) {
     return html`
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-        ${setting.name} (${setting.type})
+        ${this.renderSettingControl(setting)}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-        ${this.renderSettingControl(setting)}
+        Controls weather to perform tactile feedback (vibrations) when editing
+        score fields.
       </div>
     `;
   }
@@ -189,17 +192,18 @@ export class GcSettingsElement extends LitElement {
   private renderSettingControl(setting: Setting) {
     switch (setting.type) {
       case 'bool':
-        return html`<input
-          type="checkbox"
-          ?checked=${setting.value}
+        return html`<mdc-switch
+          ?selected=${setting.value}
           @change=${{
             handleEvent: (event: Event) =>
               this.updateSetting({
                 ...setting,
-                value: (event.target as HTMLInputElement).checked,
+                value: (event.target as MdcSwitchElement).selected,
               }),
           }}
-        />`;
+        >
+          ${setting.name}
+        </mdc-switch>`;
       default:
         return html`${setting.value}`;
     }
