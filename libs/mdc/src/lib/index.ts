@@ -5,3 +5,4 @@ export * from './hidden.styles.js';
 export * from './dialog.service.js';
 export * from './confirm-dialog.service.js';
 export * from './snackbar.service.js';
+export * from './replay-event.js';

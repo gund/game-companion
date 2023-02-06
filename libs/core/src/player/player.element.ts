@@ -1,12 +1,13 @@
+import { webContextConsumer } from '@game-companion/context';
+import type { Player, PlayerStatsData, Session } from '@game-companion/core';
 import {
   isNameablePlayerStats,
   isUpdatablePlayerStats,
+  NavigatableRouter,
   PlayerStatsRegistry,
-  queryRootElement,
   SessionsService,
   UpdatePlayerStatsDataEvent,
 } from '@game-companion/core';
-import type { Session, Player, PlayerStatsData } from '@game-companion/core';
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
@@ -22,11 +23,7 @@ import {
   state,
   when,
 } from '@game-companion/lit';
-import {
-  ConfirmDialogService,
-  DialogService,
-  SnackbarService,
-} from '@game-companion/mdc';
+import { ConfirmDialogService, SnackbarService } from '@game-companion/mdc';
 import '@game-companion/mdc/button';
 import '@game-companion/mdc/card';
 import '@game-companion/mdc/dialog';
@@ -42,6 +39,7 @@ declare global {
 }
 
 @customElement(GcPlayerElement.selector)
+@webContextConsumer()
 export class GcPlayerElement extends LitElement {
   static readonly selector = 'gc-player';
   static override styles = [
@@ -76,12 +74,22 @@ export class GcPlayerElement extends LitElement {
   @state() private declare loadingError?: string;
   @state() private declare currentPlayerStats?: PlayerStatsData;
 
-  private playerStatsDialogRef = createRef<MdcDialogElement>();
+  @webContextConsumer(NavigatableRouter)
+  private router?: NavigatableRouter;
 
-  private sessionsService = new SessionsService();
-  private playerStatsRegistry = new PlayerStatsRegistry();
-  private confirmDialogService = new ConfirmDialogService(new DialogService());
-  private snackbarService = new SnackbarService();
+  @webContextConsumer(PlayerStatsRegistry)
+  private declare playerStatsRegistry: PlayerStatsRegistry;
+
+  @webContextConsumer(SessionsService)
+  private declare sessionsService: SessionsService;
+
+  @webContextConsumer(ConfirmDialogService)
+  private declare confirmDialogService: ConfirmDialogService;
+
+  @webContextConsumer(SnackbarService)
+  private declare snackbarService: SnackbarService;
+
+  #playerStatsDialogRef = createRef<MdcDialogElement>();
 
   constructor() {
     super();
@@ -125,7 +133,7 @@ export class GcPlayerElement extends LitElement {
           title="Add Player Stats"
           aria-label="Add Player Stats"
           @click=${{
-            handleEvent: () => this.playerStatsDialogRef.value?.open(),
+            handleEvent: () => this.#playerStatsDialogRef.value?.open(),
           }}
         ></mdc-icon-button>
         <div class="mdc-layout-grid">
@@ -134,12 +142,12 @@ export class GcPlayerElement extends LitElement {
               this.player,
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               () => this.renderPlayer(this.player!),
-              () => this.renderFallback()
+              () => this.renderFallback(),
             )}
           </div>
         </div>
       </mdc-top-app-bar>
-      <mdc-dialog fullscreen ${ref(this.playerStatsDialogRef)}>
+      <mdc-dialog fullscreen ${ref(this.#playerStatsDialogRef)}>
         <span slot="title">Add Player Stats</span>
         <gc-add-player-stats
           @gcAddPlayerStats=${this.setCurrentPlayerStats}
@@ -194,7 +202,7 @@ export class GcPlayerElement extends LitElement {
                 Remove Stats
               </mdc-button>
             </mdc-card>
-          </div>`
+          </div>`,
         )}`,
       () => html`<div
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
@@ -206,14 +214,14 @@ export class GcPlayerElement extends LitElement {
           @click=${{
             handleEvent: (e: Event) => {
               e.preventDefault();
-              this.playerStatsDialogRef.value?.open();
+              this.#playerStatsDialogRef.value?.open();
             },
           }}
         >
           Add Player Stats
         </mdc-button>
         to start tracking score.
-      </div>`
+      </div>`,
     )}`;
   }
 
@@ -238,13 +246,13 @@ export class GcPlayerElement extends LitElement {
       ${when(
         this.isLoading,
         () => html`Loading Player...`,
-        () => html`<b>Invalid Player!</b> ${this.loadingError}`
+        () => html`<b>Invalid Player!</b> ${this.loadingError}`,
       )}
     </div>`;
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<GcPlayerElement>
+    changedProps: PropertyValueMap<GcPlayerElement>,
   ) {
     if (changedProps.has('sId')) {
       this.loadSession();
@@ -284,7 +292,7 @@ export class GcPlayerElement extends LitElement {
 
     if (!this.player) {
       this.loadingError = String(
-        new Error(`No Player with Id '${this.pId}' was found in this session!`)
+        new Error(`No Player with Id '${this.pId}' was found in this session!`),
       );
     }
   }
@@ -315,13 +323,13 @@ export class GcPlayerElement extends LitElement {
     }
 
     this.player.stats = this.player.stats.map((ps) =>
-      ps === playerStats ? { ...ps, ...data } : ps
+      ps === playerStats ? { ...ps, ...data } : ps,
     );
 
     try {
       this.player = await this.sessionsService.updatePlayer(
         this.sId,
-        this.player
+        this.player,
       );
 
       this.requestUpdate();
@@ -354,7 +362,7 @@ export class GcPlayerElement extends LitElement {
       });
     } catch (e) {
       this.player.stats = this.player.stats.filter(
-        (stats) => stats !== playerStats
+        (stats) => stats !== playerStats,
       );
       this.requestUpdate();
 
@@ -417,7 +425,7 @@ export class GcPlayerElement extends LitElement {
 
     const currPlayerIdx = this.session.players.findIndex(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (p) => p.id === this.player!.id
+      (p) => p.id === this.player!.id,
     );
 
     if (currPlayerIdx === -1) {
@@ -438,8 +446,8 @@ export class GcPlayerElement extends LitElement {
       return;
     }
 
-    await queryRootElement().router.navigateTo(
-      `/session/${this.session.id}/player/${nextPlayer.id}`
+    this.router?.navigateTo(
+      `/session/${this.session.id}/player/${nextPlayer.id}`,
     );
   }
 }

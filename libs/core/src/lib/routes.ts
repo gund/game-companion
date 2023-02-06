@@ -1,7 +1,7 @@
 import { RouteConfig } from '@lit-labs/router';
 import { html } from 'lit';
 
-export function getRoutes(baseUrl?: string): RouteConfig[] {
+export function getRoutes(baseUrl = '/'): RouteConfig[] {
   return [
     {
       path: `${baseUrl}`,
@@ -23,6 +23,11 @@ export function getRoutes(baseUrl?: string): RouteConfig[] {
       render: ({ sid, pid }) =>
         html`<gc-player .sId=${sid} .pId=${pid}></gc-player>`,
       enter: () => import('@game-companion/core/player').then(),
+    },
+    {
+      path: `${baseUrl}settings`,
+      render: () => html`<gc-settings></gc-settings>`,
+      enter: () => import('@game-companion/core/settings').then(),
     },
   ];
 }

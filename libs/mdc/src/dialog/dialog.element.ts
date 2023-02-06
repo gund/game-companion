@@ -13,7 +13,7 @@ import {
   unsafeCSS,
   when,
 } from '@game-companion/lit';
-import { hiddenStyles } from '@game-companion/mdc';
+import { hiddenStyles, replayEvent } from '@game-companion/mdc';
 import { MDCDialog } from '@material/dialog';
 import dialogStyles from '@material/dialog/dist/mdc.dialog.min.css?inline';
 
@@ -59,7 +59,7 @@ export class MdcDialogElement extends LitElement {
     this.actionsExist = this.actionsSlotted.length > 0;
 
     this.actionsSlotted.forEach((action) =>
-      action.classList.add('mdc-dialog__button')
+      action.classList.add('mdc-dialog__button'),
     );
   };
 
@@ -86,11 +86,11 @@ export class MdcDialogElement extends LitElement {
 
     this.titleSlotRef.value?.removeEventListener(
       'slotchange',
-      this.handleSlotChanges
+      this.handleSlotChanges,
     );
     this.actionsSlotRef.value?.removeEventListener(
       'slotchange',
-      this.handleSlotChanges
+      this.handleSlotChanges,
     );
     this.dialog?.destroy();
     this.dialog = undefined;
@@ -101,8 +101,8 @@ export class MdcDialogElement extends LitElement {
       class="mdc-dialog ${classMap(this.getDialogClassMap())}"
       @MDCDialog:opening=${this.syncOpen}
       @MDCDialog:closing=${this.syncOpen}
-      @MDCDialog:opened=${this.replayEvent}
-      @MDCDialog:closed=${this.replayEvent}
+      @MDCDialog:opened=${replayEvent}
+      @MDCDialog:closed=${replayEvent}
       ${ref(this.initDialog)}
     >
       <div class="mdc-dialog__container">
@@ -126,7 +126,7 @@ export class MdcDialogElement extends LitElement {
                 icon="close"
                 aria-label="Close"
                 data-mdc-dialog-action="close"
-              ></mdc-icon-button>`
+              ></mdc-icon-button>`,
             )}
           </div>
           <div class="mdc-dialog__content" id="dialog-content">
@@ -146,18 +146,18 @@ export class MdcDialogElement extends LitElement {
   protected override firstUpdated() {
     this.titleSlotRef.value?.addEventListener(
       'slotchange',
-      this.handleSlotChanges
+      this.handleSlotChanges,
     );
     this.actionsSlotRef.value?.addEventListener(
       'slotchange',
-      this.handleSlotChanges
+      this.handleSlotChanges,
     );
 
     this.handleSlotChanges();
   }
 
   protected override willUpdate(
-    changedProps: PropertyValueMap<MdcDialogElement>
+    changedProps: PropertyValueMap<MdcDialogElement>,
   ) {
     if (changedProps.has('isOpen')) {
       if (this.isOpen) {
@@ -204,21 +204,6 @@ export class MdcDialogElement extends LitElement {
   protected syncOpen(event: CustomEvent) {
     this.isOpen = this.dialog?.isOpen ?? false;
 
-    this.replayEvent(event);
-  }
-
-  protected replayEvent(event: CustomEvent) {
-    const newEvent = new CustomEvent(event.type, {
-      detail: event.detail,
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-
-    this.dispatchEvent(newEvent);
-
-    if (newEvent.defaultPrevented) {
-      event.preventDefault();
-    }
+    replayEvent.call(this, event);
   }
 }

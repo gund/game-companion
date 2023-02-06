@@ -1,5 +1,6 @@
 import {
   classMap,
+  css,
   customElement,
   html,
   LitElement,
@@ -9,7 +10,7 @@ import {
 } from '@game-companion/lit';
 import '@game-companion/mdc/icons-link';
 import { MDCTopAppBar } from '@material/top-app-bar';
-import topAppBarStyles from '@material/top-app-bar/dist/mdc.top-app-bar.min.css?inline';
+import { topAppBarStyles } from './top-app-bar.styles.js';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -27,16 +28,42 @@ export type TopAppBarAppearance =
 @customElement(MdcTopAppBarElement.selector)
 export class MdcTopAppBarElement extends LitElement {
   static readonly selector = 'mdc-top-app-bar';
-  static override styles = [unsafeCSS(topAppBarStyles)];
+  static override styles = [
+    unsafeCSS(topAppBarStyles),
+    css`
+      :host {
+        display: flex;
+        height: 100vh;
+      }
+
+      .content {
+        flex: auto;
+        overflow: auto;
+        position: relative;
+      }
+
+      .main-content {
+        overflow: auto;
+        height: 100%;
+      }
+
+      .mdc-top-app-bar {
+        position: absolute;
+        z-index: 7;
+      }
+    `,
+  ];
 
   @property({ type: String }) declare appearance?: TopAppBarAppearance;
 
   protected topBar?: MDCTopAppBar;
+  protected mainContentElem?: Element;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.topBar?.destroy();
     this.topBar = undefined;
+    this.mainContentElem = undefined;
   }
 
   protected override render() {
@@ -61,16 +88,27 @@ export class MdcTopAppBarElement extends LitElement {
           </section>
         </div>
       </header>
-      <main class="${this.getContentClass()}">
-        <slot></slot>
-      </main>
+      <slot name="nav-drawer"></slot>
+      <div class="content ${this.getContentClass()}">
+        <main class="main-content" ${ref(this.initMainContent)}>
+          <slot></slot>
+        </main>
+      </div>
       <mdc-icons-link></mdc-icons-link>`;
   }
 
-  private initTopBar(element?: Element) {
+  protected initTopBar(element?: Element) {
     if (element) {
       this.topBar?.destroy();
       this.topBar = MDCTopAppBar.attachTo(element);
+      this.initMainContent();
+    }
+  }
+
+  protected initMainContent(element = this.mainContentElem) {
+    if (element) {
+      this.mainContentElem = element;
+      this.topBar?.setScrollTarget(element);
     }
   }
 

@@ -1,4 +1,6 @@
+import { webContextConsumer } from '@game-companion/context';
 import { Session, SessionsService } from '@game-companion/core';
+import '@game-companion/core/menu-drawer';
 import '@game-companion/core/session-list';
 import {
   css,
@@ -21,6 +23,7 @@ declare global {
 }
 
 @customElement(GcSessionsElement.selector)
+@webContextConsumer()
 export class GcSessionsElement extends LitElement {
   static readonly selector = 'gc-sessions';
   static override styles = [
@@ -39,27 +42,56 @@ export class GcSessionsElement extends LitElement {
     `,
   ];
 
-  private sessionsService = new SessionsService();
+  @webContextConsumer(SessionsService)
+  private declare sessionsService: SessionsService;
 
   @state()
   private declare sessions: Promise<Session[]>;
   @state()
   private declare inactiveSessions: Promise<Session[]>;
+  @state()
+  private declare drawerOpened: boolean;
+
+  constructor() {
+    super();
+
+    this.drawerOpened = false;
+  }
 
   protected override render() {
     return html`
       <mdc-top-app-bar appearance="fixed">
         <span slot="title">Sessions</span>
+        <mdc-icon-button
+          slot="menu"
+          type="button"
+          class="mdc-top-app-bar__navigation-icon"
+          icon="${this.drawerOpened ? 'close' : 'menu'}"
+          title="Toggle menu"
+          aria-label="Toggle menu"
+          @click=${{
+            handleEvent: () => (this.drawerOpened = !this.drawerOpened),
+          }}
+        ></mdc-icon-button>
+        <gc-menu-drawer
+          slot="nav-drawer"
+          ?open=${this.drawerOpened}
+          @MDCDrawer:opened=${{ handleEvent: () => (this.drawerOpened = true) }}
+          @MDCDrawer:closed=${{
+            handleEvent: () => (this.drawerOpened = false),
+          }}
+        >
+        </gc-menu-drawer>
         ${until(
           this.sessions
             .then((s) => this.renderSessions(s))
             .catch((e) => this.renderError(e)),
-          `Loading...`
+          `Loading...`,
         )}
         ${until(
           this.inactiveSessions
             .then((s) => this.renderInactiveSessions(s))
-            .catch((e) => this.renderError(e))
+            .catch((e) => this.renderError(e)),
         )}
       </mdc-top-app-bar>
       <mdc-fab
@@ -91,7 +123,7 @@ export class GcSessionsElement extends LitElement {
             </div>
           </div>
         </div>
-        ${this.renderSessions(sessions)}`
+        ${this.renderSessions(sessions)}`,
     )}`;
   }
 

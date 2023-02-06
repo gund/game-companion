@@ -1,6 +1,7 @@
-import { mixinRootElement } from '@game-companion/core';
+import { getRoutes, NavigatableRouter } from '@game-companion/core';
+import '@game-companion/core/provider';
 import '@game-companion/core/update-notification';
-import { customElement, html, state } from '@game-companion/lit';
+import { customElement, html, LitElement, state } from '@game-companion/lit';
 import { tfmPlayerStats } from '@game-companion/tfm';
 import { registerSW } from 'virtual:pwa-register';
 
@@ -11,16 +12,15 @@ declare global {
 }
 
 @customElement(TfmAppElement.selector)
-export class TfmAppElement extends mixinRootElement({
-  selector: 'tfm-companion-root',
-  playerStats: [...tfmPlayerStats],
-}) {
+export class TfmAppElement extends LitElement {
   static readonly selector = 'tfm-companion-root';
 
   @state() private declare needRefresh: boolean;
   @state() private declare offlineReady: boolean;
 
-  private updateSw: () => Promise<void>;
+  #router = new NavigatableRouter(this, getRoutes());
+  #playerStats = [...tfmPlayerStats];
+  #updateSw: () => Promise<void>;
 
   constructor() {
     super();
@@ -28,7 +28,7 @@ export class TfmAppElement extends mixinRootElement({
     this.needRefresh = false;
     this.offlineReady = false;
 
-    this.updateSw = registerSW({
+    this.#updateSw = registerSW({
       immediate: true,
       onNeedRefresh: () => (this.needRefresh = true),
       onOfflineReady: () => (this.offlineReady = true),
@@ -36,11 +36,16 @@ export class TfmAppElement extends mixinRootElement({
   }
 
   protected override render() {
-    return html`${super.render()}
-      <gc-update-notification
-        .needRefresh=${this.needRefresh}
-        .offlineReady=${this.offlineReady}
-        @gcUpdateNotificationRefresh=${this.updateSw}
-      ></gc-update-notification>`;
+    return html`
+      <gc-provider .router=${this.#router} .playerStats=${this.#playerStats}>
+        ${this.#router.outlet()}
+
+        <gc-update-notification
+          .needRefresh=${this.needRefresh}
+          .offlineReady=${this.offlineReady}
+          @gcUpdateNotificationRefresh=${this.#updateSw}
+        ></gc-update-notification>
+      </gc-provider>
+    `;
   }
 }

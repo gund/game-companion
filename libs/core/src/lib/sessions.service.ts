@@ -1,9 +1,38 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BooleanNumber, DbService, TextRange } from './db.service.js';
 import type { Player } from './player.model.js';
 import type { Session } from './session.model.js';
 
+declare global {
+  interface GcDbSchema {
+    sessions: {
+      key: string;
+      value: Session;
+      indexes: {
+        isActive: BooleanNumber;
+        createdAt: Date;
+        'isActive-createdAt': [BooleanNumber, Date | string];
+      };
+    };
+  }
+}
+
 export class SessionsService {
-  constructor(private dbService = new DbService()) {}
+  constructor(private dbService: DbService) {
+    this.initDb();
+  }
+
+  private initDb() {
+    this.dbService.addMigration(1, (db) => {
+      const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id' });
+      sessionsStore.createIndex('isActive', 'isActive');
+      sessionsStore.createIndex('createdAt', 'createdAt');
+      sessionsStore.createIndex('isActive-createdAt', [
+        'isActive',
+        'createdAt',
+      ]);
+    });
+  }
 
   async getActive(): Promise<Session[]> {
     const db = await this.dbService.getDb();
@@ -14,9 +43,9 @@ export class SessionsService {
       .iterate(
         IDBKeyRange.bound(
           [BooleanNumber.False, TextRange.Upper],
-          [BooleanNumber.True, TextRange.Upper]
+          [BooleanNumber.True, TextRange.Upper],
         ),
-        'prev'
+        'prev',
       );
 
     const sessions: Session[] = [];
@@ -34,7 +63,7 @@ export class SessionsService {
     const sessions = await db.getAllFromIndex(
       'sessions',
       'isActive',
-      BooleanNumber.False
+      BooleanNumber.False,
     );
 
     return sessions.map((s) => this.deserializeSession(s));
@@ -73,7 +102,7 @@ export class SessionsService {
     const { session, tx } = await this.findByIdTx(sId, 'readwrite');
 
     session.players = session.players.map((p) =>
-      p.id === player.id ? player : p
+      p.id === player.id ? player : p,
     );
 
     await tx.store.put(this.serializeSession(session));
@@ -97,7 +126,7 @@ export class SessionsService {
 
   private async findByIdTx<M extends IDBTransactionMode = 'readonly'>(
     sId: string,
-    mode: M = 'readonly' as any
+    mode: M = 'readonly' as any,
   ) {
     const db = await this.dbService.getDb();
     const tx = db.transaction('sessions', mode);

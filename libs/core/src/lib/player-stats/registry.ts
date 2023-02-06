@@ -1,10 +1,13 @@
-import { queryRootElement } from '../root-element.js';
 import type { PlayerStats } from './player-stats.js';
 
 export class PlayerStatsRegistry {
-  private playerStats = queryRootElement().playerStats;
+  #playerStats;
+
+  constructor(playerStats: PlayerStats[]) {
+    this.#playerStats = playerStats;
+  }
 
   getAvailable(): PlayerStats[] {
-    return this.playerStats;
+    return this.#playerStats;
   }
 }

@@ -1,3 +1,4 @@
+import { webContextConsumer } from '@game-companion/context';
 import type { Session } from '@game-companion/core';
 import { SessionHelper } from '@game-companion/core';
 import {
@@ -19,6 +20,7 @@ declare global {
 }
 
 @customElement(GcSessionListElement.selector)
+@webContextConsumer()
 export class GcSessionListElement extends LitElement {
   static readonly selector = 'gc-session-list';
   static override styles = [
@@ -33,7 +35,8 @@ export class GcSessionListElement extends LitElement {
 
   @property() declare sessions: Session[];
 
-  private sessionHelper = new SessionHelper();
+  @webContextConsumer(SessionHelper)
+  private declare sessionHelper: SessionHelper;
 
   protected override render() {
     return html`${when(
@@ -51,7 +54,7 @@ export class GcSessionListElement extends LitElement {
                 >From ${this.sessionHelper.formatSince(s)}</span
               >
             </a>
-          </mdc-list-item>`
+          </mdc-list-item>`,
         )}
       </mdc-list>`,
       () => html`<div class="mdc-layout-grid no-sessions">
@@ -60,7 +63,7 @@ export class GcSessionListElement extends LitElement {
             <h3>No sessions found!</h3>
           </div>
         </div>
-      </div>`
+      </div>`,
     )}`;
   }
 }

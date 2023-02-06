@@ -1,0 +1,9 @@
+{
+  "name": "@game-companion/context",
+  "version": "0.0.1",
+  "description": "Context API for Web Components",
+  "type": "module",
+  "main": "index.cjs",
+  "module": "index.js",
+  "types": "index.d.ts"
+}
