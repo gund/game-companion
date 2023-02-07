@@ -112,7 +112,7 @@ export class GcSettingsElement extends LitElement {
                 this.settings
                   ?.then((settings) => this.renderSettings(settings))
                   .catch((e) => this.renderError(e)),
-                () => html`Loading settings...`,
+                html`Loading settings...`,
               )}
             </div>
             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -169,8 +169,7 @@ export class GcSettingsElement extends LitElement {
         ${this.renderSettingControl(setting)}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-        Controls weather to perform tactile feedback (vibrations) when editing
-        score fields.
+        ${setting.description}
       </div>
     `;
   }

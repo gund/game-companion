@@ -26,19 +26,16 @@ export class SettingsService {
       db.createObjectStore('settings', { keyPath: 'id' });
     });
 
-    this.dbService.onPopulate((db) => {
-      const tx = db.transaction('settings', 'readwrite');
-
-      tx.store.add({
+    this.dbService.addMigration(3, (_1, _2, _3, tx) => {
+      tx.objectStore('settings').put({
         id: 'haptic-enabled',
         name: 'Haptic Feedback',
         type: 'bool',
         value: true,
+        description:
+          'Controls weather to perform tactile feedback (vibrations)' +
+          ' when editing score fields.',
       });
-
-      tx.commit();
-
-      return tx.done;
     });
   }
 
@@ -70,6 +67,7 @@ export type SettingId = keyof GcSettingsRegistry & string;
 export interface SettingBase {
   id: SettingId;
   name: string;
+  description?: string;
 }
 
 export interface BooleanSetting extends SettingBase {
