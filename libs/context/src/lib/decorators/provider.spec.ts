@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { SpyInstance } from 'vitest';
-import { ContextProvider } from '../context-provider.js';
+import { EventedContextProvider as ContextProvider } from '../evented-provider.js';
 import { contextProvider, getProviderFrom } from './provider.js';
 
-vi.mock('../context-provider.js');
+vi.mock('../evented-provider.js');
 
 class EventTargetStub implements EventTarget {
   addEventListener = vi.fn();

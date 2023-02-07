@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { SpyInstance } from 'vitest';
-import { ContextConsumer } from '../context-consumer.js';
+import { EventedContextConsumer as ContextConsumer } from '../evented-consumer.js';
 import { contextConsumer, getConsumerFrom } from './consumer.js';
 
-vi.mock('../context-consumer.js');
+vi.mock('../evented-consumer.js');
 
 class EventTargetStub implements EventTarget {
   addEventListener = vi.fn();
@@ -74,8 +74,8 @@ describe('@contextConsumer()', () => {
   it('should consume context', () => {
     @contextConsumer()
     class Test extends EventTargetStub {
-      @contextConsumer('key1', 'options1' as any) prop1 = 'value1';
-      @contextConsumer('key2', 'options2' as any) prop2 = 'value2';
+      @contextConsumer('key1') prop1 = 'value1';
+      @contextConsumer('key2') prop2 = 'value2';
     }
 
     const instance = new Test();
@@ -83,16 +83,8 @@ describe('@contextConsumer()', () => {
     expect(instance.prop1).toBe('value1');
     expect(instance.prop2).toBe('value2');
     expect(consumeSpy).toHaveBeenCalledTimes(2);
-    expect(consumeSpy).toHaveBeenCalledWith(
-      'key1',
-      expect.any(Function),
-      'options1',
-    );
-    expect(consumeSpy).toHaveBeenCalledWith(
-      'key2',
-      expect.any(Function),
-      'options2',
-    );
+    expect(consumeSpy).toHaveBeenCalledWith('key1', expect.any(Function));
+    expect(consumeSpy).toHaveBeenCalledWith('key2', expect.any(Function));
   });
 
   it('should allow update context in prop', () => {
