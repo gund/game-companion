@@ -271,7 +271,7 @@ export class GcNewSessionElement extends LitElement {
   private async handleSubmit(e: SubmitEvent) {
     e.preventDefault();
 
-    const data = new FormData(e.target as any);
+    const data = new FormData(e.target as HTMLFormElement);
 
     const playerNames = data.getAll('player[]').map(String);
 

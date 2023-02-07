@@ -8,7 +8,12 @@ import {
   SessionsService,
   SettingsService,
 } from '@game-companion/core';
-import { customElement, LitElement, property } from '@game-companion/lit';
+import {
+  customElement,
+  LitElement,
+  property,
+  PropertyValueMap,
+} from '@game-companion/lit';
 import {
   ConfirmDialogService,
   DialogService,
@@ -31,9 +36,7 @@ export class GcProviderElement extends LitElement {
   declare router?: NavigatableRouter;
 
   @property()
-  set playerStats(playerStats: PlayerStats[]) {
-    this.playerStatsRegistry = new PlayerStatsRegistry(playerStats);
-  }
+  declare playerStats?: PlayerStats[];
 
   @webContextProvider(PlayerStatsRegistry)
   playerStatsRegistry = new PlayerStatsRegistry([]);
@@ -61,5 +64,15 @@ export class GcProviderElement extends LitElement {
 
   protected override createRenderRoot() {
     return this;
+  }
+
+  protected override willUpdate(
+    changedProps: PropertyValueMap<GcProviderElement>,
+  ) {
+    if (changedProps.has('playerStats')) {
+      this.playerStatsRegistry = new PlayerStatsRegistry(
+        this.playerStats ?? [],
+      );
+    }
   }
 }

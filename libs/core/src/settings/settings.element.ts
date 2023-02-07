@@ -1,6 +1,5 @@
 import { webContextConsumer } from '@game-companion/context';
 import { DbService, Setting, SettingsService } from '@game-companion/core';
-import '@game-companion/core/menu-drawer';
 import {
   customElement,
   html,
@@ -30,7 +29,6 @@ export class GcSettingsElement extends LitElement {
   static readonly selector = 'gc-settings';
   static override styles = [layoutStyles];
 
-  @state() private declare drawerOpened: boolean;
   @state() private declare clearingStorage: boolean;
   @state() private declare settings?: Promise<Setting[]>;
   @state() private declare updateError?: string;
@@ -47,7 +45,6 @@ export class GcSettingsElement extends LitElement {
   constructor() {
     super();
 
-    this.drawerOpened = false;
     this.clearingStorage = false;
   }
 
@@ -101,24 +98,13 @@ export class GcSettingsElement extends LitElement {
         <span slot="title">Settings</span>
         <mdc-icon-button
           slot="menu"
-          type="button"
+          type="link"
+          href="/"
           class="mdc-top-app-bar__navigation-icon"
-          icon="${this.drawerOpened ? 'close' : 'menu'}"
-          title="Toggle menu"
-          aria-label="Toggle menu"
-          @click=${{
-            handleEvent: () => (this.drawerOpened = !this.drawerOpened),
-          }}
+          icon="arrow_back"
+          title="Back"
+          aria-label="Back"
         ></mdc-icon-button>
-        <gc-menu-drawer
-          slot="nav-drawer"
-          ?open=${this.drawerOpened}
-          @MDCDrawer:opened=${{ handleEvent: () => (this.drawerOpened = true) }}
-          @MDCDrawer:closed=${{
-            handleEvent: () => (this.drawerOpened = false),
-          }}
-        >
-        </gc-menu-drawer>
         <div class="mdc-layout-grid">
           <div class="mdc-layout-grid__inner">
             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
