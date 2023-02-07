@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValueMap,
-} from '@game-companion/lit';
+import { customElement, html, LitElement, property } from '@game-companion/lit';
 import { fixture, fixtureCleanup } from '@open-wc/testing';
 import { webContextConsumer } from './web-consumer.js';
 import { webContextProvider } from './web-provider.js';

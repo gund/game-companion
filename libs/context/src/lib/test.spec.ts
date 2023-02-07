@@ -8,8 +8,8 @@ import {
   PropertyValueMap,
 } from '@game-companion/lit';
 import { fixture, fixtureCleanup } from '@open-wc/testing';
-import { ContextConsumer } from './context-consumer.js';
-import { ContextProvider } from './context-provider.js';
+import { EventedContextConsumer as ContextConsumer } from './evented-consumer.js';
+import { EventedContextProvider as ContextProvider } from './evented-provider.js';
 
 describe('Context API', () => {
   afterEach(() => fixtureCleanup());
@@ -29,7 +29,7 @@ describe('Context API', () => {
 
       override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.ctxProvider.dispose();
+        this.ctxProvider.disconnect();
       }
 
       protected override render(): unknown {
@@ -83,7 +83,7 @@ describe('Context API', () => {
 
       override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.ctxConsumer.dispose();
+        this.ctxConsumer.disconnect();
       }
 
       protected override render(): unknown {

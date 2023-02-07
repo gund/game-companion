@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  ContextConsumer,
-  ContextConsumerConsumeOptions,
-  ContextConsumerOptions,
-} from '../context-consumer.js';
+  EventedContextConsumer as ContextConsumer,
+  EventedContextConsumerOptions as ContextConsumerOptions,
+} from '../evented-consumer.js';
 import { Type } from '../type.js';
 import { collectPropContext, getTargetContextMetadata } from './metadata.js';
 
@@ -12,7 +11,6 @@ export function contextConsumer(
 ): <T extends Type<EventTarget>>(target: T) => void | T;
 export function contextConsumer(
   key: unknown,
-  options?: ContextConsumerPropOptions,
 ): (
   target: EventTarget,
   prop?: string | symbol,
@@ -20,7 +18,6 @@ export function contextConsumer(
 ) => void;
 export function contextConsumer(
   keyOrClassOptions?: unknown | ContextConsumerClassOptions,
-  propOptions?: ContextConsumerPropOptions,
 ) {
   return <T extends Type<EventTarget>>(
     target: EventTarget | T,
@@ -28,18 +25,16 @@ export function contextConsumer(
     descriptor?: PropertyDescriptor,
   ): void | T => {
     if (typeof target === 'object' && prop !== undefined) {
-      return collectPropContext<ContextTargetMetadataExtras>(
+      return collectPropContext(
         target.constructor,
         prop,
         keyOrClassOptions,
         descriptor,
-        { propOptions },
       );
     }
 
     if (typeof target === 'function') {
-      const metadata =
-        getTargetContextMetadata<ContextTargetMetadataExtras>(target);
+      const metadata = getTargetContextMetadata(target);
 
       if (Object.keys(metadata.props).length === 0) {
         return target as T;
@@ -64,7 +59,6 @@ export function contextConsumer(
             this.#ctxConsumer.consume(
               meta.key,
               (value) => (this[propName] = value),
-              meta.propOptions,
             );
           });
         }
@@ -94,15 +88,8 @@ export interface ContextConsumerClassOptions extends ContextConsumerOptions {
   disconnectOn?: string;
 }
 
-export interface ContextConsumerPropOptions
-  extends ContextConsumerConsumeOptions {}
-
 export interface WithContextConsumer {
   getContextConsumer(): ContextConsumer;
-}
-
-interface ContextTargetMetadataExtras {
-  propOptions?: ContextConsumerPropOptions;
 }
 
 interface FlexibleEventTarget

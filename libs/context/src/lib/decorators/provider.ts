@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  ContextProvider,
-  ContextProviderOptions,
-} from '../context-provider.js';
+  EventedContextProvider as ContextProvider,
+  EventedContextProviderOptions as ContextProviderOptions,
+} from '../evented-provider.js';
 import { Type } from '../type.js';
 import {
   collectPropContext,
