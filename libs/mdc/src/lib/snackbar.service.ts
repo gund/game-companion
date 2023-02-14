@@ -6,11 +6,11 @@ import type {
 
 export class SnackbarService {
   protected renderRoot;
-  protected openedSnackbars = new Set<SnackbarRef>();
+  protected openedSnackbars = new Set<SimpleSnackbarRef>();
 
   constructor(
     config?: SnackbarServiceConfig,
-    protected document = globalThis.document
+    protected document = globalThis.document,
   ) {
     this.renderRoot = config?.renderRoot ?? this.document.body;
   }
@@ -30,7 +30,7 @@ export class SnackbarService {
           ${options.content}
         </mdc-snackbar>
       `,
-      snackbarContainer
+      snackbarContainer,
     );
 
     const snackbarElem = snackbarContainer.querySelector('mdc-snackbar');
@@ -41,8 +41,17 @@ export class SnackbarService {
 
     const snackbarRef: SimpleSnackbarRef = new SimpleSnackbarRef(
       snackbarElem,
-      () => this.openedSnackbars.delete(snackbarRef)
+      () => this.openedSnackbars.delete(snackbarRef),
+      options.tag,
     );
+
+    if (options.tag) {
+      this.openedSnackbars.forEach((ref) => {
+        if (ref.tag === options.tag) {
+          ref.close();
+        }
+      });
+    }
 
     this.openedSnackbars.add(snackbarRef);
     this.renderRoot.appendChild(snackbarElem);
@@ -54,7 +63,7 @@ export class SnackbarService {
 
   async cloaseAll() {
     await Promise.all(
-      Array.from(this.openedSnackbars).map((snackbar) => snackbar.close())
+      Array.from(this.openedSnackbars).map((snackbar) => snackbar.close()),
     );
     this.openedSnackbars.clear();
   }
@@ -70,6 +79,7 @@ export interface OpenSnackbarOptions {
   noCloseOnEscape?: boolean;
   mode?: MdcSnackbarMode;
   timeoutMs?: number;
+  tag?: string;
 }
 
 export interface SnackbarRef {
@@ -80,12 +90,13 @@ export interface SnackbarRef {
 export class SimpleSnackbarRef implements SnackbarRef {
   constructor(
     protected snackbarElem: MdcSnackbarElement,
-    protected onClose: () => void
+    protected onClose: () => void,
+    public tag?: string,
   ) {
     this.snackbarElem.addEventListener(
       'MDCSnackbar:closed',
       () => this.handleClosed(),
-      { once: true }
+      { once: true },
     );
   }
 
