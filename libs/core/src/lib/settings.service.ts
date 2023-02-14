@@ -19,6 +19,11 @@ declare global {
 export type { GcSettingsRegistry };
 
 export class SettingsService {
+  protected updateCallbacks = new Map<
+    SettingId | null,
+    Set<(setting: Setting) => void>
+  >();
+
   constructor(private dbService: DbService) {
     this.initDb();
   }
@@ -78,7 +83,25 @@ export class SettingsService {
 
     await db.put('settings', setting);
 
+    this.updateCallbacks.get(setting.id)?.forEach((cb) => cb(setting));
+    this.updateCallbacks.get(null)?.forEach((cb) => cb(setting));
+
     return setting;
+  }
+
+  onUpdate(
+    callback: (setting: Setting) => void,
+    settingId?: SettingId,
+  ): () => void {
+    if (!this.updateCallbacks.has(settingId ?? null)) {
+      this.updateCallbacks.set(settingId ?? null, new Set());
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.updateCallbacks.get(settingId ?? null)!.add(callback);
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return () => this.updateCallbacks.get(settingId ?? null)!.delete(callback);
   }
 }
 

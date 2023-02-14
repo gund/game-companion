@@ -6,6 +6,7 @@ export class WakelockService {
   protected isEnabled?: boolean;
   protected shouldShowNotification?: boolean;
   protected shouldReaquire = false;
+  protected disposable?: () => void;
 
   constructor(
     protected settingsService: SettingsService,
@@ -70,21 +71,19 @@ export class WakelockService {
       'visibilitychange',
       this.handleVisibilityChange,
     );
+    this.disposable?.();
+    this.disposable = undefined;
     this.release();
   }
 
   protected async init() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
-    this.isEnabled =
-      (await this.settingsService.getById('wakelock-enabled'))?.value ?? false;
-    this.shouldShowNotification =
-      (await this.settingsService.getById('wakelock-notifications'))?.value ??
-      false;
+    this.disposable = this.settingsService.onUpdate(() =>
+      this.updateSettings(),
+    );
 
-    if (this.shouldReaquire) {
-      await this.request();
-    }
+    await this.updateSettings();
   }
 
   protected canRequest() {
@@ -118,5 +117,19 @@ export class WakelockService {
       hasDismiss: true,
       tag: 'gc-wakelock-message',
     });
+  }
+
+  protected async updateSettings() {
+    this.isEnabled =
+      (await this.settingsService.getById('wakelock-enabled'))?.value ?? false;
+    this.shouldShowNotification =
+      (await this.settingsService.getById('wakelock-notifications'))?.value ??
+      false;
+
+    if (this.isEnabled && this.shouldReaquire) {
+      await this.request();
+    } else if (!this.isEnabled && this.isAquired()) {
+      await this.release();
+    }
   }
 }
