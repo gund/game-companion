@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["vite/client", "vite-plugin-pwa/client"]
+    "types": ["vite/client", "vite-plugin-pwa/client", "dom-screen-wake-lock"]
   },
   "exclude": ["src/**/*.spec.ts"],
   "include": ["src/**/*.ts"]

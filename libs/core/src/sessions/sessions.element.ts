@@ -1,5 +1,9 @@
 import { webContextConsumer } from '@game-companion/context';
-import { Session, SessionsService } from '@game-companion/core';
+import {
+  Session,
+  SessionsService,
+  WakelockService,
+} from '@game-companion/core';
 import '@game-companion/core/menu-drawer';
 import '@game-companion/core/session-list';
 import {
@@ -45,6 +49,9 @@ export class GcSessionsElement extends LitElement {
   @webContextConsumer(SessionsService)
   private declare sessionsService: SessionsService;
 
+  @webContextConsumer(WakelockService)
+  private declare wakelockService: WakelockService;
+
   @state()
   private declare sessions: Promise<Session[]>;
   @state()
@@ -56,6 +63,13 @@ export class GcSessionsElement extends LitElement {
     super();
 
     this.drawerOpened = false;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.loadSessions();
+    this.wakelockService.release();
   }
 
   protected override render() {
@@ -102,11 +116,6 @@ export class GcSessionsElement extends LitElement {
         aria-label="Create new session"
       ></mdc-fab>
     `;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.loadSessions();
   }
 
   private renderSessions(sessions: Session[]) {

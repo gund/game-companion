@@ -11,6 +11,8 @@ declare global {
 
   interface GcSettingsRegistry {
     'haptic-enabled': BooleanSetting;
+    'wakelock-enabled': BooleanSetting;
+    'wakelock-notifications': BooleanSetting;
   }
 }
 
@@ -35,6 +37,26 @@ export class SettingsService {
         description:
           'Controls weather to perform tactile feedback (vibrations)' +
           ' when editing score fields.',
+      });
+    });
+
+    this.dbService.addMigration(4, (_1, _2, _3, tx) => {
+      tx.objectStore('settings').put({
+        id: 'wakelock-enabled',
+        name: 'Screen Wakelock',
+        type: 'bool',
+        value: true,
+        description:
+          'Request a screen wakelock in an active sessions to prevent it from going to sleep.',
+      });
+
+      tx.objectStore('settings').put({
+        id: 'wakelock-notifications',
+        name: 'Screen Wakelock Notifications',
+        type: 'bool',
+        value: true,
+        description:
+          'Show a notification whenever a Screen Wakelock is aquired or released.',
       });
     });
   }

@@ -4,7 +4,12 @@
   "compilerOptions": {
     "noEmit": true,
     "moduleResolution": "node",
-    "types": ["vite/client", "vite-plugin-pwa/client", "vitest"]
+    "types": [
+      "vite/client",
+      "vite-plugin-pwa/client",
+      "vitest",
+      "dom-screen-wake-lock"
+    ]
   },
   "include": ["src"],
   "references": [

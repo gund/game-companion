@@ -7,6 +7,7 @@ import {
   SessionHelper,
   SessionsService,
   SettingsService,
+  WakelockService,
 } from '@game-companion/core';
 import {
   customElement,
@@ -61,6 +62,12 @@ export class GcProviderElement extends LitElement {
 
   @webContextProvider(SnackbarService)
   snackbarService = new SnackbarService();
+
+  @webContextProvider(WakelockService)
+  wakelockService = new WakelockService(
+    this.settingsService,
+    this.snackbarService,
+  );
 
   protected override createRenderRoot() {
     return this;

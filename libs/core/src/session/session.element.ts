@@ -8,6 +8,7 @@ import {
   PlayerStatsRegistry,
   SessionsService,
   UpdatePlayerStatsDataEvent,
+  WakelockService,
 } from '@game-companion/core';
 import {
   css,
@@ -67,6 +68,9 @@ export class GcSessionElement extends LitElement {
   @webContextConsumer(SnackbarService)
   private declare snackbarService: SnackbarService;
 
+  @webContextConsumer(WakelockService)
+  private declare wakelockService: WakelockService;
+
   constructor() {
     super();
 
@@ -120,6 +124,7 @@ export class GcSessionElement extends LitElement {
         <div class="mdc-layout-grid__inner">
           ${when(
             this.session,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             () => this.renderSession(this.session!),
             () => this.renderFallback(),
           )}
@@ -247,6 +252,15 @@ export class GcSessionElement extends LitElement {
     try {
       this.isLoading = true;
       this.session = await this.sessionsService.getById(this.sId);
+
+      if (this.session.isActive) {
+        this.wakelockService.request().catch((e) =>
+          this.snackbarService.open({
+            content: `Failed to request Wakelock: ${String(e)}`,
+            hasDismiss: true,
+          }),
+        );
+      }
     } catch (e) {
       this.loadingError = String(e);
     } finally {
@@ -286,7 +300,10 @@ export class GcSessionElement extends LitElement {
       });
 
       if (isConfirmed) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.session = await this.sessionsService.finishSesssion(this.sId!);
+
+        this.wakelockService.release();
       }
     } catch (e) {
       await this.snackbarService.open({
