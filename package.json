@@ -6,7 +6,6 @@
   "scripts": {},
   "dependencies": {
     "@lit-labs/router": "^0.1.1",
-    "core-js": "^3.27.0",
     "idb": "^7.1.1",
     "lit": "^2.5.0",
     "material-components-web": "^14.0.0",
