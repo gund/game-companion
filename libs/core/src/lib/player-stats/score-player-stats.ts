@@ -43,7 +43,7 @@ export class ScorePlayerStats implements PlayerStats, UpdatablePlayerStats {
 
   getScoreRestrictions(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    stats: ScorePlayerStatsData
+    stats: ScorePlayerStatsData,
   ): ScoreRestrictionsPlayerStats {
     return this.scoreRestrictions;
   }
@@ -52,4 +52,10 @@ export class ScorePlayerStats implements PlayerStats, UpdatablePlayerStats {
   getScoreLabel(stats: ScorePlayerStatsData): string {
     return 'Score';
   }
+}
+
+export function isScorePlayerStatsData(
+  stats: PlayerStatsData,
+): stats is ScorePlayerStatsData {
+  return 'scoreCount' in stats;
 }

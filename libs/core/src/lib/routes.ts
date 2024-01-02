@@ -9,7 +9,7 @@ export function getRoutes(baseUrl = '/'): RouteConfig[] {
       enter: () => import('@game-companion/core/sessions').then(),
     },
     {
-      path: `${baseUrl}session/new`,
+      path: `${baseUrl}new-session*`,
       render: () => html`<gc-new-session></gc-new-session>`,
       enter: () => import('@game-companion/core/new-session').then(),
     },

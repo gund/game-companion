@@ -75,7 +75,7 @@ export class GcPlayerElement extends LitElement {
   @state() private declare currentPlayerStats?: PlayerStatsData;
 
   @webContextConsumer(NavigatableRouter)
-  private router?: NavigatableRouter;
+  private declare router: NavigatableRouter;
 
   @webContextConsumer(PlayerStatsRegistry)
   private declare playerStatsRegistry: PlayerStatsRegistry;
@@ -126,16 +126,19 @@ export class GcPlayerElement extends LitElement {
           aria-label="Next player"
           @click=${this.nextPlayer}
         ></mdc-icon-button>
-        <mdc-icon-button
-          slot="toolbar"
-          type="button"
-          icon="add_circle"
-          title="Add Player Stats"
-          aria-label="Add Player Stats"
-          @click=${{
-            handleEvent: () => this.#playerStatsDialogRef.value?.open(),
-          }}
-        ></mdc-icon-button>
+        ${when(
+          this.session?.isActive,
+          () => html`<mdc-icon-button
+            slot="toolbar"
+            type="button"
+            icon="add_circle"
+            title="Add Player Stats"
+            aria-label="Add Player Stats"
+            @click=${{
+              handleEvent: () => this.#playerStatsDialogRef.value?.open(),
+            }}
+          ></mdc-icon-button>`,
+        )}
         <div class="mdc-layout-grid">
           <div class="mdc-layout-grid__inner">
             ${when(
@@ -189,18 +192,21 @@ export class GcPlayerElement extends LitElement {
             >
               <div>${this.getPlayerStatsName(ps)}</div>
               <div>${this.renderPlayerStats(ps)}</div>
-              <mdc-button
-                slot="actions"
-                type="button"
-                icon="delete"
-                outlined
-                ?disabled=${this.isRemovingPlayerStats}
-                @click=${{
-                  handleEvent: () => this.confirmRemovePlayerStats(ps),
-                }}
-              >
-                Remove Stats
-              </mdc-button>
+              ${when(
+                this.session?.isActive,
+                () => html`<mdc-button
+                  slot="actions"
+                  type="button"
+                  icon="delete"
+                  outlined
+                  ?disabled=${this.isRemovingPlayerStats}
+                  @click=${{
+                    handleEvent: () => this.confirmRemovePlayerStats(ps),
+                  }}
+                >
+                  Remove Stats
+                </mdc-button>`,
+              )}
             </mdc-card>
           </div>`,
         )}`,
@@ -208,19 +214,22 @@ export class GcPlayerElement extends LitElement {
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <h3>Player has no stats!</h3>
-        <mdc-button
-          type="link"
-          href="#"
-          @click=${{
-            handleEvent: (e: Event) => {
-              e.preventDefault();
-              this.#playerStatsDialogRef.value?.open();
-            },
-          }}
-        >
-          Add Player Stats
-        </mdc-button>
-        to start tracking score.
+        ${when(
+          this.session?.isActive,
+          () => html`<mdc-button
+              type="link"
+              href="#"
+              @click=${{
+                handleEvent: (e: Event) => {
+                  e.preventDefault();
+                  this.#playerStatsDialogRef.value?.open();
+                },
+              }}
+            >
+              Add Player Stats
+            </mdc-button>
+            to start tracking score.`,
+        )}
       </div>`,
     )}`;
   }
@@ -232,7 +241,7 @@ export class GcPlayerElement extends LitElement {
       return;
     }
 
-    if (isUpdatablePlayerStats(playerStats)) {
+    if (isUpdatablePlayerStats(playerStats) && this.session?.isActive) {
       return playerStats.renderUpdateStats(data);
     } else {
       return playerStats.renderStats(data);
@@ -446,7 +455,7 @@ export class GcPlayerElement extends LitElement {
       return;
     }
 
-    this.router?.navigateTo(
+    this.router.navigateTo(
       `/session/${this.session.id}/player/${nextPlayer.id}`,
     );
   }

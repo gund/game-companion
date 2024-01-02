@@ -1,19 +1,21 @@
 import { webContextConsumer } from '@game-companion/context';
-import type { PlayerStatsData } from '@game-companion/core';
+import type { PlayerStatsData, Session } from '@game-companion/core';
 import {
   NavigatableRouter,
   Player,
   PlayerStatsRegistry,
   SessionsService,
+  isScorePlayerStatsData,
+  isShallowEqual,
 } from '@game-companion/core';
 import '@game-companion/core/add-player-stats';
 import { AddPlayerStatsEvent } from '@game-companion/core/add-player-stats';
 import {
+  LitElement,
   css,
   customElement,
   html,
   ifDefined,
-  LitElement,
   repeat,
   state,
   when,
@@ -68,7 +70,7 @@ export class GcNewSessionElement extends LitElement {
   private declare isSaving: boolean;
 
   @webContextConsumer(NavigatableRouter)
-  private router?: NavigatableRouter;
+  private declare router: NavigatableRouter;
 
   @webContextConsumer(PlayerStatsRegistry)
   private declare playerStatsRegistry: PlayerStatsRegistry;
@@ -86,7 +88,7 @@ export class GcNewSessionElement extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addPlayer();
+    this.prefillSession();
   }
 
   protected override render() {
@@ -186,7 +188,9 @@ export class GcNewSessionElement extends LitElement {
                             type="button"
                             outlined
                             ?disabled=${!this.currentGlobalStats}
-                            @click=${this.addGlobalStats}
+                            @click=${{
+                              handleEvent: () => this.commitGlobalStats(),
+                            }}
                           >
                             Add Stats
                           </mdc-button>
@@ -229,6 +233,10 @@ export class GcNewSessionElement extends LitElement {
     this.players = this.players.filter((p) => p !== player);
   }
 
+  addGlobalStats(stats: PlayerStatsData) {
+    this.commitGlobalStats(stats);
+  }
+
   createSession() {
     this.players.forEach(
       (player) =>
@@ -244,12 +252,12 @@ export class GcNewSessionElement extends LitElement {
     this.currentGlobalStats = event.data;
   }
 
-  private addGlobalStats() {
-    if (!this.currentGlobalStats) {
+  private commitGlobalStats(stats = this.currentGlobalStats) {
+    if (!stats) {
       return;
     }
 
-    this.globalStats = [...this.globalStats, this.currentGlobalStats];
+    this.globalStats = [...this.globalStats, stats];
   }
 
   private removeGlobalStats(data: PlayerStatsData) {
@@ -281,11 +289,64 @@ export class GcNewSessionElement extends LitElement {
       this.error = undefined;
       this.isSaving = true;
       const session = await this.createSession();
-      await this.router?.navigateTo(`/session/${session.id}`);
+      await this.router.navigateTo(`/session/${session.id}`);
     } catch (e) {
       this.error = String(e);
     } finally {
       this.isSaving = false;
+    }
+  }
+
+  private async prefillSession(): Promise<void> {
+    const duplicateSessionId = new URLSearchParams(window.location.search).get(
+      'duplicateSession',
+    );
+
+    if (!duplicateSessionId) {
+      return void this.addPlayer();
+    }
+
+    let session: Session;
+
+    // First try to get the session and add the players
+    try {
+      session = await this.sessionsService.getById(duplicateSessionId);
+
+      session.players
+        .map((player) => ({ ...player, stats: [] }))
+        .forEach((player) => this.addPlayer(player));
+    } catch {
+      return void this.addPlayer();
+    }
+
+    // Then try to extract the global stats and add them
+    try {
+      const allStats = session.players
+        .map((player) => player.stats)
+        .flat()
+        .map((stat) => {
+          stat = { ...stat };
+
+          if (isScorePlayerStatsData(stat)) {
+            delete stat.scoreCount;
+          }
+
+          return stat;
+        });
+
+      const globalStats: PlayerStatsData[] = [];
+
+      allStats.forEach((stat) => {
+        if (
+          !globalStats.find((s) => stat.id === s.id && isShallowEqual(stat, s))
+        ) {
+          globalStats.push(stat);
+        }
+      });
+
+      globalStats.forEach((stat) => this.addGlobalStats(stat));
+    } catch {
+      // Do nothing
     }
   }
 }
