@@ -1,22 +1,23 @@
 import { webContextConsumer } from '@game-companion/context';
 import type { Session } from '@game-companion/core';
 import {
-  isNameablePlayerStats,
-  isUpdatablePlayerStats,
+  NavigatableRouter,
   Player,
   PlayerStatsData,
   PlayerStatsRegistry,
   SessionsService,
   UpdatePlayerStatsDataEvent,
   WakelockService,
+  isNameablePlayerStats,
+  isUpdatablePlayerStats,
 } from '@game-companion/core';
 import {
+  LitElement,
+  PropertyValueMap,
   css,
   customElement,
   html,
-  LitElement,
   property,
-  PropertyValueMap,
   repeat,
   state,
   when,
@@ -71,6 +72,9 @@ export class GcSessionElement extends LitElement {
   @webContextConsumer(WakelockService)
   private declare wakelockService: WakelockService;
 
+  @webContextConsumer(NavigatableRouter)
+  private declare router: NavigatableRouter;
+
   constructor() {
     super();
 
@@ -119,6 +123,17 @@ export class GcSessionElement extends LitElement {
               @click=${this.finishSession}
             ></mdc-icon-button>
           `,
+        () => html`
+          <mdc-icon-button
+            slot="toolbar"
+            type="button"
+            class="mdc-top-app-bar__navigation-icon"
+            icon="content_copy"
+            title="Duplicate session"
+            aria-label="Duplicate session"
+            @click=${this.duplicateSession}
+          ></mdc-icon-button>
+        `,
       )}
       <div class="mdc-layout-grid">
         <div class="mdc-layout-grid__inner">
@@ -353,5 +368,15 @@ export class GcSessionElement extends LitElement {
         hasDismiss: true,
       });
     }
+  }
+
+  private async duplicateSession() {
+    if (!this.session) {
+      return;
+    }
+
+    await this.router.navigateTo(
+      `/new-session?duplicateSession=${this.session.id}`,
+    );
   }
 }

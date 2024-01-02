@@ -110,7 +110,7 @@ export class GcSessionsElement extends LitElement {
       </mdc-top-app-bar>
       <mdc-fab
         type="link"
-        href="/session/new"
+        href="/new-session"
         icon="group_add"
         title="Create new session"
         aria-label="Create new session"

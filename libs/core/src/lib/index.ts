@@ -8,3 +8,4 @@ export * from './navigatable-router.js';
 export * from './db.service.js';
 export * from './settings.service.js';
 export * from './wakelock.service.js';
+export * from './utils/index.js';
